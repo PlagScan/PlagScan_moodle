@@ -2,7 +2,7 @@
 
 The advanced plagiarism checker plugin for moodle.
 
-Release date: Feb 19th 2018
+Release date: Nov 20th 2018
 -------------
 
 System requirements:
@@ -24,11 +24,11 @@ https://api.plagscan.com/PlagScan_Moodle_Manual-Admin_EN.pdf
 Bug Fix:
 --------
 
-    - Fixing a bug with individual teachers accounts and single account that makes the cron to crash.
+    - Alpha release
 
 Special thanks:
 ---------------
 
-    - Sasho for the pacience and the support and Mr. Lackovic for allow to work in the system.
+    - Jesus and Kirupa for the time dedicate
 
 Rubén Olmedo © PlagScan.com
