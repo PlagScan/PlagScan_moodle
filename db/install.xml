@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="blocks/plagscan/db" VERSION="20151103" COMMENT="XMLDB file for Moodle blocks/plagscan" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
+>
+  <TABLES>
+    <TABLE NAME="plagiarism_plagscan" COMMENT="plagscan table. It stores information about the submissions" NEXT="plagiarism_plagscan_config">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="20" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" NEXT="userid"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" PREVIOUS="id" NEXT="pid"/>
+        <FIELD NAME="pid" TYPE="int" LENGTH="20" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" PREVIOUS="userid" NEXT="pstatus"/>
+        <FIELD NAME="pstatus" TYPE="number" LENGTH="4" NOTNULL="false" UNSIGNED="false" SEQUENCE="false" DECIMALS="1" COMMENT="Percentage of plagiarism detected" PREVIOUS="pid" NEXT="status"/>
+        <FIELD NAME="status" TYPE="int" LENGTH="4" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" PREVIOUS="pstatus" NEXT="cmid"/>
+        <FIELD NAME="cmid" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" PREVIOUS="status" NEXT="filehash"/>
+        <FIELD NAME="filehash" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" PREVIOUS="cmid" NEXT="updatestatus"/>
+        <FIELD NAME="updatestatus" TYPE="int" LENGTH="2" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" COMMENT="Flag to identify that this file has been updated on Plagscan server - need to ask for details" PREVIOUS="filehash" NEXT="submissiontype"/>
+        <FIELD NAME="submissiontype" TYPE="int" LENGTH="1" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" COMMENT="text/content=1,file=2" PREVIOUS="updatestatus" NEXT="submitid"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id" NEXT="cmid"/>
+        <KEY NAME="cmid" TYPE="foreign" FIELDS="cmid" REFTABLE="course_modules" REFFIELDS="id" PREVIOUS="primary" NEXT="userid"/>
+        <KEY NAME="userid" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id" PREVIOUS="cmid"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="cm_user" UNIQUE="false" FIELDS="cmid, userid" NEXT="pid"/>
+        <INDEX NAME="pid" UNIQUE="false" FIELDS="pid" PREVIOUS="cm_user"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="plagiarism_plagscan_config" COMMENT="contains plagscan specific settings for each course module" PREVIOUS="plagiarism_plagscan">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" NEXT="cm"/>
+        <FIELD NAME="cm" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="id" NEXT="upload"/>
+        <FIELD NAME="upload" TYPE="int" LENGTH="4" NOTNULL="true" UNSIGNED="false" DEFAULT="0" SEQUENCE="false" COMMENT="When to upload to plagscan (never, manually, automatically)" PREVIOUS="cm" NEXT="complete"/>
+        <FIELD NAME="complete" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="false" DEFAULT="0" SEQUENCE="false" COMMENT="The timestamp of when the automatic upload was last done" PREVIOUS="upload" NEXT="username"/>
+        <FIELD NAME="username" TYPE="char" LENGTH="100" NOTNULL="false" SEQUENCE="false" COMMENT="The username of the user whose account should be used for uploading files from this assignment" PREVIOUS="complete" NEXT="nondisclosure"/>
+        <FIELD NAME="nondisclosure" TYPE="int" LENGTH="1" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" COMMENT="Flag to mark nondisclosure documents." PREVIOUS="username" NEXT="show_report_to_students" />
+        <FIELD NAME="show_report_to_students" TYPE="int" LENGTH="1" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" COMMENT="Flag to show the report to students" PREVIOUS="nondisclosure"/>
+        <FIELD NAME="show_students_links" TYPE="int" LENGTH="1" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" COMMENT="Flag to show links or PlagLevel to students" PREVIOUS="show_report_to_students"/>
+        <FIELD NAME="ownerid" TYPE="char" LENGTH="255" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" COMMENT="The id of the owner who created the submission" PREVIOUS="show_students_links" NEXT="submissionid"/>
+        <FIELD NAME="submissionid" TYPE="char" LENGTH="255" NOTNULL="false" DEFAULT="NULL" UNSIGNED="true" SEQUENCE="false" COMMENT="Unique PlagScan submission ID" PREVIOUS="ownerid"/>   
+        <FIELD NAME="enable_online_text" TYPE="int" LENGTH="1" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" COMMENT="Enable Plagiarism check for online text (not file)" PREVIOUS="submissionid"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id" NEXT="cm"/>
+        <KEY NAME="cm" TYPE="foreign" FIELDS="cm" REFTABLE="course_modules" REFFIELDS="id" PREVIOUS="primary"/>
+      </KEYS>
+    </TABLE>
+     <TABLE NAME="plagiarism_plagscan_user" COMMENT="matching the plagscan user with moodle user" PREVIOUS="plagiarism_plagscan_sub">
+         <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" NEXT="userid"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" PREVIOUS="id"/>
+         </FIELDS>
+        <KEYS>
+         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+         <KEY NAME="id" TYPE="foreign" FIELDS="id" REFTABLE="user" REFFIELDS="id" PREVIOUS="primary"/>
+        </KEYS>
+     </TABLE>
+  </TABLES>
+</XMLDB>

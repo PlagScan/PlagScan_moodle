@@ -1,0 +1,20 @@
+.plagscan_good {
+    color: white;
+    background-color: #16dd16;
+    padding: 2px;
+    border-radius: 5px;
+}
+
+.plagscan_warning {
+    color: white;
+    background-color: #ffbd26;
+    padding: 2px;
+    border-radius: 5px;
+}
+
+.plagscan_bad {
+    color: white;
+    background-color: #fb0000;
+    padding: 2px;
+    border-radius: 5px;
+}
