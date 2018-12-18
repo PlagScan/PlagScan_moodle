@@ -296,6 +296,11 @@ function xmldb_plagiarism_plagscan_upgrade($oldversion) {
             $dbman->add_field($table, $field);
         }
         
+        $field = new xmldb_field('psuserid', XMLDB_TYPE_INTEGER, '10', XMLDB_NOTNULL, XMLDB_UNSIGNED, null, 'userid'); 
+         if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        
         
     }
     

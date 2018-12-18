@@ -66,9 +66,17 @@ $connection = new plagscan_connection();
 //$connection->set_username($instanceconfig->username);
 //$connection->send_report($plagscan, $type);
 
-$user = $DB->get_record('plagiarism_plagscan_user', array('id' => $USER->id));
-        
-$res = $connection->report_retrieve($pid, $user, $instanceconfig);
+$is_multiaccount = get_config('plagiarism_plagscan', 'plagscan_multipleaccounts');
+$is_teacher = has_capability('plagiarism/plagscan:control', $context);
+
+$user = $DB->get_record('plagiarism_plagscan_user', array('userid' => $USER->id));
+
+if(!$is_multiaccount || $instanceconfig->submissionid == null)
+    $mode = 7;
+else
+    $mode = 10;
+
+$res = $connection->report_retrieve($pid, $user, $mode);
         
 if(isset($res["reportLink"])){
     redirect($res["reportLink"]);

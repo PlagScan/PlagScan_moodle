@@ -163,7 +163,7 @@ class plagiarism_plugin_plagscan extends plagiarism_plugin {
                     }
                     if ($user) {
                         $name = fullname($user)." ({$user->email})";
-                        $mform->addElement('static', 'plagscan_username', '', get_string('filesassociated', 'plagiarism_plagscan', $name));
+                        $mform->addElement('static', 'plagscan_admin_email', '', get_string('filesassociated', 'plagiarism_plagscan', $name));
                     }
                 }
                 $url = new moodle_url('/plagiarism/plagscan/userconfig.php', array('sesskey' => sesskey()));
@@ -201,23 +201,38 @@ class plagiarism_plugin_plagscan extends plagiarism_plugin {
             $config->upload = $data->plagscan_upload; 
 
             if ($config->upload !== self::RUN_NO) {
+                
+                $is_multiaccount = get_config('plagiarism_plagscan', 'plagscan_multipleaccounts');
+                
+                if($is_multiaccount){
+                    $user = $USER;
+                }
+                else {
+                    $user = $DB->get_record("user", array("email" => get_config('plagiarism_plagscan', 'plagscan_admin_email')));
+                }
    
-                $oldconfig = plagscan_get_instance_config($cmid);
+                $oldconfig = plagscan_get_instance_config($cmid, false);
                 if (empty($oldconfig->username)) {
-                    $config->username = $USER->email;
+                    $config->username = $user->email;
                 } else {
                     $config->username = $oldconfig->username;
                 }
                 
-                if(empty($oldconfig)){
+                if(empty($oldconfig->ownerid)){
+                    $config->ownerid = $user->id;
+                }
+                else
+                    $config->ownerid = $oldconfig->ownerid;
+                
+                if(empty($oldconfig->upload)){
                     $connection = new plagscan_connection();
-                    $submissionid = $connection->create_submissionid($cmid, $module, $config, $USER);
+                    $submissionid = $connection->create_submissionid($cmid, $module, $config, $user);
                 }
                 else{
                     $submissionid = $oldconfig->submissionid;
                     if($submissionid != NULL){
                         $connection = new plagscan_connection();
-                        $assign_owner = $DB->get_record("plagiarism_plagscan_user", array("id" => $oldconfig->ownerid));
+                        $assign_owner = $DB->get_record("user", array("id" => $oldconfig->ownerid));
                         $connection->update_submission($cmid, $module, $config, $submissionid, $assign_owner);
                     }
                 }
@@ -226,7 +241,6 @@ class plagiarism_plugin_plagscan extends plagiarism_plugin {
                 $config->show_students_links = $data->show_students_links;
                 $config->enable_online_text = $data->online_text;
                
-                $config->ownerid = $USER->id;
                 $config->submissionid = $submissionid;
                 //nondisclosure document
                 if (isset($data->nondisclosure_notice) && $data->nondisclosure_notice == 1 && get_config('plagiarism_plagscan', 'plagscan_nondisclosure_notice_email')) {
@@ -319,6 +333,8 @@ public $PS_CFG_YELLOW=null;
         $is_file = isset($linkarray['file']);
         $is_content = isset($linkarray['content']);
         
+        $is_multiaccount = get_config('plagiarism_plagscan', 'plagscan_multipleaccounts');
+        
         // Check if plagscan is enabled for this module instance (and cache the result)
         static $psfileenabled = array();
         static $instanceconfig = null;;
@@ -337,7 +353,7 @@ public $PS_CFG_YELLOW=null;
             $context = context_module::instance($cmid);
         }
         
-        //get viewreport variable
+        //get viewreport varinviable
         //get assigned closed
         $viewreport = false;
         $modulesql = 'SELECT m.id, m.name, cm.instance'.
@@ -399,12 +415,17 @@ public $PS_CFG_YELLOW=null;
         
         if($userid != null) {
 
-           $student_user = $DB->get_record("user", array("id" => $userid));       
+            if($is_multiaccount){
+                $submitter_user = $DB->get_record("user", array("id" => $userid));
+            }
+            else {
+                $submitter_user = $DB->get_record("user", array("email" => get_config('plagiarism_plagscan', 'plagscan_admin_email')));
+            }
 
-           $student_userid = $connection->find_user($student_user);
+           $submitter_userid = $connection->find_user($submitter_user);
 
-            if($student_userid == null) 
-                   $student_userid = $connection->add_new_user($student_user);
+            if($submitter_userid == null) 
+                   $submitter_userid = $connection->add_new_user($submitter_user);
             
         }
         
@@ -420,7 +441,7 @@ public $PS_CFG_YELLOW=null;
         
         //INVOLVE TEACHER - TODO: Maybe should go in another place
         static $involved;
-        if($instanceconfig->submissionid != null && $instanceconfig->ownerid != null && $assign_psownerid != null && !isset($involved[$cmid][$USER->id])){
+        if($is_multiaccount && $instanceconfig->submissionid != null && $instanceconfig->ownerid != null && $assign_psownerid != null && !isset($involved[$cmid][$USER->id]) ){
             if($connection->is_assistant($context,$instanceconfig,$USER)){
                 $is_involved = $connection->involve_assistant($instanceconfig, $assign_psownerid, $USER);
                 if ($is_involved)
@@ -432,7 +453,7 @@ public $PS_CFG_YELLOW=null;
         
         if($is_file){
             $file = $linkarray['file'];
-            $filehash = $file->get_pathnamehash();
+            $filehash = $file->get_contenthash();
             $filename = $file->get_filename();
 
             if (!plagscan_file::plagscan_supported_filetype($filename)) {
@@ -495,32 +516,49 @@ public $PS_CFG_YELLOW=null;
                 }
             }
         }
-
+        
+        static $ajaxenabled;
+        if(!isset($ajaxenabled[$cmid])){
+                $jsmodule = array(
+                    'name' => 'plagiarism_plagscan',
+                    'fullpath' => '/plagiarism/plagscan/ajax.js',
+                    'requires' => array('json'),
+                );
+                $PAGE->requires->js_init_call('M.plagiarism_plagscan.init', array($context->instanceid), true, $jsmodule);
+                //$this->page->requires->yui_module('moodle-local_pluginname-modulename', 'M.local_pluginname.init_modulename',
+                //array(array('aparam'=>'paramvalue')));
+         $ajaxenabled[$cmid] = true;       
+        }
         //create $message 
         if (!$psfile) {
             $message = get_string('notsubmitted', 'plagiarism_plagscan');
         } else {
+            
+            $message .= "<div class='psreport pid-".$psfile->pid."'>";
+            
             if ($psfile->status >= plagscan_file::STATUS_FAILED) {
                 if ($psfile->status == plagscan_file::STATUS_FAILED_FILETYPE) {
-                    $message = get_string('unsupportedfiletype', 'plagiarism_plagscan');
+                    $message .= get_string('unsupportedfiletype', 'plagiarism_plagscan');
                 } elseif ($psfile->status == plagscan_file::STATUS_FAILED_OPTOUT) {
-                    $message = get_string('wasoptedout', 'plagiarism_plagscan');
+                    $message .= get_string('wasoptedout', 'plagiarism_plagscan');
                 } else if ($psfile->status == plagscan_file::STATUS_FAILED_CONNECTION) {
-                    $message = get_string('serverconnectionproblem', 'plagiarism_plagscan');
+                    $message .= get_string('serverconnectionproblem', 'plagiarism_plagscan');
                 } else { // STATUS_FAILED_UNKNOWN
-                    $message = get_string('serverrejected', 'plagiarism_plagscan');
+                    $message .= get_string('serverrejected', 'plagiarism_plagscan');
                 }
             } else if ($psfile->status != plagscan_file::STATUS_FINISHED) {
                 
                 if($psfile->status == plagscan_file::STATUS_WAITING){
                     if($viewreport || $viewlinksb){
-                        $message = get_string('process_checking', 'plagiarism_plagscan');
-
+                        $message .= "<span class='progress_checking'>";
+                        $message .= get_string('process_checking', 'plagiarism_plagscan');
+                        $message .= "<label style='background-image:url(".new moodle_url('/plagiarism/plagscan/images/loader.gif').");width: 16px;height: 16px;'></label>";
                         $message .= html_writer::empty_tag('br');
+                        $message .= "</span>";
                     }
                 }
                 else{
-                    $message = get_string('notprocessed', 'plagiarism_plagscan');
+                    $message .= get_string('notprocessed', 'plagiarism_plagscan');
 
                     $message .= html_writer::empty_tag('br');
 
@@ -553,11 +591,12 @@ public $PS_CFG_YELLOW=null;
                   // $percent = html_writer::tag('span', sprintf('%0.1f%%', $psfile->pstatus), array('class' => $percentclass));
                 } 
                 $psurl = new moodle_url('/plagiarism/plagscan/reports/view.php',array('pid' => $psfile->pid, 'return' => urlencode($pageurl)));
-                $message = '';
                 
+                
+                 
                 if (($viewlinksb || has_capability('plagiarism/plagscan:viewfullreport', $context))) {
                     
-                    $message .= html_writer::link($psurl,html_writer::tag('span', sprintf('%0.1f%%', $psfile->pstatus), array('class' => $percentclass))."<label style='background-image:url(".new moodle_url('/plagiarism/plagscan/images/docicons.png').");width: 32px;height: 24px;background-position-y: 286px;min-width: 25px;max-width: 25px;min-height: 24px;max-height: 24px;'></label>");
+                    $message .= html_writer::link($psurl,html_writer::tag('span', sprintf('%0.1f%%', $psfile->pstatus), array('id'=> $psfile->pid ,'class' => $percentclass))."<label style='background-image:url(".new moodle_url('/plagiarism/plagscan/images/docicons.png').");width: 32px;height: 24px;background-position-y: 286px;min-width: 25px;max-width: 25px;min-height: 24px;max-height: 24px;'></label>");
                     $message .= "<div style='    margin-left: -8px;'>";
                     $message .= "</div>";
                     
@@ -566,13 +605,14 @@ public $PS_CFG_YELLOW=null;
                     if(!$showlinks){
                         $message .= html_writer::tag('span', sprintf('%0.1f%%', $psfile->pstatus), array('class' => $percentclass));
                     }else{
-                        $message .= html_writer::link($psurl,html_writer::tag('span', sprintf('%0.1f%%', $psfile->pstatus), array('class' => $percentclass))."<label style='background-image:url(".new moodle_url('/plagiarism/plagscan/images/docicons.png').");width: 32px;height: 24px;background-position-y: 286px;min-width: 25px;max-width: 25px;min-height: 24px;max-height: 24px;'></label>");
+                        $message .= html_writer::link($psurl,html_writer::tag('span', sprintf('%0.1f%%', $psfile->pstatus), array('id'=> $psfile->pid ,'class' => $percentclass))."<label style='background-image:url(".new moodle_url('/plagiarism/plagscan/images/docicons.png').");width: 32px;height: 24px;background-position-y: 286px;min-width: 25px;max-width: 25px;min-height: 24px;max-height: 24px;'></label>");
                         $message .= "<div style='    margin-left: -8px;'>";
                         $message .= "</div>";
                     }
                 }
                 $message .= html_writer::empty_tag('br');
             }
+            $message .="</div>";
         }
         //END create message
       
@@ -581,10 +621,10 @@ public $PS_CFG_YELLOW=null;
             $filedata = array(
                 'submissionid' => $instanceconfig->submissionid,
                 'ownerid' => $assign_psownerid,
-                'submitterid' => $student_userid,
-                'email' => $student_user->email,
-                'firstname' => $student_user->firstname,
-                'lastname' => $student_user->lastname);
+                'submitterid' => $submitter_userid,
+                'email' => $submitter_user->email,
+                'firstname' => $submitter_user->firstname,
+                'lastname' => $submitter_user->lastname);
             
             if($is_file){
                 $filedata['filename'] = $file->get_filename();
@@ -592,7 +632,7 @@ public $PS_CFG_YELLOW=null;
                 $filedata['mimetype'] = $file->get_mimetype();
             }
             else if($is_content){
-                $filedata['filename'] = $student_user->lastname."-".$student_user->firstname."_".$module->name;
+                $filedata['filename'] = $submitter_user->lastname."-".$submitter_user->firstname."_".$module->name;
                 $filedata['content'] = $onlinetext;
             }
 
@@ -606,6 +646,11 @@ public $PS_CFG_YELLOW=null;
                 $psfile->submissiontype = '1';
             else
                 $psfile->submissiontype = '2';
+            
+            if($psfileenabled[$cmid] == self::RUN_ALL)
+                $psfile->status = plagscan_file::STATUS_WAITING;
+            else
+                $psfile->status = plagscan_file::STATUS_NOT_STARTED;
             
             $res = plagscan_file::submit($psfile,$filedata);
             
@@ -727,7 +772,7 @@ function plagscan_set_instance_config($cmid, $data) {
     }
 }
 
-function plagscan_get_instance_config($cmid) {
+function plagscan_get_instance_config($cmid, $defaultconfig = true) {
     global $DB;
 
     if ($config = $DB->get_record('plagiarism_plagscan_config', array('cm' => $cmid))) {
@@ -735,11 +780,13 @@ function plagscan_get_instance_config($cmid) {
     }
 
     $default = new stdClass();
-    $default->upload = plagiarism_plugin_plagscan::RUN_NO;
-    $default->complete = 0;
-    $default->username = '';
-    $default->show_report_to_students = plagiarism_plugin_plagscan::SHOWSTUDENTS_NEVER;
-    $default->show_students_links = plagiarism_plugin_plagscan::SHOWS_ONLY_PLVL;
+    if($defaultconfig){
+        $default->upload = plagiarism_plugin_plagscan::RUN_NO;
+        $default->complete = 0;
+        $default->username = '';
+        $default->show_report_to_students = plagiarism_plugin_plagscan::SHOWSTUDENTS_NEVER;
+        $default->show_students_links = plagiarism_plugin_plagscan::SHOWS_ONLY_PLVL;
+    }
 
     return $default;
 }

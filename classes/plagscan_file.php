@@ -132,6 +132,12 @@ class plagscan_file {
                                                       'filehash' => $filehash));
     }
     
+    public static function find_by_psids($ids){
+        global $DB;
+        
+        return $DB->get_records_list('plagiarism_plagscan', 'pid',$ids);
+    }
+    
     /**
      * Saves the file data on the PlagScan table
      * 
@@ -228,7 +234,6 @@ class plagscan_file {
         } 
         // Insert a new record for this file
         $psfile->pid = intval($result);
-        $psfile->status = self::STATUS_NOT_STARTED;
         $psfile->pstatus = '';
         
         $psfile->id = self::save($psfile);

@@ -31,7 +31,6 @@ require_once(dirname(__FILE__) . '/../../../config.php');
 require_once($CFG->dirroot.'/plagiarism/plagscan/lib.php');
 global $CFG, $DB; 
 
-echo 'checkstatus file open';
 $cmid = optional_param('cmid', 0, PARAM_INT);
 $pid = optional_param('pid', 0, PARAM_INT);
 $return = required_param('return', PARAM_TEXT);
@@ -44,7 +43,6 @@ if (!$cmid && !$pid) {
 
 if ($pid) {
     $plagscan = $DB->get_record('plagiarism_plagscan', array('pid' => $pid), '*', MUST_EXIST);
-    print_r($plagscan);
     $cmid = $plagscan->cmid;
 } 
 
@@ -73,9 +71,6 @@ $connection = new plagscan_connection();
 if ($pid) {
     //print_r($pid);
     $msg = get_string('filechecked', 'plagiarism_plagscan');
-    //$connection->update_file_status($plagscan);
-//      print_r($postdata); = Array ( [USER] => kirupakech@gmail.com [KEY] => k10Ydv6Gf8yESW2s9tzKl438E3fTzQLa [VERSION] => 3.0 ) 
-      //..  $postdata['METHOD'] = 'Submit';
 
     $result = $connection->analyze($pid);
 } else {
@@ -84,5 +79,4 @@ if ($pid) {
 }
 $return = $return."&action=grading";
 $return = urldecode($return);
-print_r($return);
 redirect($return, $msg, 2);

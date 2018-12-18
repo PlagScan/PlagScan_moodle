@@ -28,7 +28,7 @@
 require_once(dirname(__FILE__) . '/../../config.php');
 
 //If the callback is from the convertion process
-if(isset($_GET["testing"]) && $_GET["testing"] == true){
+if(isset($_GET["checkCallback"]) && $_GET["checkCallback"] == true){
     
     require_once($CFG->dirroot.'/plagiarism/plagscan/lib.php');
     global $CFG, $DB;

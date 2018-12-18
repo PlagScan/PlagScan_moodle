@@ -49,10 +49,11 @@
          <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" NEXT="userid"/>
         <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" PREVIOUS="id"/>
+        <FIELD NAME="psuserid" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" PREVIOUS="userid"/>
          </FIELDS>
         <KEYS>
          <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-         <KEY NAME="id" TYPE="foreign" FIELDS="id" REFTABLE="user" REFFIELDS="id" PREVIOUS="primary"/>
+         <KEY NAME="userid" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id" PREVIOUS="primary"/>
         </KEYS>
      </TABLE>
   </TABLES>

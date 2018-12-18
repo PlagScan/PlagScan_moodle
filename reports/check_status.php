@@ -41,7 +41,6 @@ if (!$cmid && !$pid) {
 
 if ($pid) {
     $plagscan = $DB->get_record('plagiarism_plagscan', array('pid' => $pid), '*', MUST_EXIST);
-    print_r($plagscan);
     $cmid = $plagscan->cmid;
 } 
 
@@ -75,5 +74,4 @@ if ($pid) {
 }
 $return = $return."&action=grading";
 $return = urldecode($return);
-print_r($return);
 redirect($return, $msg, 2);

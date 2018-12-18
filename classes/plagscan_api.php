@@ -42,6 +42,10 @@ class plagscan_api {
      */
     const API_TOKEN = "/token";
     /**
+     * API_CHECK_CALLBACK
+     */
+    const API_CHECK_CALLBACK = "/checkcallback";
+    /**
      * API_URL
      */
     const API_URL = "https://api.plagscan.com/v3";
@@ -81,15 +85,9 @@ class plagscan_api {
         $url = self::API_URL.$endPoint;
         
         if($urlencodeddata){
-                $paramsJoined = array();
-
                 foreach($data as $param => $value) {
-                   $paramsJoined[] = "$param=$value";
+                    $url .="&$param=".urlencode($value);
                 }
-
-                $query = implode('&', $paramsJoined);
-                $url .="&".$query;
-            
         }
         
         if($requestType == "POST" && $filedata != null){

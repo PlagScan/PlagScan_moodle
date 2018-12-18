@@ -84,37 +84,21 @@ class plagscan_admin_settings_form extends moodleform {
         
         $mform->addElement('checkbox', 'plagscan_use', get_string('useplagscan', 'plagiarism_plagscan'));
         
-        
-        $mform->addElement('text', 'plagscan_server', get_string('plagscanserver', 'plagiarism_plagscan'), array('size' => '40', 'style' => 'height: 33px'));
-        $mform->addHelpButton('plagscan_server', 'plagscanserver', 'plagiarism_plagscan');
-        if (isset($CFG->proxyhost) && $CFG->proxyhost!='') {
-            $mform->setDefault('plagscan_server', 'https://api.plagscan.com/v3/');
-        } else {
-            $mform->setDefault('plagscan_server', 'ssl://api.plagscan.com/v3/');  
-        }
-        $mform->addRule('plagscan_server', null, 'required', null, 'client');
-        $mform->setType('plagscan_server', PARAM_TEXT);
-
         //$mform->addElement('text', 'plagscan_version', get_string('plagscan_API_version', 'plagiarism_plagscan'), array('style' => 'height: 33px'));
         //$mform->addHelpButton('plagscan_version', 'plagscan_API_version', 'plagiarism_plagscan');
         //$mform->setDefault('plagscan_version', '3.0');
         //$mform->addRule('plagscan_version', null, 'required', null, 'client');
         //$mform->setType('plagscan_version', PARAM_TEXT);
 
-        $mform->addElement('text', 'plagscan_key', get_string('plagscan_API_key', 'plagiarism_plagscan'), array('size' => '40', 'style' => 'height: 33px'));
-        $mform->addHelpButton('plagscan_key', 'plagscan_API_key', 'plagiarism_plagscan');
-        $mform->addRule('plagscan_key', null, 'required', null, 'client');
-        $mform->setType('plagscan_key', PARAM_TEXT);
-
         $mform->addElement('text', 'plagscan_id', get_string('plagscan_client_id', 'plagiarism_plagscan'), array('style' => 'height: 33px'));
         $mform->addRule('plagscan_id', null, 'required', null, 'client');
         $mform->setType('plagscan_id', PARAM_TEXT);
         
-        //$mform->addElement('text', 'plagscan_username', get_string('plagscan_client_username', 'plagiarism_plagscan'), array('style' => 'height: 33px'));
-        //$mform->addRule('plagscan_username', null, 'required', null, 'client');
-     // $mform->addHelpButton('plagscan_username', 'plagscan_client_username', 'plagiarism_plagscan');
-        //$mform->setType('plagscan_username', PARAM_TEXT); 
-
+        $mform->addElement('text', 'plagscan_key', get_string('plagscan_API_key', 'plagiarism_plagscan'), array('size' => '40', 'style' => 'height: 33px'));
+        $mform->addHelpButton('plagscan_key', 'plagscan_API_key', 'plagiarism_plagscan');
+        $mform->addRule('plagscan_key', null, 'required', null, 'client');
+        $mform->setType('plagscan_key', PARAM_TEXT);
+        
         $mform->addElement('select', 'plagscan_language', get_string("api_language", "plagiarism_plagscan"), $languageoptions);
         $mform->addHelpButton('plagscan_language', 'api_language', 'plagiarism_plagscan');
         $mform->setDefault('plagscan_language', '0');
@@ -126,9 +110,21 @@ class plagscan_admin_settings_form extends moodleform {
         $mform->addHelpButton('plagscan_email_notification_account', 'email_policy_notification_account', 'plagiarism_plagscan');
         $mform->setDefault('plagscan_email_notification_account', 1);
 
-        $mform->addElement('select', 'plagscan_data_policy', get_string("data_policy", "plagiarism_plagscan"), $dataoptions);
+        /*$mform->addElement('select', 'plagscan_data_policy', get_string("data_policy", "plagiarism_plagscan"), $dataoptions);
         $mform->disabledIf('plagscan_data_policy', 'plagscan_use', 'eq', 0);
-        $mform->addHelpButton('plagscan_data_policy', 'datapolicyhelp', 'plagiarism_plagscan');
+        $mform->addHelpButton('plagscan_data_policy', 'datapolicyhelp', 'plagiarism_plagscan');*/
+        
+        
+        $mform->addElement('checkbox', 'plagscan_web', get_string("plagscan_web_policy", "plagiarism_plagscan"));
+        
+        $mform->addElement('checkbox', 'plagscan_own_workspace', get_string("plagscan_own_workspace_policy", "plagiarism_plagscan"));
+        
+        $mform->addElement('checkbox', 'plagscan_own_repository', get_string("plagscan_own_repository_policy", "plagiarism_plagscan"));
+        
+        $mform->addElement('checkbox', 'plagscan_orga_repository', get_string("plagscan_orga_repository_policy", "plagiarism_plagscan"));
+        
+        $mform->addElement('checkbox', 'plagscan_plagiarism_prevention_pool', get_string("plagscan_ppp_policy", "plagiarism_plagscan"));
+        
 
         $mform->addElement('selectyesno', 'plagscan_studentpermission', get_string('plagscan_studentpermission', 'plagiarism_plagscan'), 0);
 
@@ -155,6 +151,12 @@ class plagscan_admin_settings_form extends moodleform {
         $mform->setDefault('source_percentage', get_string('source_percentage_default','plagiarism_plagscan'));
 
         $mform->addElement('select', 'plagscan_multipleaccounts', get_string('plagscan_multipleaccounts', 'plagiarism_plagscan'), $accountsopts, 0);
+        $mform->setDefault('plagscan_multipleaccounts', 1);
+        
+        $mform->addElement('text', 'plagscan_admin_email', get_string('plagscan_admin_email', 'plagiarism_plagscan'), array('style' => 'height: 33px'));
+        $mform->addHelpButton('plagscan_admin_email', 'plagscan_admin_email', 'plagiarism_plagscan');
+        $mform->setType('plagscan_admin_email', PARAM_TEXT); 
+        $mform->disabledIf('plagscan_admin_email','plagscan_multipleaccounts', 'eq', 1);
         
         $mform->addElement('html',"</div>");
 

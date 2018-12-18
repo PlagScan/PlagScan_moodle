@@ -51,13 +51,13 @@ $serversettings = (array)$connection->get_user_settings($USER);
 
 $settings = new stdClass();
 $apimapping = $connection->get_user_settings_mapping();
-        echo "</br></br></br>";
+
 foreach ($apimapping as $field => $serverfield) {
     if (isset($serversettings[$serverfield])) {
         $value = $serversettings[$serverfield];
         if($serverfield == "redLevel" || $serverfield == "yellowLevel")
             $value = $value / 10;
-        var_dump($serverfield);
+        
         $settings->$field = $value;
     }
 }

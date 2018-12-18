@@ -119,7 +119,7 @@ class plagscan_connection {
      */
     protected function get_username($adminuser = false, $originaluser = '', $tryfallback = false) {
         if ($adminuser) {
-            return $this->config->plagscan_username; // Admin request - always send the admin user.
+            return $this->config->plagscan_admin_email; // Admin request - always send the admin user.
         }
 
         if (!empty($originaluser)) {
@@ -129,7 +129,7 @@ class plagscan_connection {
         if (empty($this->config->plagscan_multipleaccounts) && !$this->nondisclosure) {
             // Using the global user account.
             if (!$tryfallback) { // Fallback = try local account instead.
-                return $this->config->plagscan_username;
+                return $this->config->plagscan_admin_email;
             }
         }
 
@@ -139,13 +139,13 @@ class plagscan_connection {
         }*/
 
         if (empty($this->username)) {
-            return $this->config->plagscan_username; // No local username - just return the global account.
+            return $this->config->plagscan_admin_email; // No local username - just return the global account.
         }
 
         if (!$tryfallback || empty($this->config->plagscan_multipleaccounts)) {
             return $this->username; // Default for 'use local username' + fallback for 'use global account'
         } else {
-            return $this->config->plagscan_username; // Fallback for 'use local username'
+            return $this->config->plagscan_admin_email; // Fallback for 'use local username'
         }
     }
 
@@ -215,7 +215,7 @@ class plagscan_connection {
         
         $access_token = $this->get_access_token();
         
-        $url = plagscan_api::APIUSERS."/$psuserid?access_token=".$access_token;
+        $url = plagscan_api::API_USERS."/$psuserid?access_token=".$access_token;
         
 	$res = plagscan_api::instance()->request($url, "PATCH", $settings, null, true);
                 
@@ -373,22 +373,16 @@ class plagscan_connection {
     * 
     * @param int $pid
     * @param \stdClass $user
-    * @param \stdClass $assign
+    * @param int $mode
     * @return array
     */
-   function report_retrieve($pid, $user, $assign) {
-        
-        if($assign->submissionid == null)
-            $mode = 7;
-        else
-            $mode = 10;
-        
+   function report_retrieve($pid, $user, $mode) {
         $access_token= $this->get_access_token();
         
         $url= plagscan_api::API_FILES."/$pid/retrieve?mode=".$mode."&access_token=$access_token";
         
         if($mode == 10)
-            $url .= "&userID=".$user->userid;
+            $url .= "&userID=".$user->psuserid;
         
         $res = plagscan_api::instance()->request($url, "GET", null);
         
@@ -413,77 +407,79 @@ class plagscan_connection {
     * @return int
     */
    function create_submissionid($cmid, $module, $config, $user) {
-       global $DB, $CFG;
-  //733-745lines are repeated from function get_links()     
-       $modulesql = 'SELECT m.id, m.name, cm.instance'.
-                ' FROM {course_modules} cm' .
-                ' INNER JOIN {modules} m on cm.module = m.id ' .
-                'WHERE cm.id = ?'; 
-       $moduledetail = $DB->get_record_sql($modulesql, array($cmid));
-       if (!empty($moduledetail)) {
-       $sql = "SELECT * FROM " . $CFG->prefix . $moduledetail->name . " WHERE id= ?";
-       $module = $DB->get_record_sql($sql, array($moduledetail->instance));
-      // print_r($module);
+        global $DB, $CFG;
+    //733-745lines are repeated from function get_links()     
+        $modulesql = 'SELECT m.id, m.name, cm.instance'.
+                 ' FROM {course_modules} cm' .
+                 ' INNER JOIN {modules} m on cm.module = m.id ' .
+                 'WHERE cm.id = ?'; 
+        $moduledetail = $DB->get_record_sql($modulesql, array($cmid));
+        if (!empty($moduledetail)) {
+        $sql = "SELECT * FROM " . $CFG->prefix . $moduledetail->name . " WHERE id= ?";
+        $module = $DB->get_record_sql($sql, array($moduledetail->instance));
+       // print_r($module);
+
+        $data = $DB->get_record('plagiarism_plagscan_config', array('cm' => $cmid));
+      //  print_r($data);
+        }
+
+         $psuserid = $this->find_user($user);
+         if($psuserid == null) 
+             $psuserid = $this->add_new_user( $user);
+
+        $title = $module->name;
+        $maxuplaods = '100';
+        $share = 1;
+        $checkdeadline = 0;
+        $enableresub = 1; 
+        $checkonupload = 0;
+        $type = 1;
        
-       $data = $DB->get_record('plagiarism_plagscan_config', array('cm' => $cmid));
-     //  print_r($data);
-       }
-       
-        $psuserid = $this->find_user($user);
-        if($psuserid == null) 
-            $psuserid = $this->add_new_user( $user);
+        //start manually   
+        if($config->upload == 1){
+           $checkdeadline = 0;
+           $checkonupload = 0;
+        }
+        //start immediately
+        elseif($config->upload == 3){
+           $checkonupload = 1;
+         }
         
-       $title = $module->name;
-       $maxuplaods = '100';
-       $share = 1;
-       $checkdeadline = 0;
-       $notifydeadline = 0;
-       $enableresub = 1; 
-       $checkonupload = 0;
-       $type = 1;
-       
-    //check date
-       if($module->duedate > 0){
-           $endtime= date('d-m-Y', $module->duedate);
-       }
-       
-       
-    //start manually   
-    if($config->upload == 1){
-       $checkdeadline = 0;
-       $notifydeadline = 0;
-       $checkonupload = 0;
-    }
-    //start immediately
-    elseif($config->upload == 3){
-       $checkonupload = 1;
-     }
-     
-    //start after due date
-    elseif($config->upload == 4){
-       $checkdeadline = 1;
-    }
-    
-       
-       $data = ["ownerID" => $psuserid, 
+         
+         $endtime = null;
+        //start after due date
+        if($config->upload == 2 || $config->upload == 4){
+           $checkdeadline = 1;
+           //check date
+            if($config->upload == 2 && $module->duedate > 0){
+                $endtime = date('d-m-Y H:i:s', $module->duedate);
+            }
+            else if($module->cutoffdate > 0){
+                $endtime = date('d-m-Y H:i:s', $module->cutoffdate);
+            }
+            else if($module->duedate > 0){
+                $endtime = date('d-m-Y H:i:s', $module->duedate);
+            }
+        }
+        
+        $data = ["ownerID" => $psuserid, 
            "title" => $title, 
            "endTime" => "".$endtime, 
            "maxUploads" => $maxuplaods, 
            "share" => $share, 
            "checkDeadline" => $checkdeadline, 
-           "notifyDeadline" => $notifydeadline, 
            "enableResubmission" => $enableresub, 
            "checkOnUpload" => $checkonupload, 
            "type" => $type];
        
        
-       $access_token= $this->get_access_token();
-       
-       $url = plagscan_api::API_SUBMISSIONS."?access_token=".$access_token;
-       
-       $res = plagscan_api::instance()->request($url, "POST", $data);
-        
-       return $res["response"]["data"]["submissionID"];;
+        $access_token= $this->get_access_token();
+
+        $url = plagscan_api::API_SUBMISSIONS."?access_token=".$access_token;
+
+        $res = plagscan_api::instance()->request($url, "POST", $data);
+
+        return $res["response"]["data"]["submissionID"];;
     }
     
     /**
@@ -497,71 +493,73 @@ class plagscan_connection {
      * @return bool
      */
     function update_submission($cmid, $module, $config, $assign_id, $user) {
-       global $DB, $CFG;
-  //733-745lines are repeated from function get_links()     
-       $modulesql = 'SELECT m.id, m.name, cm.instance'.
-                ' FROM {course_modules} cm' .
-                ' INNER JOIN {modules} m on cm.module = m.id ' .
-                'WHERE cm.id = ?'; 
-       $moduledetail = $DB->get_record_sql($modulesql, array($cmid));
-       if (!empty($moduledetail)) {
-       $sql = "SELECT * FROM " . $CFG->prefix . $moduledetail->name . " WHERE id= ?";
-       $module = $DB->get_record_sql($sql, array($moduledetail->instance));
-      // print_r($module);
-       
-       $data = $DB->get_record('plagiarism_plagscan_config', array('cm' => $cmid));
-     //  print_r($data);
-       }
-       
-        $psuserid = $this->find_user($user);
+        global $DB, $CFG;
+        //733-745lines are repeated from function get_links()     
+        $modulesql = 'SELECT m.id, m.name, cm.instance'.
+                 ' FROM {course_modules} cm' .
+                 ' INNER JOIN {modules} m on cm.module = m.id ' .
+                 'WHERE cm.id = ?'; 
+        $moduledetail = $DB->get_record_sql($modulesql, array($cmid));
+        if (!empty($moduledetail)) {
+        $sql = "SELECT * FROM " . $CFG->prefix . $moduledetail->name . " WHERE id= ?";
+        $module = $DB->get_record_sql($sql, array($moduledetail->instance));
+        // print_r($module);
+
+        $data = $DB->get_record('plagiarism_plagscan_config', array('cm' => $cmid));
+        //  print_r($data);
+        }
+
+         $psuserid = $this->find_user($user);
+
+         if($psuserid == null) 
+             $psuserid = $this->add_new_user( $user);
+
+        $title = $module->name;
+        $checkdeadline = 0;
+        $enableresub = 1; 
+        $checkonupload = 0;
+
+        //start manually   
+        if($config->upload == 1){
+        $checkdeadline = 0;
+        $checkonupload = 0;
+        }
+        //start immediately
+        elseif($config->upload == 3){
+        $checkonupload = 1;
+        }
+
         
-        if($psuserid == null) 
-            $psuserid = $this->add_new_user( $user);
-        
-       $title = $module->name;
-       $checkdeadline = 0;
-       $notifydeadline = 0;
-       $enableresub = 1; 
-       $checkonupload = 0;
-       
-    //check date
-       if($module->duedate > 0){
-           $endtime= date('d-m-Y', $module->duedate);
-       }
-       
-       
-    //start manually   
-    if($config->upload == 1){
-       $checkdeadline = 0;
-       $notifydeadline = 0;
-       $checkonupload = 0;
-    }
-    //start immediately
-    elseif($config->upload == 3){
-       $checkonupload = 1;
-     }
-     
-    //start after due date
-    elseif($config->upload == 4){
-       $checkdeadline = 1;
-    }
-    
-       
-       $data = ["ownerID" => $psuserid, 
-           "title" => $title, 
-           "endTime" => "".$endtime, 
-           "checkDeadline" => $checkdeadline, 
-           "notifyDeadline" => $notifydeadline, 
-           "enableResubmission" => $enableresub, 
-           "checkOnUpload" => $checkonupload];
-       
-        $access_token= $this->get_access_token();
-       
-       $url = plagscan_api::API_SUBMISSIONS."/$assign_id?access_token=".$access_token;
-       
-       $res = plagscan_api::instance()->request($url, "PATCH", $data, null, true);
-       
-       return true;
+        $endtime = null;
+        //start after due date
+        if($config->upload == 2 || $config->upload == 4){
+           $checkdeadline = 1;
+           //check date
+            if($config->upload == 2 && $module->duedate > 0){
+                $endtime = date('d-m-Y H:i:s', $module->duedate);
+            }
+            else if($module->cutoffdate > 0){
+                $endtime = date('d-m-Y H:i:s', $module->cutoffdate);
+            }
+            else if($module->duedate > 0){
+                $endtime = date('d-m-Y H:i:s', $module->duedate);
+            }
+        }
+
+        $data = ["ownerID" => $psuserid, 
+            "title" => $title, 
+            "endTime" => "".$endtime, 
+            "checkDeadline" => $checkdeadline, 
+            "enableResubmission" => $enableresub, 
+            "checkOnUpload" => $checkonupload];
+
+         $access_token= $this->get_access_token();
+
+        $url = plagscan_api::API_SUBMISSIONS."/$assign_id?access_token=".$access_token;
+
+        $res = plagscan_api::instance()->request($url, "PATCH", $data, null, true);
+
+        return true;
     }
     
     /**
@@ -584,8 +582,8 @@ class plagscan_connection {
         $psid = $res["response"]["data"]["userID"];
         
         $insert = new stdClass();
-        $insert->id = $user->id;
-        $insert->userid = $psid;
+        $insert->userid = $user->id;
+        $insert->psuserid = $psid;
 
         $DB->insert_record('plagiarism_plagscan_user', $insert);
 
@@ -602,19 +600,28 @@ class plagscan_connection {
         global $DB;
         
         //First check if the user is registered in the Moodle DB with the PS id
-        $psuser = $DB->get_record("plagiarism_plagscan_user", array("id" => $user->id));
+        $psuser = $DB->get_record("plagiarism_plagscan_user", array("userid" => $user->id));
         $psuserid = null;
         
         if($psuser){
-            $psuserid = $psuser->userid;
+            $psuserid = $psuser->psuserid;
         }
         else{
             $access_token = $this->get_access_token();
-            $url = plagscan_api::API_USERS."/users?access_token=$access_token&searchByEmail=$user->email";
+            
+            $url = plagscan_api::API_USERS."?access_token=$access_token&searchByEmail=$user->email";
 
             $res = plagscan_api::instance()->request($url, "GET", null);
-
+            
+            
             $psuserid = $res["response"]["data"]["userID"];
+            if($psuserid != null){
+                $insert = new stdClass();
+                $insert->userid = $user->id;
+                $insert->psuserid = $psuserid;
+                $DB->insert_record('plagiarism_plagscan_user', $insert);
+                
+            }
         }
         
         return $psuserid;
@@ -652,8 +659,10 @@ class plagscan_connection {
         
         $involved_psuserid = $this->find_user($involved_user);
         
-        //die();
-        $url = plagscan_api::API_SUBMISSIONS."/$assign->submissionid/involve?userID=$involved_psuserid&ownerID=$assign_psownerid&access_token=".$access_token;
+        if($involved_psuserid == null)
+            $involved_psuserid = $this->add_new_user($involved_user);
+        
+        $url = plagscan_api::API_SUBMISSIONS."/$assign->submissionid/involve?userID=$involved_psuserid&ownerID=$assign_psownerid&shareMode=4&access_token=".$access_token;
         
         $res = plagscan_api::instance()->request($url, "GET", null);
         
@@ -669,6 +678,71 @@ class plagscan_connection {
         }
         
         return true;
+    }
+    
+    /**
+     * Send a request to check the callback configuration from the PlagScan admin account
+     */
+    public function check_callback_config(){
+        $access_token = $this->get_access_token();
+        
+        $url = plagscan_api::API_CHECK_CALLBACK."?access_token=$access_token";
+
+        return plagscan_api::instance()->request($url, "PUT", null);
+    }
+    
+    /**
+     * Check the status of the files from an array of PlagScan file ids. It returns an array with one pair, file id and message/content
+     * 
+     * @param array $psfiles
+     * @return array
+     */
+    public function check_report_status($psfiles){
+        global $CFG,$PAGE, $PS_CFG_YELLOW, $PS_CFG_RED;
+        require_once($CFG->dirroot . '/plagiarism/plagscan/classes/plagscan_file.php');
+        
+        $psfiles = plagscan_file::find_by_psids($psfiles);
+        
+        $results = array();
+        
+        foreach($psfiles as $psfile){
+            $message = "";
+            if ($psfile->status >= plagscan_file::STATUS_FAILED) {
+                if ($psfile->status == plagscan_file::STATUS_FAILED_FILETYPE) {
+                    $message = get_string('unsupportedfiletype', 'plagiarism_plagscan');
+                } elseif ($psfile->status == plagscan_file::STATUS_FAILED_OPTOUT) {
+                    $message = get_string('wasoptedout', 'plagiarism_plagscan');
+                } else if ($psfile->status == plagscan_file::STATUS_FAILED_CONNECTION) {
+                    $message = get_string('serverconnectionproblem', 'plagiarism_plagscan');
+                } else { // STATUS_FAILED_UNKNOWN
+                    $message = get_string('serverrejected', 'plagiarism_plagscan');
+                }
+                
+                array_push($results, array("pid" => $psfile->pid, "content" => $message));
+            } else if ($psfile->status == plagscan_file::STATUS_FINISHED) {
+                $percent = '';
+                if (!is_null($psfile->pstatus)) {
+                    $percentclass = 'plagscan_good';
+                    if ($psfile->pstatus > ($PS_CFG_RED/10)) {
+                        $percentclass = 'plagscan_bad';
+                    } else if ($psfile->pstatus > ($PS_CFG_YELLOW/10)) {
+                        $percentclass = 'plagscan_warning';
+                    }
+                  // $percent = html_writer::tag('span', sprintf('%0.1f%%', $psfile->pstatus), array('class' => $percentclass));
+                } 
+                $psurl = new moodle_url('/plagiarism/plagscan/reports/view.php',array('pid' => $psfile->pid, 'return' => urlencode($PAGE->url)));
+                $message = '';
+                $message .= html_writer::link($psurl,html_writer::tag('span', sprintf('%0.1f%%', $psfile->pstatus), array('id'=> $psfile->pid ,'class' => "psreport ".$percentclass))."<label style='background-image:url(".new moodle_url('/plagiarism/plagscan/images/docicons.png').");width: 32px;height: 24px;background-position-y: 286px;min-width: 25px;max-width: 25px;min-height: 24px;max-height: 24px;'></label>");
+                $message .= "<div style='    margin-left: -8px;'>";
+                $message .= "</div>";
+                   
+                $message .= html_writer::empty_tag('br');
+                
+                array_push($results, array("pid" => $psfile->pid, "content" => $message));
+            }
+            
+        }
+        return $results;
     }
     
 }

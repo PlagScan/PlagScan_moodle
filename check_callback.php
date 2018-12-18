@@ -31,10 +31,7 @@ require_once($CFG->dirroot.'/plagiarism/plagscan/classes/plagscan_connection.php
 global $CFG, $DB;
 
 $connection = new plagscan_connection();
-
-$access_token = $connection->get_access_token();
-
-$res = $connection->request_to_api("/checkcallback?access_token=$access_token", "PUT", null);
+$res = $connection->check_callback_config();
 
 if($res["httpcode"] == 204){
     $msg = get_string('callback_setup', 'plagiarism_plagscan');

@@ -93,6 +93,8 @@ $string['plagscan:control'] = 'Einreichung von Dokumenten f&ouml;r PlagScan';
 $string['plagscan:enable'] = 'PlagScan in einer Aufgabe aktivieren/deaktivieren';
 $string['plagscan:viewfullreport'] = 'PlagScan berichte lesen und herunterladen';
 $string['pluginname'] = 'PlagScan';
+$string['plagscan_admin_email']='Admin Email';
+$string['plagscan_admin_email_help']='Your Plagscan admin account registered email. This is necessary if you associate uploaded files with the main PlagScan account';
 $string['plagscan_API_key'] = 'API Key';
 $string['plagscan_API_key_help'] = 'Ihren API Key finden Sie auf der Seite <a href="https://www.plagscan.com/apisetup" target="_blank">https://www.plagscan.com/apisetup</a>';
 $string['plagscan_API_method'] = 'Methode';

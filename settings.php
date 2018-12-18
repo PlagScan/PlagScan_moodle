@@ -52,7 +52,7 @@ echo $OUTPUT->header();
 
 // user clicked on save changes
 if (($data = $mform->get_data()) && confirm_sesskey()) {
-
+    
     //plagscan_use will not be send if it's false
     if (!isset($data->plagscan_use)) {
         $data->plagscan_use = 0;
@@ -68,12 +68,13 @@ if (($data = $mform->get_data()) && confirm_sesskey()) {
                                'plagscan_key' => true,
                                'plagscan_student_disclosure' => false,
                                'plagscan_studentpermission' => false,
-                               'plagscan_server' => true,
                                'plagscan_multipleaccounts' => false,
                                'plagscan_nondisclosure_notice_email' => false,
                                'plagscan_email_notification_account' => false,
                                'plagscan_groups' => true);
 
+    
+        
     //copy submitted localonlysettings to local copy (plagiarism_plagscan)
     $fullserverupdate = false;
     foreach ($localonlysettings as $field => $requirefullupdate) {
@@ -84,6 +85,7 @@ if (($data = $mform->get_data()) && confirm_sesskey()) {
 
         // Save the setting
         set_config($field, $value, 'plagiarism_plagscan');
+
 
         // Check if changing this setting means a full update of server settings is required
         if ($requirefullupdate) {
@@ -102,6 +104,9 @@ if (($data = $mform->get_data()) && confirm_sesskey()) {
     $apimapping = $connection->get_user_settings_mapping();
     $updatesettings = new stdClass();
     foreach ($apimapping as $field => $serverfield) {
+        if($data->$field == null)
+            $data->$field = 0;
+
         $value = $data->$field;
         if (isset($plagiarismsettings->$field) && $plagiarismsettings->$field == $value) {
             if (!$fullserverupdate) {
@@ -113,17 +118,24 @@ if (($data = $mform->get_data()) && confirm_sesskey()) {
         set_config($field, $value, 'plagiarism_plagscan');
 
         // Send the new value to the server
-         $updatesettings->$serverfield = $value;
-        
+        if($serverfield != "redLevel" && $serverfield != "yellowLevel")
+            $updatesettings->$serverfield = $value;
+
     }
 
-    $result = $connection->set_user_settings($USER,$updatesettings);
+    if(isset($data->plagscan_admin_email)){
+        $user = $DB->get_record('user', array('email' => $data->plagscan_admin_email));
+        $result = $connection->set_user_settings($user,$updatesettings);
+        set_config('plagscan_admin_email', $data->plagscan_admin_email, 'plagiarism_plagscan');
+    }
+    
     //satus message
     if(!$result) {
-        notify(get_string('savedapiconfigerror', 'plagiarism_plagscan'), 'notifysuccess');
+        $OUTPUT->notification(get_string('savedapiconfigerror', 'plagiarism_plagscan'), 'notifysuccess');
     } else {
-        notify(get_string('savedconfigsuccess', 'plagiarism_plagscan'), 'notifysuccess');
+        $OUTPUT->notification(get_string('savedconfigsuccess', 'plagiarism_plagscan'), 'notifysuccess');
     }
+    
 }
 
 $mform->set_data($plagiarismsettings);
