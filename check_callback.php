@@ -45,4 +45,4 @@ else{
     $time=10;
 }
 
-redirect("./settings.php", $msg, $time);
+redirect("./settings.php", $msg, $time, \core\output\notification::NOTIFY_ERROR);

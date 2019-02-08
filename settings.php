@@ -33,6 +33,7 @@ require_once($CFG->dirroot.'/plagiarism/plagscan/lib.php');
 require_once($CFG->dirroot.'/plagiarism/plagscan/classes/plagscan_settings_form.php');
 
 require_login();
+
 if ($CFG->version < 2011120100) {
     $context = get_context_instance(CONTEXT_SYSTEM);
 } else {
@@ -40,16 +41,39 @@ if ($CFG->version < 2011120100) {
 }
 require_capability('moodle/site:config', $context, $USER->id, true, "nopermissions");
 
+$PAGE->set_context($context);
+   
 //require form
 $mform = new plagscan_admin_settings_form();
 $plagiarismsettings = (array) get_config('plagiarism_plagscan');
 
+$connection = new plagscan_connection();
+$apimapping = $connection->get_user_settings_mapping();
+    
+if(get_config('plagiarism_plagscan', 'plagscan_multipleaccounts') == 0){
+    $user = $DB->get_record("user", array("email" => get_config('plagiarism_plagscan', 'plagscan_admin_email')));
+    if($user != false){
+        $serversettings = (array)$connection->get_user_settings($user);
+
+        foreach ($apimapping as $field => $serverfield) {
+            if (isset($serversettings[$serverfield])) {
+                $value = $serversettings[$serverfield];
+                if($serverfield == "redLevel" || $serverfield == "yellowLevel")
+                    $value = $value / 10;
+
+                $plagiarismsettings[$field] = $value;
+
+            }
+        }
+    }
+}
+
 if ($mform->is_cancelled()) {
-    redirect(new moodle_url('/plagiarism/plagscan/settings.php'));
+    $url = new moodle_url('/plagiarism/plagscan/settings.php');
+    $PAGE->set_url($url);
 }
 
 echo $OUTPUT->header();
-
 // user clicked on save changes
 if (($data = $mform->get_data()) && confirm_sesskey()) {
     
@@ -92,8 +116,7 @@ if (($data = $mform->get_data()) && confirm_sesskey()) {
             $fullserverupdate = true;
         }
     }
-    // Must not do this earlier, as this depends on the settings updated just above here
-    $connection = new plagscan_connection(true);
+    
 
     //set autostart for plagscan analysis
     //$connection->enable_auto_analysis();
@@ -101,10 +124,10 @@ if (($data = $mform->get_data()) && confirm_sesskey()) {
 
     // Links the local setting name to the server setting name
     $result = true; //Plagscan API parameters
-    $apimapping = $connection->get_user_settings_mapping();
     $updatesettings = new stdClass();
+    
     foreach ($apimapping as $field => $serverfield) {
-        if($data->$field == null)
+        if(!isset($data->$field) || $data->$field == null)
             $data->$field = 0;
 
         $value = $data->$field;
@@ -120,18 +143,23 @@ if (($data = $mform->get_data()) && confirm_sesskey()) {
         // Send the new value to the server
         if($serverfield != "redLevel" && $serverfield != "yellowLevel")
             $updatesettings->$serverfield = $value;
+        
 
     }
 
-    if(isset($data->plagscan_admin_email)){
+    if($data->plagscan_multipleaccounts == 0 && isset($data->plagscan_admin_email)){
+        
         $user = $DB->get_record('user', array('email' => $data->plagscan_admin_email));
-        $result = $connection->set_user_settings($user,$updatesettings);
-        set_config('plagscan_admin_email', $data->plagscan_admin_email, 'plagiarism_plagscan');
+        if($user != false){
+            $result = $connection->set_user_settings($user,$updatesettings);
+            set_config('plagscan_admin_email', $data->plagscan_admin_email, 'plagiarism_plagscan');
+        }
+        else{
+            $OUTPUT->notification(get_string('savedapiconfigerror_admin_email', 'plagiarism_plagscan'), 'notifysuccess');
+        }
     }
-    
     //satus message
     if(!$result) {
-        $OUTPUT->notification(get_string('savedapiconfigerror', 'plagiarism_plagscan'), 'notifysuccess');
     } else {
         $OUTPUT->notification(get_string('savedconfigsuccess', 'plagiarism_plagscan'), 'notifysuccess');
     }

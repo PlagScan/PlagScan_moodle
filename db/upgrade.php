@@ -301,6 +301,8 @@ function xmldb_plagiarism_plagscan_upgrade($oldversion) {
             $dbman->add_field($table, $field);
         }
         
+        // plagscan savepoint reached
+        upgrade_plugin_savepoint(true, 2018112000, 'plagiarism', 'plagscan');
         
     }
     

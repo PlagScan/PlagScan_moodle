@@ -44,6 +44,8 @@ if ($CFG->version < 2011120100) {
 } else {
     $context = context_module::instance($cmid);
 }
+$PAGE->set_context($context);
+
 if (!(has_capability('plagiarism/plagscan:viewfullreport', $context) || has_capability('plagiarism/plagscan:control', $context))) {
     $instanceconfig = plagscan_get_instance_config($cmid);
     if ($instanceconfig->show_students_links != plagiarism_plugin_plagscan::SHOWS_LINKS){

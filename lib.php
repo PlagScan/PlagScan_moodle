@@ -182,6 +182,9 @@ class plagiarism_plugin_plagscan extends plagiarism_plugin {
     public function save_form_elements($data) {
         global $DB, $USER, $CFG;
         
+        if($data->modulename != "assign")
+            return '';
+        
         $cmid = $data->coursemodule;
         
         $modulesql = 'SELECT m.id, m.name, cm.instance'.
@@ -325,6 +328,7 @@ public $PS_CFG_YELLOW=null;
 
     public function get_links($linkarray) {
         
+        
         global $CFG, $USER, $COURSE, $DB, $PAGE,$PS_CFG_RED,$PS_CFG_YELLOW, $cm;
         
         $cmid = $linkarray['cmid'];
@@ -332,6 +336,9 @@ public $PS_CFG_YELLOW=null;
         
         $is_file = isset($linkarray['file']);
         $is_content = isset($linkarray['content']);
+        
+        if($is_file && $linkarray['file']->get_filearea() == 'introattachment')
+            return '';
         
         $is_multiaccount = get_config('plagiarism_plagscan', 'plagscan_multipleaccounts');
         
@@ -596,7 +603,7 @@ public $PS_CFG_YELLOW=null;
                  
                 if (($viewlinksb || has_capability('plagiarism/plagscan:viewfullreport', $context))) {
                     
-                    $message .= html_writer::link($psurl,html_writer::tag('span', sprintf('%0.1f%%', $psfile->pstatus), array('id'=> $psfile->pid ,'class' => $percentclass))."<label style='background-image:url(".new moodle_url('/plagiarism/plagscan/images/docicons.png').");width: 32px;height: 24px;background-position-y: 286px;min-width: 25px;max-width: 25px;min-height: 24px;max-height: 24px;'></label>");
+                    $message .= html_writer::link($psurl,html_writer::tag('span', sprintf('%0.1f%%', $psfile->pstatus), array('id'=> $psfile->pid ,'class' => $percentclass))."<label style='background-image:url(".new moodle_url('/plagiarism/plagscan/images/docicons.png').");width: 32px;height: 24px;background-position-y: 286px;min-width: 25px;max-width: 25px;min-height: 24px;max-height: 24px;'></label>",array('target' => '_blank'));
                     $message .= "<div style='    margin-left: -8px;'>";
                     $message .= "</div>";
                     
@@ -605,7 +612,7 @@ public $PS_CFG_YELLOW=null;
                     if(!$showlinks){
                         $message .= html_writer::tag('span', sprintf('%0.1f%%', $psfile->pstatus), array('class' => $percentclass));
                     }else{
-                        $message .= html_writer::link($psurl,html_writer::tag('span', sprintf('%0.1f%%', $psfile->pstatus), array('id'=> $psfile->pid ,'class' => $percentclass))."<label style='background-image:url(".new moodle_url('/plagiarism/plagscan/images/docicons.png').");width: 32px;height: 24px;background-position-y: 286px;min-width: 25px;max-width: 25px;min-height: 24px;max-height: 24px;'></label>");
+                        $message .= html_writer::link($psurl,html_writer::tag('span', sprintf('%0.1f%%', $psfile->pstatus), array('id'=> $psfile->pid ,'class' => $percentclass))."<label style='background-image:url(".new moodle_url('/plagiarism/plagscan/images/docicons.png').");width: 32px;height: 24px;background-position-y: 286px;min-width: 25px;max-width: 25px;min-height: 24px;max-height: 24px;'></label>", array( 'target' => '_blank'));
                         $message .= "<div style='    margin-left: -8px;'>";
                         $message .= "</div>";
                     }

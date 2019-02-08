@@ -26,6 +26,7 @@
 if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.'); // It must be included from a Moodle page.
 }
+
 require_once($CFG->dirroot.'/lib/formslib.php');
 
 class plagscan_admin_settings_form extends moodleform {
@@ -105,10 +106,6 @@ class plagscan_admin_settings_form extends moodleform {
 
         $mform->addElement('select', 'plagscan_email_policy', get_string("email_policy", "plagiarism_plagscan"), $emailoptions);
         $mform->setDefault('plagscan_email_policy', '0');
-
-        $mform->addElement('checkbox', 'plagscan_email_notification_account', get_string("email_policy_notification_account", "plagiarism_plagscan"));
-        $mform->addHelpButton('plagscan_email_notification_account', 'email_policy_notification_account', 'plagiarism_plagscan');
-        $mform->setDefault('plagscan_email_notification_account', 1);
 
         /*$mform->addElement('select', 'plagscan_data_policy', get_string("data_policy", "plagiarism_plagscan"), $dataoptions);
         $mform->disabledIf('plagscan_data_policy', 'plagscan_use', 'eq', 0);

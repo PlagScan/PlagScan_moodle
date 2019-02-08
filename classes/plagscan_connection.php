@@ -79,7 +79,7 @@ class plagscan_connection {
      * @return array
      */
     public function get_user_settings_mapping() {
-        return array('plagscan_language' => 'lang',
+        return array('plagscan_language' => 'language',
                      'plagscan_email_policy' => 'emailPolicy',
                      'plagscan_web' => 'checkWeb',
                      'plagscan_own_workspace' => 'checkOwnWorkspace',

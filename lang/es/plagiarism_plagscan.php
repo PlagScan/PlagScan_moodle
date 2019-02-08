@@ -25,8 +25,8 @@
  */
 
 $string['allfileschecked'] = 'Estado de todos los documentos analizados en PlagScan';
-$string['always'] = 'siempre';
-$string['analyze'] = 'Analizar';
+$string['always'] = 'Siempre';
+$string['check'] = 'Analizar';
 $string['api_language']='Idioma del informe';
 $string['api_language_help']= 'Todos los informes de PlagScan seran en este idioma.';
 $string['assignments']='Entregas';
@@ -131,6 +131,7 @@ $string['runmanual'] = 'Manualmente';
 $string['save']='Guardar';
 $string['savedapiconfigerror'] = 'Hubo un error mientras se actualiza la configuraci&oacute;n de PlagScan';
 $string['savedconfigsuccess'] = 'Configuraci&oacute;n de PlagScan guardada!';
+$string['savedapiconfigerror_admin_email'] = 'Make sure you entered a valid user email as "Admin Email"';
 $string['serverconnectionproblem'] = 'Problema al conectar a PlagScan';
 $string['serverrejected'] = 'El servidor de PlagScan rechazo el archivo - Est&aacute; protegido o corrupto.';
 $string['settings_cancelled'] = 'Configuraci&oacute;n antiplagio ha sido cancelada';

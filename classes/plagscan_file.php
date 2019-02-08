@@ -333,8 +333,6 @@ class plagscan_file {
             // File was not submitted properly in the first place - skip it.
             return false;
         }
-        
-        $status = self::STATUS_WAITING;
 
         $connection = new plagscan_connection();
         $result = $connection->plaglevel_retrieve($pid);
@@ -348,7 +346,9 @@ class plagscan_file {
                 $pstatus = floatval($result) / 10;
             }
         }
-
+        else
+            return false;
+        
         if ($status == $psfile->status && $pstatus == $psfile->pstatus && !$psfile->updatestatus) {
             return false; // Nothing has changed
         }

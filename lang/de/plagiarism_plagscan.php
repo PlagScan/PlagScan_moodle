@@ -26,7 +26,7 @@
 
 $string['allfileschecked'] = 'Status aller Dokumente auf PlagScan Server gepr&uuml;ft';
 $string['always'] = 'immer';
-$string['analyze'] = 'Analisieren';
+$string['check'] = 'Analisieren';
 $string['api_language']='Sprache der Berichte';
 $string['api_language_help']='Ihre PlagScan Berichte mit den Ergebnissen der Plagiatsprüfung werden in dieser Sprache vom Server heruntergeladen.';
 $string['assignments']='Aufgaben';
@@ -88,7 +88,7 @@ $string['optin'] = 'Plagiatpr&uuml;fung zulassen';
 $string['optin_explanation'] = 'Sie haben sich entschieden die Plagiatpr&uuml;fung zuzulassen. Von nun an werden alle Ihre Arbeiten auf dem PlagScan Server hochgeladen und gepr&uuml;ft';
 $string['optout'] = 'Plagiatpr&uuml;fung verweigern';
 $string['optout_explanation'] = 'Sie haben sich entschieden die Plagiatpr&uuml;fung zu verweigern. Von nun an werden keine Arbeiten mehr auf dem PlagScan Server hochgeladen und gepr&uuml;ft';
-$string['plagscan']  ='Plagscan';
+$string['plagscan']  ='PlagScan';
 $string['plagscan:control'] = 'Einreichung von Dokumenten f&ouml;r PlagScan';
 $string['plagscan:enable'] = 'PlagScan in einer Aufgabe aktivieren/deaktivieren';
 $string['plagscan:viewfullreport'] = 'PlagScan berichte lesen und herunterladen';
@@ -132,6 +132,7 @@ $string['runmanual'] = 'Starte manuell';
 $string['save']='Speichern';
 $string['savedapiconfigerror'] = 'Es gab einen Fehler beim Speichern der PlagScan Einstellungen';
 $string['savedconfigsuccess'] = 'Plagscan Einstellungen gespeichert';
+$string['savedapiconfigerror_admin_email'] = 'Make sure you entered a valid user email as "Admin Email"';
 $string['serverconnectionproblem'] = 'Problem mit der Verbindung zum PlagScan Server';
 $string['serverrejected'] = 'Der PlagScan Server hat diese Datei abgelehnt - sie ist besch&auml;digt oder gesch&uuml;tzt.';
 $string['settings_cancelled'] = 'Einstellungen nicht gespeichert';

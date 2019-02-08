@@ -51,6 +51,8 @@ if ($CFG->version < 2011120100) {
 } else {
     $context = context_module::instance($cmid);
 }
+$PAGE->set_context($context);
+
 if (!(has_capability('plagiarism/plagscan:viewfullreport', $context) || has_capability('plagiarism/plagscan:control', $context))) {
     throw new moodle_exception('Permission denied!', 'plagiarism_plagscan');
 }
