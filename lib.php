@@ -575,7 +575,7 @@ public $PS_CFG_YELLOW=null;
                         $message .= html_writer::empty_tag('br');
                         $submiturl = new moodle_url('/plagiarism/plagscan/reports/analyze.php', array('pid' => $psfile->pid,
                                                                                                         'return' => urlencode($pageurl))); 
-                        $message .= html_writer::link($submiturl, get_string('analyze', 'plagiarism_plagscan'));
+                        $message .= html_writer::link($submiturl, get_string('check', 'plagiarism_plagscan'));
 
                         $message .= html_writer::empty_tag('br');
                     }
