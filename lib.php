@@ -145,10 +145,11 @@ class plagiarism_plugin_plagscan extends plagiarism_plugin {
         if ($cmid) {
             $instanceconfig = plagscan_get_instance_config($cmid);
             $mform->setDefault('plagscan_upload', $instanceconfig->upload);
-            $mform->setDefault('online_text', $instanceconfig->enable_online_text); 
+            if(isset($instanceconfig->enable_online_text))
+                $mform->setDefault('online_text', $instanceconfig->enable_online_text); 
             $mform->setDefault('show_to_students', $instanceconfig->show_report_to_students);
             $mform->setDefault('show_students_links', $instanceconfig->show_students_links);
-           // $mform->setDefault('online_text', $instanceconfig->online_text);
+            
             
             if (get_config('plagiarism_plagscan', 'plagscan_nondisclosure_notice_email')) {
                 $mform->setDefault('nondisclosure_notice', $instanceconfig->nondisclosure);
@@ -455,6 +456,9 @@ public $PS_CFG_YELLOW=null;
                     $involved[$cmid][$USER->id] = true;
                }
         }
+        
+        
+        $message = '';
 
      if($is_file || ($is_content && $instanceconfig->enable_online_text == 1)){ 
         
@@ -483,7 +487,6 @@ public $PS_CFG_YELLOW=null;
             return get_string('useroptedout', 'plagiarism_plagscan');
         }
 
-        $message = '';
     
         // Find the plagscan entry for this file
         $psfile = plagscan_file::find($cmid,$userid,$filehash);
