@@ -49,24 +49,6 @@ $plagiarismsettings = (array) get_config('plagiarism_plagscan');
 
 $connection = new plagscan_connection();
 $apimapping = $connection->get_user_settings_mapping();
-    
-if(get_config('plagiarism_plagscan', 'plagscan_multipleaccounts') == 0){
-    $user = $DB->get_record("user", array("email" => get_config('plagiarism_plagscan', 'plagscan_admin_email')));
-    if($user != false){
-        $serversettings = (array)$connection->get_user_settings($user);
-
-        foreach ($apimapping as $field => $serverfield) {
-            if (isset($serversettings[$serverfield])) {
-                $value = $serversettings[$serverfield];
-                if($serverfield == "redLevel" || $serverfield == "yellowLevel")
-                    $value = $value / 10;
-
-                $plagiarismsettings[$field] = $value;
-
-            }
-        }
-    }
-}
 
 if ($mform->is_cancelled()) {
     $url = new moodle_url('/plagiarism/plagscan/settings.php');
@@ -116,7 +98,6 @@ if (($data = $mform->get_data()) && confirm_sesskey()) {
             $fullserverupdate = true;
         }
     }
-    
 
     //set autostart for plagscan analysis
     //$connection->enable_auto_analysis();
@@ -147,10 +128,32 @@ if (($data = $mform->get_data()) && confirm_sesskey()) {
 
     }
 
+    $token = $connection->get_access_token();
+    if ($token == NULL) 
+        \core\notification::warning(get_string('badcredentials','plagiarism_plagscan'));
+    
+    if(get_config('plagiarism_plagscan', 'plagscan_multipleaccounts') == 0){
+        $user = $DB->get_record("user", array("email" => get_config('plagiarism_plagscan', 'plagscan_admin_email')));
+        if($user != false && $token != NULL){
+            $serversettings = (array)$connection->get_user_settings($user);
+
+            foreach ($apimapping as $field => $serverfield) {
+                if (isset($serversettings[$serverfield])) {
+                    $value = $serversettings[$serverfield];
+                    if($serverfield == "redLevel" || $serverfield == "yellowLevel")
+                        $value = $value / 10;
+
+                    $plagiarismsettings[$field] = $value;
+
+                }
+            }
+        }
+    }
+
     if($data->plagscan_multipleaccounts == 0 && isset($data->plagscan_admin_email)){
         
         $user = $DB->get_record('user', array('email' => $data->plagscan_admin_email));
-        if($user != false){
+        if($user != false && $token != NULL){
             $result = $connection->set_user_settings($user,$updatesettings);
             set_config('plagscan_admin_email', $data->plagscan_admin_email, 'plagiarism_plagscan');
         }

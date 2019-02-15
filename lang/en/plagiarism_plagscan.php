@@ -34,7 +34,7 @@ $string['autodel']='Auto save document';
 $string['autodescription'] = 'Analyze documents automatically when the deadline has approached';
 $string['autodescriptionsubmitted'] = 'The files were automatically uploaded to Plagscan on {$a} - switch to the \'manual\' mode to resubmit individual documents';
 $string['autostart'] = 'Autostart Plagiarism checks';
-$string['badcredentials'] = 'PlagScan did not recognize the account details - please check if the server URL, username ({$a->user}), API key, and version number ({$a->version}) is correct';
+$string['badcredentials'] = 'PlagScan did not recognize the account details - please check if the "Client ID" and "API Key" are correct';
 $string['checkallfilestatus'] = 'Update status of all submitted files';
 $string['checkalltextstatus'] = 'Update status of all submitted text contents';
 $string['checkstatus'] = 'Status info';
@@ -179,7 +179,10 @@ $string['testconnection_success']='Connection was successful!';
 $string['unsupportedfiletype'] = 'This file type is not supported by PlagScan';
 $string['updateyoursettings'] = 'To your PlagScan settings';
 $string['useplagscan'] = 'Enable Plagscan';
-$string['useplagscan_help'] = '';
+$string['useplagscan_help'] = '* <b>Start manually</b>: you will have to check each document manually.<br />'
+        . '* <b>Start immediately</b>: the PlagScan plugin will start analyzing documents automatically and immediately after uploading. <br />'
+        . '* <b>Start immediately after the first due date</b>: the PlagScan plugin only starts when the first due date has passed. <br />'
+        . '* <b>Start immediately after all due dates</b>: the plugin will begin analyzing the documents right after every deadline.';
 $string['useroptedout'] = 'Opted-out of plagiarism detection';
 $string['viewmatches'] = 'View matches';
 $string['viewreport'] = 'View report';
