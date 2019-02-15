@@ -36,6 +36,7 @@ $res = $connection->check_callback_config();
 if($res["httpcode"] == 204){
     $msg = get_string('callback_setup', 'plagiarism_plagscan');
     $time = 5;
+    $notification = \core\output\notification::NOTIFY_SUCCESS;
 }
 else{
     if(isset($res["response"]["error"]))
@@ -43,6 +44,7 @@ else{
     else 
         $msg= $res["response"];
     $time=10;
+    $notification = \core\output\notification::NOTIFY_ERROR;
 }
 
-redirect("./settings.php", $msg, $time, \core\output\notification::NOTIFY_ERROR);
+redirect("./settings.php", $msg, $time, $notification);
