@@ -216,19 +216,19 @@ class plagiarism_plugin_plagscan extends plagiarism_plugin {
                 }
    
                 $oldconfig = plagscan_get_instance_config($cmid, false);
-                if (empty($oldconfig->username)) {
+                if (!isset($oldconfig->username) || empty($oldconfig->username)) {
                     $config->username = $user->email;
                 } else {
                     $config->username = $oldconfig->username;
                 }
                 
-                if(empty($oldconfig->ownerid)){
+                if(!isset($oldconfig->ownerid) || empty($oldconfig->ownerid)){
                     $config->ownerid = $user->id;
                 }
                 else
                     $config->ownerid = $oldconfig->ownerid;
                 
-                if(empty($oldconfig->upload)){
+                if(!isset($oldconfig->upload) ||empty($oldconfig->upload)){
                     $connection = new plagscan_connection();
                     $submissionid = $connection->create_submissionid($cmid, $module, $config, $user);
                 }

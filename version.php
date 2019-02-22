@@ -25,9 +25,9 @@
 * @license    	http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 */
 
-$plugin->version =  2019020800;
+$plugin->version =  2019021500;
 $plugin->requires = 2010112400;
 $plugin->cron     = 60;
 $plugin->maturity = MATURITY_BETA;
 $plugin->component = 'plagiarism_plagscan';
-$plugin->release = '3.0.2';
+$plugin->release = '3.0.3';

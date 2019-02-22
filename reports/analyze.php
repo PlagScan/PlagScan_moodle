@@ -70,15 +70,21 @@ if ($instanceconfig->upload == plagiarism_plugin_plagscan::RUN_NO) {
 
 $connection = new plagscan_connection();
 //$connection->set_username($instanceconfig->username);
+$notification = \core\output\notification::NOTIFY_SUCCESS;
 if ($pid) {
     //print_r($pid);
     $msg = get_string('filechecked', 'plagiarism_plagscan');
 
     $result = $connection->analyze($pid);
+    if($result != null){
+        $msg = $result;
+        $notification = \core\output\notification::NOTIFY_ERROR;
+    }
+        
 } else {
     $msg = get_string('allfileschecked', 'plagiarism_plagscan');
     $connection->update_module_status($cmid);
 }
 $return = $return."&action=grading";
 $return = urldecode($return);
-redirect($return, $msg, 2);
+redirect($return, $msg, 2, $notification);

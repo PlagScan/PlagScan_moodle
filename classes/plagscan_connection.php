@@ -212,6 +212,9 @@ class plagscan_connection {
         // Send the setting to the plagscan server
       
         $psuserid = $this->find_user($user);
+
+        if($psuserid == NULL)
+            $psuserid = $connection->add_new_user($user);
         
         $access_token = $this->get_access_token();
         
@@ -232,11 +235,14 @@ class plagscan_connection {
      * @return string
      */
     function get_access_token(){
-        $data = ["client_id" => $this->config->plagscan_id, "client_secret" => $this->config->plagscan_key]; 
-            
-        $res = plagscan_api::instance()->request(plagscan_api::API_TOKEN, "POST", $data);
+        $data = ["client_id" =>  get_config('plagiarism_plagscan', 'plagscan_id'), "client_secret" => get_config('plagiarism_plagscan', 'plagscan_key')]; 
+        $token = NULL;
         
-        return $res["response"]["access_token"];
+        $res = plagscan_api::instance()->request(plagscan_api::API_TOKEN, "POST", $data);
+        if(isset($res["response"]["access_token"]))
+            $token = $res["response"]["access_token"];
+        
+        return $token;
     }
     
     /**
@@ -321,7 +327,7 @@ class plagscan_connection {
      * 
      * @param string $access_token
      * @param int $pid
-     * @return boolean
+     * @return string
      */    
     function analyze( $pid) {
         global $DB;
@@ -336,10 +342,14 @@ class plagscan_connection {
         $current = $DB->get_record('plagiarism_plagscan', array('pid' => $pid));
         $current->status = 1;
         $DB->update_record('plagiarism_plagscan', $current);
-        
+        return null;
       }
-      
-      return true;
+      else{
+        if(isset($res["response"]["error"]))
+            return $res["response"]["error"]["message"];
+        else
+            return $res["response"];
+      }
     } 
     
    /**

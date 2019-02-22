@@ -130,7 +130,7 @@ if (($data = $mform->get_data()) && confirm_sesskey()) {
 
     $token = $connection->get_access_token();
     if ($token == NULL) 
-        \core\notification::warning(get_string('badcredentials','plagiarism_plagscan'));
+        echo $OUTPUT->notification(get_string('badcredentials','plagiarism_plagscan'), 'notifywarning');
     
     if(get_config('plagiarism_plagscan', 'plagscan_multipleaccounts') == 0){
         $user = $DB->get_record("user", array("email" => get_config('plagiarism_plagscan', 'plagscan_admin_email')));
@@ -158,13 +158,15 @@ if (($data = $mform->get_data()) && confirm_sesskey()) {
             set_config('plagscan_admin_email', $data->plagscan_admin_email, 'plagiarism_plagscan');
         }
         else{
-            $OUTPUT->notification(get_string('savedapiconfigerror_admin_email', 'plagiarism_plagscan'), 'notifysuccess');
+            echo $OUTPUT->notification(get_string('savedapiconfigerror_admin_email', 'plagiarism_plagscan'), 'notifyerror');
+            $result = false;
         }
     }
     //satus message
     if(!$result) {
+        echo $OUTPUT->notification(get_string('savedapiconfigerror', 'plagiarism_plagscan'), 'notifyerror');
     } else {
-        $OUTPUT->notification(get_string('savedconfigsuccess', 'plagiarism_plagscan'), 'notifysuccess');
+        echo $OUTPUT->notification(get_string('savedconfigsuccess', 'plagiarism_plagscan'), 'notifysuccess');
     }
     
 }
