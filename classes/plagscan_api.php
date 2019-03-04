@@ -24,6 +24,13 @@
 * @copyright    2016 PlagScan GmbH {@link https://www.plagscan.com/}
 * @license      http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 */
+
+namespace plagiarism_plagscan\classes;
+
+if (!defined('MOODLE_INTERNAL')) {
+    die('Direct access to this script is forbidden.');
+}
+
 class plagscan_api {
     /**
      * API_FILES

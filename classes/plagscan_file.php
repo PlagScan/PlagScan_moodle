@@ -24,6 +24,12 @@
 * @copyright    2018 PlagScan GmbH {@link https://www.plagscan.com/}
 * @license      http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 */
+
+namespace plagiarism_plagscan\classes;
+
+use plagiarism_plagscan\classes\plagscan_connection;
+use moodle_exception;
+
 class plagscan_file {
     
     /**
@@ -46,6 +52,10 @@ class plagscan_file {
      * STATUS_QUEUED
      */
     const STATUS_QUEUED = 4;
+    /**
+     * STATUS_SUBMITTING
+     */
+    const STATUS_SUBMITTING = 100;
     /**
      * STATUS_FAILED
      */
@@ -185,7 +195,7 @@ class plagscan_file {
      */
     public static function submit($psfile, $filedata){
         global $DB,$CFG;
-        require_once($CFG->dirroot . '/plagiarism/plagscan/classes/plagscan_connection.php');
+        
         $connection = new plagscan_connection();
         
         if($psfile->submissiontype == 1){
@@ -199,7 +209,8 @@ class plagscan_file {
             self::set_status($psfile, self::STATUS_FAILED_OPTOUT);
             return plagscan_connection::SUBMIT_OPTOUT; // User has opted-out of PlagScan uploads.
         }
-        // Delete any existing reports / records for this file 
+        
+        /*// Delete any existing reports / records for this file 
         // mostly works with re_submit
         $oldrecords = $DB->get_records('plagiarism_plagscan', array('cmid' => $psfile->cmid,
                           'userid' => $psfile->userid,
@@ -212,7 +223,7 @@ class plagscan_file {
                 throw new moodle_exception('oldsubmission_notdeleted', 'plagiarism_plagscan');
             }
             $DB->delete_records('plagiarism_plagscan', array('id' => $oldrecord->id));
-        }
+        }*/
         
 
         try {
@@ -235,6 +246,7 @@ class plagscan_file {
         // Insert a new record for this file
         $psfile->pid = intval($result);
         $psfile->pstatus = '';
+        $psfile->status = self::STATUS_SUBMITTING;
         
         $psfile->id = self::save($psfile);
         
@@ -255,7 +267,7 @@ class plagscan_file {
         if ($CFG->version < 2011120100) {
             $context = get_context_instance(CONTEXT_MODULE, $cmid);
         } else {
-            $context = context_module::instance($cmid);
+            $context = \context_module::instance($cmid);
         }
         
         $fs = get_file_storage();
@@ -303,7 +315,7 @@ class plagscan_file {
                                                                 'filehash' => $psfile->filehash));
         if ($current) {
             if ($status != $current->status) {
-                $upd = new stdClass();
+                $upd = new \stdClass();
                 $upd->id = $current->id;
                 $upd->status = $status;
                 $DB->update_record('plagiarism_plagscan', $upd);
@@ -353,7 +365,7 @@ class plagscan_file {
             return false; // Nothing has changed
         }
 
-        $update = new stdClass();
+        $update = new \stdClass();
         $update->status = $status;
         $update->pstatus = $result;
         $update->pid = $psfile->pid;

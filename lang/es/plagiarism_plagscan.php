@@ -120,6 +120,7 @@ $string['plagscanserver_help'] = 'La configuraci&oacute;n est&aacute;ndar es "<b
 $string['plagscanversion']  ='2.3';
 $string['psreport'] = 'Informe PS';
 $string['process_checking'] = "El archivo está siendo analizado...";
+$string['process_uploading'] = "Cargando archivo en PlagScan...";
 $string['red']='El PlagLevel rojo comienza en';
 $string['report'] = 'Informe';
 $string['report_retrieve_error'] = 'Error retrieving the report. Could be the user does not have access to this report';

@@ -25,6 +25,8 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use plagiarism_plagscan\classes\plagscan_connection;
+
 require_once(dirname(__FILE__) . '/../../config.php');
 
 //If the callback is from the convertion process
@@ -58,7 +60,7 @@ if ($currentrecord->status == 3 && !is_null($currentrecord->pstatus)) {
     die(); // We already have the plagiarism % for this file
 }
 
-$upd = new stdClass();
+$upd = new \stdClass();
 $upd->id = $currentrecord->id;
 $upd->updatestatus = 1;
 if(isset($status)){ //If the callback is sent by the convertion process

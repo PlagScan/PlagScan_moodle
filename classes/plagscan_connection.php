@@ -15,6 +15,13 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+namespace plagiarism_plagscan\classes;
+
+use html_writer;
+use moodle_url;
+use plagiarism_plagscan\classes\plagscan_api;
+use plagiarism_plagscan\classes\plagscan_file;
+
 require_once($CFG->dirroot . '/plagiarism/plagscan/classes/plagscan_api.php');
 
 /**
@@ -26,6 +33,11 @@ require_once($CFG->dirroot . '/plagiarism/plagscan/classes/plagscan_api.php');
 * @copyright    2016 PlagScan GmbH {@link https://www.plagscan.com/}
 * @license      http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 */
+
+if (!defined('MOODLE_INTERNAL')) {
+    die('Direct access to this script is forbidden.');
+}
+
 class plagscan_connection {
 
     /**
@@ -156,7 +168,7 @@ class plagscan_connection {
      */
     public function update_module_status($cmid) {
         global $DB,$CFG;
-        require_once($CFG->dirroot . '/plagiarism/plagscan/classes/plagscan_file.php');
+        
         $files = $DB->get_records_select('plagiarism_plagscan', 'cmid = ? AND (status != ? OR pstatus IS null)', array($cmid, plagscan_file::STATUS_FINISHED));
         foreach ($files as $file) {
             plagscan_file::update_status($file);
@@ -591,7 +603,7 @@ class plagscan_connection {
         
         $psid = $res["response"]["data"]["userID"];
         
-        $insert = new stdClass();
+        $insert = new \stdClass();
         $insert->userid = $user->id;
         $insert->psuserid = $psid;
 
@@ -603,7 +615,7 @@ class plagscan_connection {
     /**
      * Checks if the user exist already in PlagScan
      * 
-     * @param stdClass $user
+     * @param \stdClass $user
      * @return int
      */
     function find_user($user) {
@@ -626,7 +638,7 @@ class plagscan_connection {
             
             $psuserid = $res["response"]["data"]["userID"];
             if($psuserid != null){
-                $insert = new stdClass();
+                $insert = new \stdClass();
                 $insert->userid = $user->id;
                 $insert->psuserid = $psuserid;
                 $DB->insert_record('plagiarism_plagscan_user', $insert);
@@ -705,11 +717,11 @@ class plagscan_connection {
      * Check the status of the files from an array of PlagScan file ids. It returns an array with one pair, file id and message/content
      * 
      * @param array $psfiles
+     * @param \stdClass
      * @return array
      */
-    public function check_report_status($psfiles){
+    public function check_report_status($psfiles, $context){
         global $CFG,$PAGE, $PS_CFG_YELLOW, $PS_CFG_RED;
-        require_once($CFG->dirroot . '/plagiarism/plagscan/classes/plagscan_file.php');
         
         $psfiles = plagscan_file::find_by_psids($psfiles);
         
@@ -728,7 +740,7 @@ class plagscan_connection {
                     $message = get_string('serverrejected', 'plagiarism_plagscan');
                 }
                 
-                array_push($results, array("pid" => $psfile->pid, "content" => $message));
+                
             } else if ($psfile->status == plagscan_file::STATUS_FINISHED) {
                 $percent = '';
                 if (!is_null($psfile->pstatus)) {
@@ -748,9 +760,27 @@ class plagscan_connection {
                    
                 $message .= html_writer::empty_tag('br');
                 
-                array_push($results, array("pid" => $psfile->pid, "content" => $message));
+                
+            }
+            else if($psfile->status == plagscan_file::STATUS_NOT_STARTED){
+                $message .= get_string('notprocessed', 'plagiarism_plagscan');
+                
+                if(has_capability('plagiarism/plagscan:control', $context)){
+                    $message .= html_writer::empty_tag('br');
+                    $message .= html_writer::empty_tag('br');
+                    $submiturl = new moodle_url('/plagiarism/plagscan/reports/analyze.php', array('pid' => $psfile->pid,
+                                                                                                      'return' => urlencode($PAGE->url))); 
+                    $message .= html_writer::link($submiturl, get_string('check', 'plagiarism_plagscan'));
+
+                    $message .= html_writer::empty_tag('br');
+                    $checkurl = new moodle_url('/plagiarism/plagscan/reports/check_status.php', array('pid' => $psfile->pid, 'return' => urlencode($PAGE->url)));
+
+                    $message .= ' '.html_writer::link($checkurl, get_string('checkstatus', 'plagiarism_plagscan'));
+                }
             }
             
+            if($message != "")
+                array_push($results, array("pid" => $psfile->pid, "content" => $message));
         }
         return $results;
     }

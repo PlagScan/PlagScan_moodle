@@ -133,6 +133,7 @@ $string['plagscanserver_help'] = 'The standard configuration is "<b>ssl://api.pl
 $string['plagscanversion']  ='2.3';
 $string['psreport'] = 'PS Report';
 $string['process_checking'] = "The file is being analyzed...";
+$string['process_uploading'] = "Uploading file to PlagScan...";
 $string['red']='The red PlagLevel starts at';
 $string['report'] = 'Report';
 $string['report_retrieve_error'] = 'Error retrieving the report. Could be the user does not have access to this report';

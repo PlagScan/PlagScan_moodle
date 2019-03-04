@@ -24,6 +24,9 @@
 * @license      http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 */
 
+use plagiarism_plagscan\classes\plagscan_connection;
+use plagiarism_plagscan\classes\plagscan_file;
+
 if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.');    ///  It must be included from a Moodle page
 }
@@ -201,7 +204,7 @@ class plagiarism_plugin_plagscan extends plagiarism_plugin {
             }
            
         if (isset($data->plagscan_upload)) {
-            $config = new stdClass();
+            $config = new \stdClass();
             $config->upload = $data->plagscan_upload; 
 
             if ($config->upload !== self::RUN_NO) {
@@ -328,7 +331,6 @@ public $PS_CFG_RED=null;
 public $PS_CFG_YELLOW=null;
 
     public function get_links($linkarray) {
-        
         
         global $CFG, $USER, $COURSE, $DB, $PAGE,$PS_CFG_RED,$PS_CFG_YELLOW, $cm;
         
@@ -558,9 +560,18 @@ public $PS_CFG_YELLOW=null;
                 }
             } else if ($psfile->status != plagscan_file::STATUS_FINISHED) {
                 
-                if($psfile->status == plagscan_file::STATUS_WAITING){
+                if($psfile->status == plagscan_file::STATUS_SUBMITTING){
                     if($viewreport || $viewlinksb){
-                        $message .= "<span class='progress_checking'>";
+                        $message .= "<span class='psfile_progress'>";
+                        $message .= get_string('process_uploading', 'plagiarism_plagscan');
+                        $message .= "<label style='background-image:url(".new moodle_url('/plagiarism/plagscan/images/loader.gif').");width: 16px;height: 16px;'></label>";
+                        $message .= html_writer::empty_tag('br');
+                        $message .= "</span>";
+                    }
+                }
+                else if($psfile->status == plagscan_file::STATUS_WAITING){
+                    if($viewreport || $viewlinksb){
+                        $message .= "<span class='psfile_progress'>";
                         $message .= get_string('process_checking', 'plagiarism_plagscan');
                         $message .= "<label style='background-image:url(".new moodle_url('/plagiarism/plagscan/images/loader.gif').");width: 16px;height: 16px;'></label>";
                         $message .= html_writer::empty_tag('br');
@@ -648,7 +659,7 @@ public $PS_CFG_YELLOW=null;
 
             
             
-            $psfile = new stdClass();
+            $psfile = new \stdClass();
             $psfile->userid = $userid;
             $psfile->cmid = $cmid;
             $psfile->filehash = $filehash;
@@ -662,9 +673,9 @@ public $PS_CFG_YELLOW=null;
             else
                 $psfile->status = plagscan_file::STATUS_NOT_STARTED;
             
-            $res = plagscan_file::submit($psfile,$filedata);
+            //$res = plagscan_file::submit($psfile,$filedata);
             
-            switch ($res) {
+            /*switch ($res) {
             case plagscan_connection::SUBMIT_UNSUPPORTED:
                 $msg = get_string('filetypeunsupported', 'plagiarism_plagscan', $filedata['filename']);
                 break;
@@ -675,7 +686,7 @@ public $PS_CFG_YELLOW=null;
             default:
                 $msg = get_string('filesubmitted', 'plagiarism_plagscan', $filedata['filename']);
                 break;
-            }
+            }*/
             
         }
     }
@@ -761,7 +772,7 @@ public $PS_CFG_YELLOW=null;
         $submission = end($submissions);
         $moodletextsubmission = $DB->get_record('assignsubmission_onlinetext',
                                             array('submission' => $submission->id), 'onlinetext, onlineformat');
-        $onlinetextdata = new stdClass();
+        $onlinetextdata = new \stdClass();
         $onlinetextdata->itemid = $submission->id;
         $onlinetextdata->onlinetext = $moodletextsubmission->onlinetext;
         $onlinetextdata->onlineformat = $moodletextsubmission->onlineformat;
@@ -789,7 +800,7 @@ function plagscan_get_instance_config($cmid, $defaultconfig = true) {
         return $config;
     }
 
-    $default = new stdClass();
+    $default = new \stdClass();
     if($defaultconfig){
         $default->upload = plagiarism_plugin_plagscan::RUN_NO;
         $default->complete = 0;
@@ -808,7 +819,7 @@ function plagscan_log($data) {
 
     global $CFG;
 
-    $filename = 'plagscan.log';
+    $filename = $CFG->dirroot.'/plagiarism/plagscan/plagscan.log';
     if (!$fp = fopen($filename, 'a')) {
         return;
     }

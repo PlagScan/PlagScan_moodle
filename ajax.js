@@ -54,7 +54,7 @@ M.plagiarism_plagscan.init = function(Y, contextid) {
     };
         
         Y.all(".psreport").each(function(row) {
-            if(row._node.childNodes[0].className == 'progress_checking')
+            if(row._node.childNodes[0].className == 'psfile_progress')
                 M.plagiarism_plagscan.reports.push(row._node.classList[1].substring(4));
         });
         
