@@ -29,7 +29,7 @@ use plagiarism_plagscan\classes\plagscan_connection;
 
 require_once(dirname(__FILE__) . '/../../config.php');
 
-//If the callback is from the convertion process
+//If the callback is from the setup check method
 if(isset($_GET["checkCallback"]) && $_GET["checkCallback"] == true){
     
     require_once($CFG->dirroot.'/plagiarism/plagscan/lib.php');
@@ -40,7 +40,7 @@ if(isset($_GET["checkCallback"]) && $_GET["checkCallback"] == true){
     
     die();
 }
-else if(isset($_GET["docID"]) && isset($_GET["status"])){
+else if(isset($_GET["docID"]) && isset($_GET["status"])){//If the callback is sent by the convertion process
     $pid = intval($_GET["docID"]);
     $status = $_GET["status"];
 }
@@ -73,10 +73,12 @@ else{ //If the callback is sent by the check process that means it has finished
     $upd->status = 3;
     require_once($CFG->dirroot.'/plagiarism/plagscan/lib.php');
     $connection = new plagscan_connection();
-
+    
     $result = $connection->plaglevel_retrieve($pid);
+    
      if($result >= 0){
         $upd->pstatus = $result;
      }
 }
+
 $DB->update_record('plagiarism_plagscan', $upd);

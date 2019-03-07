@@ -25,4 +25,11 @@ class plagiarism_plagscan_observer {
         
         file_handler::instance()->file_uploaded($event);
     }
+    
+    public static function assignsubmission_onlinetext_uploaded( 
+        \assignsubmission_onlinetext\event\assessable_uploaded $event){
+        plagscan_log("here in the onlinetext event");
+        
+        file_handler::instance()->onlinetext_uploaded($event);
+    }
 }

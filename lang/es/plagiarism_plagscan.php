@@ -94,7 +94,7 @@ $string['plagscan:enable'] = 'Activar/Desactivar PlagScan en una actividad';
 $string['plagscan:viewfullreport'] = 'View/Download PlagScan Reports';
 $string['pluginname'] = 'PlagScan';
 $string['plagscan_admin_email']='Admin Email';
-$string['plagscan_admin_email_help']='Your Plagscan admin account registered email. This is necessary if you associate uploaded files with the main PlagScan account';
+$string['plagscan_admin_email_help']='Your PlagScan admin account registered email. This is necessary if you associate uploaded files with the main PlagScan account';
 $string['plagscan_API_key'] = 'Clave API';
 $string['plagscan_API_key_help'] = 'You can see your API key on <a href="https://www.plagscan.com/apisetup" target="_blank">https://www.plagscan.com/apisetup</a>';
 $string['plagscan_API_method'] = 'm&eacute;todo';

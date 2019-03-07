@@ -720,28 +720,88 @@ class plagscan_connection {
      * @param \stdClass
      * @return array
      */
-    public function check_report_status($psfiles, $context){
-        global $CFG,$PAGE, $PS_CFG_YELLOW, $PS_CFG_RED;
+    public function check_report_status($psfiles, $context, $viewlinks, $showlinks, $viewreport){
         
         $psfiles = plagscan_file::find_by_psids($psfiles);
         
         $results = array();
         
         foreach($psfiles as $psfile){
-            $message = "";
+            $message = $this->get_message_view_from_report_status($psfile, $context, $viewlinks, $showlinks, $viewreport);
+            if($message != "")
+                array_push($results, array("pid" => $psfile->pid, "content" => $message));
+        }
+        return $results;
+    }
+    
+    public function get_message_view_from_report_status($psfile, $context, $viewlinks, $showlinks, $viewreport){
+        global $PAGE, $PS_CFG_YELLOW, $PS_CFG_RED;
+        
+        $message = html_writer::empty_tag('br') . 
+                html_writer::tag('img',"", array('src'=> new moodle_url('/plagiarism/plagscan/images/plagscan_icon.png'), 
+                    'width' => '25px', 'height' =>'24px' ));;
+        
+        //create $message 
+        if (!$psfile) {
+            $message = get_string('notsubmitted', 'plagiarism_plagscan');
+        } else {
+            
+            $message .= "<div class='psreport pid-".$psfile->pid."'>";
+            
             if ($psfile->status >= plagscan_file::STATUS_FAILED) {
                 if ($psfile->status == plagscan_file::STATUS_FAILED_FILETYPE) {
-                    $message = get_string('unsupportedfiletype', 'plagiarism_plagscan');
+                    $message .= get_string('unsupportedfiletype', 'plagiarism_plagscan');
                 } elseif ($psfile->status == plagscan_file::STATUS_FAILED_OPTOUT) {
-                    $message = get_string('wasoptedout', 'plagiarism_plagscan');
+                    $message .= get_string('wasoptedout', 'plagiarism_plagscan');
                 } else if ($psfile->status == plagscan_file::STATUS_FAILED_CONNECTION) {
-                    $message = get_string('serverconnectionproblem', 'plagiarism_plagscan');
+                    $message .= get_string('serverconnectionproblem', 'plagiarism_plagscan');
                 } else { // STATUS_FAILED_UNKNOWN
-                    $message = get_string('serverrejected', 'plagiarism_plagscan');
+                    $message .= get_string('serverrejected', 'plagiarism_plagscan');
+                }
+            } else if ($psfile->status != plagscan_file::STATUS_FINISHED) {
+                
+                if($psfile->status == plagscan_file::STATUS_SUBMITTING || $psfile->status == plagscan_file::STATUS_CHECKING){
+                    if($viewreport || $viewlinks){
+                        $message .= "<span class='psfile_progress'>";
+                        if($psfile->status == plagscan_file::STATUS_CHECKING)
+                            $message .= get_string('process_uploading', 'plagiarism_plagscan');
+                        else
+                            $message .= get_string('process_checking', 'plagiarism_plagscan');
+                        $message .= "<label style='background-image:url(".new moodle_url('/plagiarism/plagscan/images/loader.gif').");width: 16px;height: 16px;'></label>";
+                        $message .= html_writer::empty_tag('br');
+                        $message .= "</span>";
+                    }
+                }
+                else if($psfile->status == plagscan_file::STATUS_WAITING){
+                    if($viewreport || $viewlinks){
+                        $message .= "<span class='psfile_progress'>";
+                        $message .= get_string('process_checking', 'plagiarism_plagscan');
+                        $message .= "<label style='background-image:url(".new moodle_url('/plagiarism/plagscan/images/loader.gif').");width: 16px;height: 16px;'></label>";
+                        $message .= html_writer::empty_tag('br');
+                        $message .= "</span>";
+                    }
+                }
+                else{
+                    $message .= get_string('notprocessed', 'plagiarism_plagscan');
+
+                    if ($viewlinks) {
+                      //  $message .= html_writer::empty_tag('br');
+                        //$message .= ' '.html_writer::link($checkurl, get_string('checkstatus', 'plagiarism_plagscan')); 
+                        $message .= html_writer::empty_tag('br');
+                        $submiturl = new moodle_url('/plagiarism/plagscan/reports/analyze.php', array('pid' => $psfile->pid,
+                                                                                                        'return' => urlencode($PAGE->url))); 
+                        $message .= html_writer::link($submiturl, get_string('check', 'plagiarism_plagscan'));
+
+                        $message .= html_writer::empty_tag('br');
+                    }
+                }
+                $checkurl = new moodle_url('/plagiarism/plagscan/reports/check_status.php', array('pid' => $psfile->pid, 'return' => urlencode($PAGE->url)));
+
+                if ($viewlinks) {
+                    $message .= ' '.html_writer::link($checkurl, get_string('checkstatus', 'plagiarism_plagscan'));
                 }
                 
-                
-            } else if ($psfile->status == plagscan_file::STATUS_FINISHED) {
+            } else {
                 $percent = '';
                 if (!is_null($psfile->pstatus)) {
                     $percentclass = 'plagscan_good';
@@ -753,36 +813,24 @@ class plagscan_connection {
                   // $percent = html_writer::tag('span', sprintf('%0.1f%%', $psfile->pstatus), array('class' => $percentclass));
                 } 
                 $psurl = new moodle_url('/plagiarism/plagscan/reports/view.php',array('pid' => $psfile->pid, 'return' => urlencode($PAGE->url)));
-                $message = '';
-                $message .= html_writer::link($psurl,html_writer::tag('span', sprintf('%0.1f%%', $psfile->pstatus), array('id'=> $psfile->pid ,'class' => "psreport ".$percentclass))."<label style='background-image:url(".new moodle_url('/plagiarism/plagscan/images/docicons.png').");width: 32px;height: 24px;background-position-y: 286px;min-width: 25px;max-width: 25px;min-height: 24px;max-height: 24px;'></label>");
-                $message .= "<div style='    margin-left: -8px;'>";
-                $message .= "</div>";
-                   
-                $message .= html_writer::empty_tag('br');
+                $pslink = html_writer::link($psurl,html_writer::tag('span', sprintf('%0.1f%%', $psfile->pstatus), array('id'=> $psfile->pid ,'class' => $percentclass)),array('target' => '_blank'));
+                $pslink .= "<div style='    margin-left: -8px;'></div>";
                 
-                
-            }
-            else if($psfile->status == plagscan_file::STATUS_NOT_STARTED){
-                $message .= get_string('notprocessed', 'plagiarism_plagscan');
-                
-                if(has_capability('plagiarism/plagscan:control', $context)){
-                    $message .= html_writer::empty_tag('br');
-                    $message .= html_writer::empty_tag('br');
-                    $submiturl = new moodle_url('/plagiarism/plagscan/reports/analyze.php', array('pid' => $psfile->pid,
-                                                                                                      'return' => urlencode($PAGE->url))); 
-                    $message .= html_writer::link($submiturl, get_string('check', 'plagiarism_plagscan'));
-
-                    $message .= html_writer::empty_tag('br');
-                    $checkurl = new moodle_url('/plagiarism/plagscan/reports/check_status.php', array('pid' => $psfile->pid, 'return' => urlencode($PAGE->url)));
-
-                    $message .= ' '.html_writer::link($checkurl, get_string('checkstatus', 'plagiarism_plagscan'));
+                if (($viewlinks || has_capability('plagiarism/plagscan:viewfullreport', $context))) {
+                    $message .= $pslink;
+                }else{
+                    if(!$showlinks){
+                        $message .= html_writer::tag('span', sprintf('%0.1f%%', $psfile->pstatus), array('class' => $percentclass));
+                    }else{
+                        $message .= $pslink;
+                    }
                 }
+                $message .= html_writer::empty_tag('br');
             }
-            
-            if($message != "")
-                array_push($results, array("pid" => $psfile->pid, "content" => $message));
+            $message .="</div>";
         }
-        return $results;
+        
+        return $message;
     }
     
 }

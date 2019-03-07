@@ -459,9 +459,6 @@ public $PS_CFG_YELLOW=null;
                }
         }
         
-        
-        $message = '';
-
      if($is_file || ($is_content && $instanceconfig->enable_online_text == 1)){ 
         
         if($is_file){
@@ -536,105 +533,16 @@ public $PS_CFG_YELLOW=null;
                     'fullpath' => '/plagiarism/plagscan/ajax.js',
                     'requires' => array('json'),
                 );
-                $PAGE->requires->js_init_call('M.plagiarism_plagscan.init', array($context->instanceid), true, $jsmodule);
+                $PAGE->requires->js_init_call('M.plagiarism_plagscan.init', array($context->instanceid,$viewlinksb, $showlinks, $viewreport), true, $jsmodule);
                 //$this->page->requires->yui_module('moodle-local_pluginname-modulename', 'M.local_pluginname.init_modulename',
                 //array(array('aparam'=>'paramvalue')));
          $ajaxenabled[$cmid] = true;       
         }
-        //create $message 
-        if (!$psfile) {
-            $message = get_string('notsubmitted', 'plagiarism_plagscan');
-        } else {
-            
-            $message .= "<div class='psreport pid-".$psfile->pid."'>";
-            
-            if ($psfile->status >= plagscan_file::STATUS_FAILED) {
-                if ($psfile->status == plagscan_file::STATUS_FAILED_FILETYPE) {
-                    $message .= get_string('unsupportedfiletype', 'plagiarism_plagscan');
-                } elseif ($psfile->status == plagscan_file::STATUS_FAILED_OPTOUT) {
-                    $message .= get_string('wasoptedout', 'plagiarism_plagscan');
-                } else if ($psfile->status == plagscan_file::STATUS_FAILED_CONNECTION) {
-                    $message .= get_string('serverconnectionproblem', 'plagiarism_plagscan');
-                } else { // STATUS_FAILED_UNKNOWN
-                    $message .= get_string('serverrejected', 'plagiarism_plagscan');
-                }
-            } else if ($psfile->status != plagscan_file::STATUS_FINISHED) {
-                
-                if($psfile->status == plagscan_file::STATUS_SUBMITTING){
-                    if($viewreport || $viewlinksb){
-                        $message .= "<span class='psfile_progress'>";
-                        $message .= get_string('process_uploading', 'plagiarism_plagscan');
-                        $message .= "<label style='background-image:url(".new moodle_url('/plagiarism/plagscan/images/loader.gif').");width: 16px;height: 16px;'></label>";
-                        $message .= html_writer::empty_tag('br');
-                        $message .= "</span>";
-                    }
-                }
-                else if($psfile->status == plagscan_file::STATUS_WAITING){
-                    if($viewreport || $viewlinksb){
-                        $message .= "<span class='psfile_progress'>";
-                        $message .= get_string('process_checking', 'plagiarism_plagscan');
-                        $message .= "<label style='background-image:url(".new moodle_url('/plagiarism/plagscan/images/loader.gif').");width: 16px;height: 16px;'></label>";
-                        $message .= html_writer::empty_tag('br');
-                        $message .= "</span>";
-                    }
-                }
-                else{
-                    $message .= get_string('notprocessed', 'plagiarism_plagscan');
-
-                    $message .= html_writer::empty_tag('br');
-
-                    if ($viewlinksb) {
-                      //  $message .= html_writer::empty_tag('br');
-                        //$message .= ' '.html_writer::link($checkurl, get_string('checkstatus', 'plagiarism_plagscan')); 
-                        $message .= html_writer::empty_tag('br');
-                        $submiturl = new moodle_url('/plagiarism/plagscan/reports/analyze.php', array('pid' => $psfile->pid,
-                                                                                                        'return' => urlencode($pageurl))); 
-                        $message .= html_writer::link($submiturl, get_string('check', 'plagiarism_plagscan'));
-
-                        $message .= html_writer::empty_tag('br');
-                    }
-                }
-                $checkurl = new moodle_url('/plagiarism/plagscan/reports/check_status.php', array('pid' => $psfile->pid, 'return' => urlencode($pageurl)));
-
-                if ($viewlinksb) {
-                    $message .= ' '.html_writer::link($checkurl, get_string('checkstatus', 'plagiarism_plagscan'));
-                }
-                
-            } else {
-                $percent = '';
-                if (!is_null($psfile->pstatus)) {
-                    $percentclass = 'plagscan_good';
-                    if ($psfile->pstatus > ($PS_CFG_RED/10)) {
-                        $percentclass = 'plagscan_bad';
-                    } else if ($psfile->pstatus > ($PS_CFG_YELLOW/10)) {
-                        $percentclass = 'plagscan_warning';
-                    }
-                  // $percent = html_writer::tag('span', sprintf('%0.1f%%', $psfile->pstatus), array('class' => $percentclass));
-                } 
-                $psurl = new moodle_url('/plagiarism/plagscan/reports/view.php',array('pid' => $psfile->pid, 'return' => urlencode($pageurl)));
-                
-                
-                 
-                if (($viewlinksb || has_capability('plagiarism/plagscan:viewfullreport', $context))) {
-                    
-                    $message .= html_writer::link($psurl,html_writer::tag('span', sprintf('%0.1f%%', $psfile->pstatus), array('id'=> $psfile->pid ,'class' => $percentclass))."<label style='background-image:url(".new moodle_url('/plagiarism/plagscan/images/docicons.png').");width: 32px;height: 24px;background-position-y: 286px;min-width: 25px;max-width: 25px;min-height: 24px;max-height: 24px;'></label>",array('target' => '_blank'));
-                    $message .= "<div style='    margin-left: -8px;'>";
-                    $message .= "</div>";
-                    
-                    
-                }else{
-                    if(!$showlinks){
-                        $message .= html_writer::tag('span', sprintf('%0.1f%%', $psfile->pstatus), array('class' => $percentclass));
-                    }else{
-                        $message .= html_writer::link($psurl,html_writer::tag('span', sprintf('%0.1f%%', $psfile->pstatus), array('id'=> $psfile->pid ,'class' => $percentclass))."<label style='background-image:url(".new moodle_url('/plagiarism/plagscan/images/docicons.png').");width: 32px;height: 24px;background-position-y: 286px;min-width: 25px;max-width: 25px;min-height: 24px;max-height: 24px;'></label>", array( 'target' => '_blank'));
-                        $message .= "<div style='    margin-left: -8px;'>";
-                        $message .= "</div>";
-                    }
-                }
-                $message .= html_writer::empty_tag('br');
-            }
-            $message .="</div>";
-        }
+        
+        //Create output for each file
+        $message = $connection->get_message_view_from_report_status($psfile, $context, $viewlinksb, $showlinks, $viewreport);
+        
+        
         //END create message
       
         if(!$psfile){
@@ -669,7 +577,7 @@ public $PS_CFG_YELLOW=null;
                 $psfile->submissiontype = '2';
             
             if($psfileenabled[$cmid] == self::RUN_ALL)
-                $psfile->status = plagscan_file::STATUS_WAITING;
+                $psfile->status = plagscan_file::STATUS_CHECKING;
             else
                 $psfile->status = plagscan_file::STATUS_NOT_STARTED;
             
@@ -758,6 +666,7 @@ public $PS_CFG_YELLOW=null;
        return $output; 
     } 
 
+    /*
  public function set_content($linkarray, $cm) {
      
       $onlinetextdata = $this->get_onlinetext($linkarray["userid"], $cm);
@@ -777,7 +686,7 @@ public $PS_CFG_YELLOW=null;
         $onlinetextdata->onlinetext = $moodletextsubmission->onlinetext;
         $onlinetextdata->onlineformat = $moodletextsubmission->onlineformat;
         return $onlinetextdata;
-    }
+    }*/
 }
 
 function plagscan_set_instance_config($cmid, $data) {

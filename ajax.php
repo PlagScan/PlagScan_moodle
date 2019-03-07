@@ -48,7 +48,7 @@ if (!(has_capability('plagiarism/plagscan:viewfullreport', $context) || has_capa
 
 $connection = new plagscan_connection();
 
-$results = $connection->check_report_status($data->psreports,$context);
+$results = $connection->check_report_status($data->psreports,$context, $data->viewlinks, $data->showlinks, $data->viewreport);
 
 echo json_encode($results,true);
 die;

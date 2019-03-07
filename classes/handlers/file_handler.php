@@ -37,6 +37,16 @@ class file_handler {
         $this->handle_files_queue($event->get_context()->instanceid, $event->userid);
     }
     
+    public function onlinetext_uploaded(
+            ){
+        $file = $this->create_file_from_onlinetext_content($event);
+        
+        if($file != null)
+            array_push($this->filesqueue, $file);
+        
+        $this->handle_files_queue($event->get_context()->instanceid, $event->userid);
+    }
+    
     private function handle_files_queue($cmid, $userid){
         global $DB;
         
@@ -55,10 +65,10 @@ class file_handler {
         
         $is_multiaccount = get_config('plagiarism_plagscan', 'plagscan_multipleaccounts');
         if($is_multiaccount){
-            $submitter_user = $DB->get_record("user", array("id" => $userid));
+            $submitter_user = $DB->get_record('user', array('id' => $userid));
         }
         else {
-            $submitter_user = $DB->get_record("user", array("email" => get_config('plagiarism_plagscan', 'plagscan_admin_email')));
+            $submitter_user = $DB->get_record('user', array('email' => get_config('plagiarism_plagscan', 'plagscan_admin_email')));
         }
 
        $submitter_userid = $connection->find_user($submitter_user);
@@ -92,5 +102,45 @@ class file_handler {
                 plagscan_file::submit($psfile,$filedata);
             }
         }
+    }
+    
+    
+    public function create_file_from_onlinetext_content($event){
+        global $DB;
+        
+        $content = $event->other['content'];
+        
+        if (empty($content)) {
+            return null;
+        }
+        
+        $author = $DB->get_record('user', array('id' => $event->userid));
+        
+        $filedata = array(
+            'component' => 'plagiarism_plagscan',
+            'contextid' => $event->contextid,
+            'filearea' => $event->objecttable,
+            'filepath' => '/',
+            'itemid' => $event->objectid,
+            'filename' => 'onlinetext_'.$event->contextid.'_'.$event->get_context()->instanceid.'_'.$event->objectid,
+            'userid' => $event->userid,
+            'author' => $author->firstname.' '.$author->lastname,
+            'license' => 'allrightsreserved'
+        );
+        
+        $filestorage = get_file_storage();
+        
+        $previousfile = $filestorage->get_file($filedata['contextid'], $filedata['component'], $filedata['filearea'],
+                $filedata['itemid'], $filedata['filepath'], $filedata['filename']
+        );
+        
+        if($previousfile){
+            if($previous_file->get_contenthash() == sha1($content))
+                return $previousfile;
+            
+            $previousfile->delete();
+        }
+        
+        return $filestorage->create_file_from_string($filedata, $content);
     }
 }

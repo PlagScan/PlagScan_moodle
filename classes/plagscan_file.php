@@ -39,7 +39,7 @@ class plagscan_file {
     /**
      * STATUS_WAITING
      */
-    const STATUS_WAITING = 1;
+    const STATUS_CHECKING = 1;
     /**
      * STATUS_ONGOING
      */
