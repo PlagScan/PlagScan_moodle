@@ -94,7 +94,7 @@ $string['plagscan:enable'] = 'Activar/Desactivar PlagScan en una actividad';
 $string['plagscan:viewfullreport'] = 'View/Download PlagScan Reports';
 $string['pluginname'] = 'PlagScan';
 $string['plagscan_admin_email']='Admin Email';
-$string['plagscan_admin_email_help']='Your Plagscan admin account registered email. This is necessary if you associate uploaded files with the main PlagScan account';
+$string['plagscan_admin_email_help']='Your PlagScan admin account registered email. This is necessary if you associate uploaded files with the main PlagScan account';
 $string['plagscan_API_key'] = 'Clave API';
 $string['plagscan_API_key_help'] = 'You can see your API key on <a href="https://www.plagscan.com/apisetup" target="_blank">https://www.plagscan.com/apisetup</a>';
 $string['plagscan_API_method'] = 'm&eacute;todo';
@@ -120,6 +120,7 @@ $string['plagscanserver_help'] = 'La configuraci&oacute;n est&aacute;ndar es "<b
 $string['plagscanversion']  ='2.3';
 $string['psreport'] = 'Informe PS';
 $string['process_checking'] = "El archivo está siendo analizado...";
+$string['process_uploading'] = "Cargando archivo en PlagScan...";
 $string['red']='El PlagLevel rojo comienza en';
 $string['report'] = 'Informe';
 $string['report_retrieve_error'] = 'Error retrieving the report. Could be the user does not have access to this report';

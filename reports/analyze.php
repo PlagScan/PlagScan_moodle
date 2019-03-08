@@ -27,6 +27,8 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use plagiarism_plagscan\classes\plagscan_connection;
+
 require_once(dirname(__FILE__) . '/../../../config.php');
 require_once($CFG->dirroot.'/plagiarism/plagscan/lib.php');
 global $CFG, $DB; 

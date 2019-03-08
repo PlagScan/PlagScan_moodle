@@ -32,6 +32,8 @@ require_once($CFG->libdir.'/plagiarismlib.php');
 require_once($CFG->dirroot.'/plagiarism/plagscan/lib.php');
 require_once($CFG->dirroot.'/plagiarism/plagscan/classes/plagscan_settings_form.php');
 
+use plagiarism_plagscan\classes\plagscan_connection;
+
 require_login();
 
 if ($CFG->version < 2011120100) {
@@ -44,7 +46,7 @@ require_capability('moodle/site:config', $context, $USER->id, true, "nopermissio
 $PAGE->set_context($context);
    
 //require form
-$mform = new plagscan_admin_settings_form();
+$mform = new \plagiarism_plagscan\classes\plagscan_settings_form();
 $plagiarismsettings = (array) get_config('plagiarism_plagscan');
 
 $connection = new plagscan_connection();
@@ -105,7 +107,7 @@ if (($data = $mform->get_data()) && confirm_sesskey()) {
 
     // Links the local setting name to the server setting name
     $result = true; //Plagscan API parameters
-    $updatesettings = new stdClass();
+    $updatesettings = new \stdClass();
     
     foreach ($apimapping as $field => $serverfield) {
         if(!isset($data->$field) || $data->$field == null)

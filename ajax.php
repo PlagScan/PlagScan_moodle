@@ -22,6 +22,8 @@ define('AJAX_SCRIPT', true);
 require_once(dirname(__FILE__) . '/../../config.php');
 require_once(dirname(__FILE__).'/lib.php');
 
+use plagiarism_plagscan\classes\plagscan_connection;
+
 $data = optional_param('data', array(), PARAM_RAW);
 
 $data = json_decode($data);
@@ -46,7 +48,7 @@ if (!(has_capability('plagiarism/plagscan:viewfullreport', $context) || has_capa
 
 $connection = new plagscan_connection();
 
-$results = $connection->check_report_status($data->psreports);
+$results = $connection->check_report_status($data->psreports,$context, $data->viewlinks, $data->showlinks, $data->viewreport);
 
 echo json_encode($results,true);
 die;

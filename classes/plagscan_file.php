@@ -24,6 +24,12 @@
 * @copyright    2018 PlagScan GmbH {@link https://www.plagscan.com/}
 * @license      http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 */
+
+namespace plagiarism_plagscan\classes;
+
+use plagiarism_plagscan\classes\plagscan_connection;
+use moodle_exception;
+
 class plagscan_file {
     
     /**
@@ -31,9 +37,9 @@ class plagscan_file {
      */
     const STATUS_NOT_STARTED = 0;
     /**
-     * STATUS_WAITING
+     * STATUS_CHECKING
      */
-    const STATUS_WAITING = 1;
+    const STATUS_CHECKING = 1;
     /**
      * STATUS_ONGOING
      */
@@ -46,6 +52,10 @@ class plagscan_file {
      * STATUS_QUEUED
      */
     const STATUS_QUEUED = 4;
+    /**
+     * STATUS_SUBMITTING
+     */
+    const STATUS_SUBMITTING = 100;
     /**
      * STATUS_FAILED
      */
@@ -135,7 +145,7 @@ class plagscan_file {
     public static function find_by_psids($ids){
         global $DB;
         
-        return $DB->get_records_list('plagiarism_plagscan', 'pid',$ids);
+        return $DB->get_records_list('plagiarism_plagscan', 'id',$ids);
     }
     
     /**
@@ -172,6 +182,7 @@ class plagscan_file {
         $allowedtypes = array('docx', 'doc', 'pdf', 'txt', 'html', 'wps', 'wpd',
                               'odt', 'ott', 'rtf', 'sdw', 'sxw', 'xml', 'pdb', 'ltx','pages' , 'key', 'numbers');
         $extn = pathinfo($filename, PATHINFO_EXTENSION);
+        var_dump($extn);
         return in_array($extn, $allowedtypes);
     }
     
@@ -185,21 +196,21 @@ class plagscan_file {
      */
     public static function submit($psfile, $filedata){
         global $DB,$CFG;
-        require_once($CFG->dirroot . '/plagiarism/plagscan/classes/plagscan_connection.php');
+        
         $connection = new plagscan_connection();
         
-        if($psfile->submissiontype == 1){
-            if (!self::plagscan_supported_filetype($filedata['filename'])) {
-                self::set_status($psfile, self::STATUS_FAILED_FILETYPE);
-                return plagscan_connection::SUBMIT_UNSUPPORTED; // Unsupported file type.
-            } 
-        }
+        
+        if (!self::plagscan_supported_filetype($filedata['filename'])) {
+            self::set_status($psfile, self::STATUS_FAILED_FILETYPE);
+            return plagscan_connection::SUBMIT_UNSUPPORTED; // Unsupported file type.
+        } 
  
         if (plagscan_user_opted_out($psfile->userid)) {
             self::set_status($psfile, self::STATUS_FAILED_OPTOUT);
             return plagscan_connection::SUBMIT_OPTOUT; // User has opted-out of PlagScan uploads.
         }
-        // Delete any existing reports / records for this file 
+        
+        /*// Delete any existing reports / records for this file 
         // mostly works with re_submit
         $oldrecords = $DB->get_records('plagiarism_plagscan', array('cmid' => $psfile->cmid,
                           'userid' => $psfile->userid,
@@ -212,16 +223,22 @@ class plagscan_file {
                 throw new moodle_exception('oldsubmission_notdeleted', 'plagiarism_plagscan');
             }
             $DB->delete_records('plagiarism_plagscan', array('id' => $oldrecord->id));
-        }
+        }*/
         
+        // Insert a new record for this file
+        $psfile->pid = 0;
+        $psfile->pstatus = '';
+        $psfile->status = self::STATUS_SUBMITTING;
+        
+        self::update($psfile);
 
         try {
             //Check if the assignment was created from a previous versions without creating it on PS too
-            if($filedata["submissionid"] == null){
-                $result = $connection->submit_single_file ($filedata, $psfile->submissiontype);
+            if($filedata['submissionid'] == null){
+                $result = $connection->submit_single_file ($filedata);
             }
             else{
-                $result = $connection->submit_into_submission($filedata, $psfile->submissiontype);
+                $result = $connection->submit_into_submission($filedata);
             }
         } catch (moodle_exception $e) {
             self::set_status($psfile, self::STATUS_FAILED_CONNECTION);
@@ -230,13 +247,11 @@ class plagscan_file {
         
         if ($result <= 0) {
             self::set_status($psfile, self::STATUS_FAILED_UNKNOWN);
-            return plagscan_connection::SUBMIT_UNSUPPORTED;
+            return plagscan_connection::SUBMIT_FAILE;
         } 
-        // Insert a new record for this file
-        $psfile->pid = intval($result);
-        $psfile->pstatus = '';
         
-        $psfile->id = self::save($psfile);
+        $psfile->pid = intval($result);
+        self::update($psfile);
         
         return plagscan_connection::SUBMIT_OK;
             
@@ -255,7 +270,7 @@ class plagscan_file {
         if ($CFG->version < 2011120100) {
             $context = get_context_instance(CONTEXT_MODULE, $cmid);
         } else {
-            $context = context_module::instance($cmid);
+            $context = \context_module::instance($cmid);
         }
         
         $fs = get_file_storage();
@@ -303,7 +318,7 @@ class plagscan_file {
                                                                 'filehash' => $psfile->filehash));
         if ($current) {
             if ($status != $current->status) {
-                $upd = new stdClass();
+                $upd = new \stdClass();
                 $upd->id = $current->id;
                 $upd->status = $status;
                 $DB->update_record('plagiarism_plagscan', $upd);
@@ -353,7 +368,7 @@ class plagscan_file {
             return false; // Nothing has changed
         }
 
-        $update = new stdClass();
+        $update = new \stdClass();
         $update->status = $status;
         $update->pstatus = $result;
         $update->pid = $psfile->pid;

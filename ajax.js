@@ -9,17 +9,19 @@ M.plagiarism_plagscan = {
     reports : []
 };
 
-M.plagiarism_plagscan.init = function(Y, contextid) {
+M.plagiarism_plagscan.init = function(Y, contextid, viewlinks, showlinks, viewreport) {
     
     var handleReport = function( report) {
-        var reportArea = Y.one('.psreport.pid-'+report.pid);
+        var reportArea = Y.one('.psreport.pid-'+report.id);
         
-        reportArea.insert(report.content, 'after').remove();
-        var reports = M.plagiarism_plagscan.reports;
-        reports.splice(reports.indexOf(report.pid),1);
+        if(!report.content.includes('psfile_progress')){
+            reportArea.insert(report.content, 'after').remove();
+            var reports = M.plagiarism_plagscan.reports;
+            reports.splice(reports.indexOf(report.id),1);
+        }
     };
     
-    var checkReportStatus = function(Y, reports, contextid) {
+    var checkReportStatus = function(Y, reports, contextid, viewlinks, showlinks, viewreport) {
         
         if(!reports[0])
             return;
@@ -34,7 +36,10 @@ M.plagiarism_plagscan.init = function(Y, contextid) {
                 'sesskey': M.cfg.sesskey,
                 'data': Y.JSON.stringify({
                     psreports: reports,
-                    cmid: contextid
+                    cmid: contextid,
+                    viewlinks: viewlinks,
+                    showlinks: showlinks,
+                    viewreport: viewreport
                 })
             },
             on: {
@@ -54,11 +59,11 @@ M.plagiarism_plagscan.init = function(Y, contextid) {
     };
         
         Y.all(".psreport").each(function(row) {
-            if(row._node.childNodes[0].className == 'progress_checking')
+            if(row._node.childNodes[0].className == 'psfile_progress')
                 M.plagiarism_plagscan.reports.push(row._node.classList[1].substring(4));
         });
         
         setInterval(function() {
-            checkReportStatus(Y, M.plagiarism_plagscan.reports, contextid)
+            checkReportStatus(Y, M.plagiarism_plagscan.reports, contextid, viewlinks, showlinks, viewreport)
         },3000);
 };

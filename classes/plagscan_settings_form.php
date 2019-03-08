@@ -23,13 +23,20 @@
  * @copyright   2018 PlagScan GmbH {@link https://www.plagscan.com/}
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
+namespace plagiarism_plagscan\classes;
+
+use moodleform;
+use moodle_url;
+use html_writer;
+
 if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.'); // It must be included from a Moodle page.
 }
 
 require_once($CFG->dirroot.'/lib/formslib.php');
 
-class plagscan_admin_settings_form extends moodleform {
+class plagscan_settings_form extends moodleform {
    
     /**
      * Defines the settings form
