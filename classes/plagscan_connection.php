@@ -720,7 +720,7 @@ class plagscan_connection {
         foreach($psfiles as $psfile){
             $message = $this->get_message_view_from_report_status($psfile, $context, $viewlinks, $showlinks, $viewreport);
             if($message != "")
-                array_push($results, array("pid" => $psfile->pid, "content" => $message));
+                array_push($results, array("id" => $psfile->id, "content" => $message));
         }
         return $results;
     }
@@ -735,7 +735,7 @@ class plagscan_connection {
             $message = get_string('notsubmitted', 'plagiarism_plagscan');
         } else {
             
-            $message .= "<div class='psreport pid-".$psfile->pid."'>";
+            $message .= "<div class='psreport pid-".$psfile->id."'>";
             
             if ($psfile->status >= plagscan_file::STATUS_FAILED) {
                 if ($psfile->status == plagscan_file::STATUS_FAILED_FILETYPE) {

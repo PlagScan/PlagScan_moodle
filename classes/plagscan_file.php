@@ -145,7 +145,7 @@ class plagscan_file {
     public static function find_by_psids($ids){
         global $DB;
         
-        return $DB->get_records_list('plagiarism_plagscan', 'pid',$ids);
+        return $DB->get_records_list('plagiarism_plagscan', 'id',$ids);
     }
     
     /**

@@ -12,12 +12,12 @@ M.plagiarism_plagscan = {
 M.plagiarism_plagscan.init = function(Y, contextid, viewlinks, showlinks, viewreport) {
     
     var handleReport = function( report) {
-        var reportArea = Y.one('.psreport.pid-'+report.pid);
+        var reportArea = Y.one('.psreport.pid-'+report.id);
         
         if(!report.content.includes('psfile_progress')){
             reportArea.insert(report.content, 'after').remove();
             var reports = M.plagiarism_plagscan.reports;
-            reports.splice(reports.indexOf(report.pid),1);
+            reports.splice(reports.indexOf(report.id),1);
         }
     };
     
