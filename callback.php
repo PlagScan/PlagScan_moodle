@@ -29,6 +29,7 @@ use plagiarism_plagscan\classes\plagscan_connection;
 
 require_once(dirname(__FILE__) . '/../../config.php');
 
+
 //If the callback is from the setup check method
 if(isset($_GET["checkCallback"]) && $_GET["checkCallback"] == true){
     
@@ -37,16 +38,21 @@ if(isset($_GET["checkCallback"]) && $_GET["checkCallback"] == true){
 
     // Make sure multiple plagscan cron sessions don't overlap (as uploads could take a long time).
     set_config('plagscan_callbackworking', 1, 'plagiarism_plagscan');
-    
+    $c = "callback set up";
     die();
 }
 else if(isset($_GET["docID"]) && isset($_GET["status"])){//If the callback is sent by the convertion process
     $pid = intval($_GET["docID"]);
     $status = $_GET["status"];
+    $c= "upload";
 }
 else { //if the callback is from the check process
     $pid = intval($_SERVER['QUERY_STRING']);
+    $c= "check";
 }
+
+require_once(dirname(__FILE__) . '/lib.php');
+plagscan_log("callback received ".$c." ".$pid);
 
 if (empty($pid) || $pid <= 0) {
     die(); // No PID or wrong - ignore the request

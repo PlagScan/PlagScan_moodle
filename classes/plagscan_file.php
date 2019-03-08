@@ -37,7 +37,7 @@ class plagscan_file {
      */
     const STATUS_NOT_STARTED = 0;
     /**
-     * STATUS_WAITING
+     * STATUS_CHECKING
      */
     const STATUS_CHECKING = 1;
     /**
@@ -182,6 +182,7 @@ class plagscan_file {
         $allowedtypes = array('docx', 'doc', 'pdf', 'txt', 'html', 'wps', 'wpd',
                               'odt', 'ott', 'rtf', 'sdw', 'sxw', 'xml', 'pdb', 'ltx','pages' , 'key', 'numbers');
         $extn = pathinfo($filename, PATHINFO_EXTENSION);
+        var_dump("filename: ".$filename."extension: ".$extn);
         return in_array($extn, $allowedtypes);
     }
     
@@ -198,12 +199,11 @@ class plagscan_file {
         
         $connection = new plagscan_connection();
         
-        if($psfile->submissiontype == 1){
-            if (!self::plagscan_supported_filetype($filedata['filename'])) {
-                self::set_status($psfile, self::STATUS_FAILED_FILETYPE);
-                return plagscan_connection::SUBMIT_UNSUPPORTED; // Unsupported file type.
-            } 
-        }
+        
+        if (!self::plagscan_supported_filetype($filedata['filename'])) {
+            self::set_status($psfile, self::STATUS_FAILED_FILETYPE);
+            return plagscan_connection::SUBMIT_UNSUPPORTED; // Unsupported file type.
+        } 
  
         if (plagscan_user_opted_out($psfile->userid)) {
             self::set_status($psfile, self::STATUS_FAILED_OPTOUT);
@@ -229,10 +229,10 @@ class plagscan_file {
         try {
             //Check if the assignment was created from a previous versions without creating it on PS too
             if($filedata["submissionid"] == null){
-                $result = $connection->submit_single_file ($filedata, $psfile->submissiontype);
+                $result = $connection->submit_single_file ($filedata);
             }
             else{
-                $result = $connection->submit_into_submission($filedata, $psfile->submissiontype);
+                $result = $connection->submit_into_submission($filedata);
             }
         } catch (moodle_exception $e) {
             self::set_status($psfile, self::STATUS_FAILED_CONNECTION);

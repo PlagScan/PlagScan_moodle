@@ -261,10 +261,9 @@ class plagscan_connection {
      * Submits a document into a PlagScan submission
      * 
      * @param array $filedata
-     * @param array $submissionType
      * @return int
      */
-    function submit_into_submission($filedata, $submissionType) {
+    function submit_into_submission($filedata) {
         $docid = -1;
         
         $access_token= $this->get_access_token();
@@ -281,14 +280,8 @@ class plagscan_connection {
                         "sendResults" => "0",
                         "toRepository" => false];
 
-        if($submissionType == 1){
-            $files = array($filedata["file"]);
-        }
-        else{
-            $data["textname"] = $filedata["filename"];
-            $data["textdata"] = $filedata["content"];
-            $files = null;
-        }
+        $files = array($filedata["file"]);
+        
 
         $url = plagscan_api::API_SUBMISSIONS."/".$submissionid."?access_token=".$access_token;
 
@@ -304,10 +297,9 @@ class plagscan_connection {
      * Submits a single document into PlagScan
      * 
      * @param array $filedata
-     * @param array $submissionType
      * @return int
      */
-    function submit_single_file($filedata, $submissionType){
+    function submit_single_file($filedata){
         $docid = -1;
         
         $access_token= $this->get_access_token();
@@ -315,14 +307,9 @@ class plagscan_connection {
         $data= ["userID" => $filedata["ownerid"],
                         "toRepository" => false];
 
-        if($submissionType == 1){
-            $files = array($filedata["file"]);
-        }
-        else{
-            $data["textname"] = $filedata["filename"];
-            $data["textdata"] = $filedata["content"];
-            $files = null;
-        }
+        
+        $files = array($filedata["file"]);
+        
 
         $url = plagscan_api::API_FILES."?access_token=".$access_token;
 
@@ -737,9 +724,7 @@ class plagscan_connection {
     public function get_message_view_from_report_status($psfile, $context, $viewlinks, $showlinks, $viewreport){
         global $PAGE, $PS_CFG_YELLOW, $PS_CFG_RED;
         
-        $message = html_writer::empty_tag('br') . 
-                html_writer::tag('img',"", array('src'=> new moodle_url('/plagiarism/plagscan/images/plagscan_icon.png'), 
-                    'width' => '25px', 'height' =>'24px' ));;
+        $message = "";
         
         //create $message 
         if (!$psfile) {
@@ -764,15 +749,15 @@ class plagscan_connection {
                     if($viewreport || $viewlinks){
                         $message .= "<span class='psfile_progress'>";
                         if($psfile->status == plagscan_file::STATUS_CHECKING)
-                            $message .= get_string('process_uploading', 'plagiarism_plagscan');
-                        else
                             $message .= get_string('process_checking', 'plagiarism_plagscan');
+                        else
+                            $message .= get_string('process_uploading', 'plagiarism_plagscan');
                         $message .= "<label style='background-image:url(".new moodle_url('/plagiarism/plagscan/images/loader.gif').");width: 16px;height: 16px;'></label>";
                         $message .= html_writer::empty_tag('br');
                         $message .= "</span>";
                     }
                 }
-                else if($psfile->status == plagscan_file::STATUS_WAITING){
+                else if($psfile->status == plagscan_file::STATUS_CHECKING){
                     if($viewreport || $viewlinks){
                         $message .= "<span class='psfile_progress'>";
                         $message .= get_string('process_checking', 'plagiarism_plagscan');

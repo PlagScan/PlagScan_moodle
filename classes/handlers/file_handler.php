@@ -38,7 +38,7 @@ class file_handler {
     }
     
     public function onlinetext_uploaded(
-            ){
+            \assignsubmission_onlinetext\event\assessable_uploaded $event){
         $file = $this->create_file_from_onlinetext_content($event);
         
         if($file != null)
@@ -97,7 +97,6 @@ class file_handler {
                 $psfile->userid = $userid;
                 $psfile->cmid = $cmid;
                 $psfile->filehash = $file->get_contenthash();
-                $psfile->submissiontype = '1';
 
                 plagscan_file::submit($psfile,$filedata);
             }
@@ -122,7 +121,7 @@ class file_handler {
             'filearea' => $event->objecttable,
             'filepath' => '/',
             'itemid' => $event->objectid,
-            'filename' => 'onlinetext_'.$event->contextid.'_'.$event->get_context()->instanceid.'_'.$event->objectid,
+            'filename' => 'onlinetext_'.$event->contextid.'_'.$event->get_context()->instanceid.'_'.$event->objectid."_".$author->lastname.".html",
             'userid' => $event->userid,
             'author' => $author->firstname.' '.$author->lastname,
             'license' => 'allrightsreserved'
@@ -135,7 +134,7 @@ class file_handler {
         );
         
         if($previousfile){
-            if($previous_file->get_contenthash() == sha1($content))
+            if($previousfile->get_contenthash() == sha1($content))
                 return $previousfile;
             
             $previousfile->delete();

@@ -464,22 +464,9 @@ public $PS_CFG_YELLOW=null;
         if($is_file){
             $file = $linkarray['file'];
             $filehash = $file->get_contenthash();
-            $filename = $file->get_filename();
-
-            if (!plagscan_file::plagscan_supported_filetype($filename)) {
-                return get_string('unsupportedfiletype', 'plagiarism_plagscan');
-            }
         }
         else if($is_content){
-            if(  $cm->modname == 'assign'){
-                $submissions = $DB->get_records_select('assign_submission', ' userid = ? AND assignment = ? ',
-                                                array($userid, $cm->instance), 'id DESC', 'id', 0, 1);
-                $submission = end($submissions);
-                $moodletextsubmission = $DB->get_record('assignsubmission_onlinetext',
-                                        array('submission' => $submission->id), 'id,assignment,onlinetext, onlineformat');    
-            }
-            $onlinetext = strip_tags($moodletextsubmission->onlinetext);
-            $filehash = sha1($onlinetext);
+            $filehash = sha1($linkarray['content']);
         }
 
         if (plagscan_user_opted_out($userid)) {
@@ -540,63 +527,13 @@ public $PS_CFG_YELLOW=null;
         }
         
         //Create output for each file
-        $message = $connection->get_message_view_from_report_status($psfile, $context, $viewlinksb, $showlinks, $viewreport);
-        
+        $message = html_writer::empty_tag('br') . 
+                html_writer::tag('img',"", array('src'=> new moodle_url('/plagiarism/plagscan/images/plagscan_icon.png'), 
+                    'width' => '25px', 'height' =>'24px' ));
+        $message .= $connection->get_message_view_from_report_status($psfile, $context, $viewlinksb, $showlinks, $viewreport);
         
         //END create message
       
-        if(!$psfile){
-            
-            $filedata = array(
-                'submissionid' => $instanceconfig->submissionid,
-                'ownerid' => $assign_psownerid,
-                'submitterid' => $submitter_userid,
-                'email' => $submitter_user->email,
-                'firstname' => $submitter_user->firstname,
-                'lastname' => $submitter_user->lastname);
-            
-            if($is_file){
-                $filedata['filename'] = $file->get_filename();
-                $filedata['file'] = $file;
-                $filedata['mimetype'] = $file->get_mimetype();
-            }
-            else if($is_content){
-                $filedata['filename'] = $submitter_user->lastname."-".$submitter_user->firstname."_".$module->name;
-                $filedata['content'] = $onlinetext;
-            }
-
-            
-            
-            $psfile = new \stdClass();
-            $psfile->userid = $userid;
-            $psfile->cmid = $cmid;
-            $psfile->filehash = $filehash;
-            if($is_file)
-                $psfile->submissiontype = '1';
-            else
-                $psfile->submissiontype = '2';
-            
-            if($psfileenabled[$cmid] == self::RUN_ALL)
-                $psfile->status = plagscan_file::STATUS_CHECKING;
-            else
-                $psfile->status = plagscan_file::STATUS_NOT_STARTED;
-            
-            //$res = plagscan_file::submit($psfile,$filedata);
-            
-            /*switch ($res) {
-            case plagscan_connection::SUBMIT_UNSUPPORTED:
-                $msg = get_string('filetypeunsupported', 'plagiarism_plagscan', $filedata['filename']);
-                break;
-            case plagscan_connection::SUBMIT_OPTOUT:
-                $msg = get_string('submituseroptedout', 'plagiarism_plagscan', $filedata['filename']);
-                break;
-            case plagscan_connection::SUBMIT_OK:
-            default:
-                $msg = get_string('filesubmitted', 'plagiarism_plagscan', $filedata['filename']);
-                break;
-            }*/
-            
-        }
     }
         //END create submit
     
