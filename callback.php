@@ -29,9 +29,14 @@ use plagiarism_plagscan\classes\plagscan_connection;
 
 require_once(dirname(__FILE__) . '/../../config.php');
 
+$checkcallback = optional_param('checkCallback', 0, PARAM_BOOL);
+$docid = optional_param('docID', 0, PARAM_INT);
+$status = optional_param('status', 0, PARAM_INT);
+
+require_once(dirname(__FILE__) . '/lib.php');
 
 //If the callback is from the setup check method
-if(isset($_GET["checkCallback"]) && $_GET["checkCallback"] == true){
+if(!empty($checkcallback) && $checkcallback == true){
     
     require_once($CFG->dirroot.'/plagiarism/plagscan/lib.php');
     global $CFG, $DB;
@@ -41,9 +46,9 @@ if(isset($_GET["checkCallback"]) && $_GET["checkCallback"] == true){
     $c = "callback set up";
     die();
 }
-else if(isset($_GET["docID"]) && isset($_GET["status"])){//If the callback is sent by the convertion process
+else if(isset($docid) && $docid > 0 && isset($status)){//If the callback is sent by the convertion process
     $pid = intval($_GET["docID"]);
-    $status = $_GET["status"];
+    $status = intval($_GET["status"]);
     $c= "upload";
 }
 else { //if the callback is from the check process
@@ -51,7 +56,6 @@ else { //if the callback is from the check process
     $c= "check";
 }
 
-require_once(dirname(__FILE__) . '/lib.php');
 plagscan_log("callback received ".$c." ".$pid);
 
 if (empty($pid) || $pid <= 0) {
@@ -69,7 +73,7 @@ if ($currentrecord->status == 3 && !is_null($currentrecord->pstatus)) {
 $upd = new \stdClass();
 $upd->id = $currentrecord->id;
 $upd->updatestatus = 1;
-if(isset($status)){ //If the callback is sent by the convertion process
+if(isset($docid) && $docid > 0 && isset($status)){ //If the callback is sent by the convertion process
     if($status == 254)
         $status = 1000;
     $upd->status = $status;

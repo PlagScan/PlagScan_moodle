@@ -52,6 +52,10 @@ class plagscan_connection {
      * SUBMIT_OPTOUT
      */
     const SUBMIT_OPTOUT = 2;
+    /**
+     * SUBMIT_FAILED_BY_CONNECTION
+     */
+    const SUBMIT_FAILED_BY_CONNECTION = 3;
 
     /**
      *  Defines the configuration of the module or assignment

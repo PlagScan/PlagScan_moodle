@@ -182,7 +182,7 @@ class plagscan_file {
         $allowedtypes = array('docx', 'doc', 'pdf', 'txt', 'html', 'wps', 'wpd',
                               'odt', 'ott', 'rtf', 'sdw', 'sxw', 'xml', 'pdb', 'ltx','pages' , 'key', 'numbers');
         $extn = pathinfo($filename, PATHINFO_EXTENSION);
-        var_dump("filename: ".$filename."extension: ".$extn);
+        var_dump($extn);
         return in_array($extn, $allowedtypes);
     }
     
@@ -225,10 +225,16 @@ class plagscan_file {
             $DB->delete_records('plagiarism_plagscan', array('id' => $oldrecord->id));
         }*/
         
+        // Insert a new record for this file
+        $psfile->pid = 0;
+        $psfile->pstatus = '';
+        $psfile->status = self::STATUS_SUBMITTING;
+        
+        self::update($psfile);
 
         try {
             //Check if the assignment was created from a previous versions without creating it on PS too
-            if($filedata["submissionid"] == null){
+            if($filedata['submissionid'] == null){
                 $result = $connection->submit_single_file ($filedata);
             }
             else{
@@ -241,14 +247,11 @@ class plagscan_file {
         
         if ($result <= 0) {
             self::set_status($psfile, self::STATUS_FAILED_UNKNOWN);
-            return plagscan_connection::SUBMIT_UNSUPPORTED;
+            return plagscan_connection::SUBMIT_FAILE;
         } 
-        // Insert a new record for this file
-        $psfile->pid = intval($result);
-        $psfile->pstatus = '';
-        $psfile->status = self::STATUS_SUBMITTING;
         
-        $psfile->id = self::save($psfile);
+        $psfile->pid = intval($result);
+        self::update($psfile);
         
         return plagscan_connection::SUBMIT_OK;
             
