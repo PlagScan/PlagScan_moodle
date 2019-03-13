@@ -130,7 +130,7 @@ if (($data = $mform->get_data()) && confirm_sesskey()) {
 
     }
 
-    $token = $connection->get_access_token();
+    $token = $connection->get_access_token($data->plagscan_id, $data->plagscan_key);
     if ($token == NULL) 
         echo $OUTPUT->notification(get_string('badcredentials','plagiarism_plagscan'), 'notifywarning');
     

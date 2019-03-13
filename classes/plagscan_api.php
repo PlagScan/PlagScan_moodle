@@ -21,7 +21,7 @@
 * @package      plagiarism_plagscan
 * @subpackage   plagiarism
 * @author       Jesús Prieto <jprieto@plagscan.com>  
-* @copyright    2016 PlagScan GmbH {@link https://www.plagscan.com/}
+* @copyright    2018 PlagScan GmbH {@link https://www.plagscan.com/}
 * @license      http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 */
 

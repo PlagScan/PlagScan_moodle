@@ -69,12 +69,11 @@ if ($instanceconfig->upload == plagiarism_plugin_plagscan::RUN_NO) {
 }
 
 $connection = new plagscan_connection();
+$connection->update_module_status($cmid);
 if ($pid) {
     $msg = get_string('filechecked', 'plagiarism_plagscan');
-    $connection->update_module_status($cmid);
 } else {
     $msg = get_string('allfileschecked', 'plagiarism_plagscan');
-    $connection->update_module_status($cmid);
 }
 $return = $return."&action=grading";
 $return = urldecode($return);

@@ -30,7 +30,7 @@ require_once($CFG->dirroot . '/plagiarism/plagscan/classes/plagscan_api.php');
 * @package      plagiarism_plagscan
 * @subpackage   plagiarism
 * @author       Jesús Prieto <jprieto@plagscan.com> (Based on the work of Ruben Olmedo <rolmedo@plagscan.com>) 
-* @copyright    2016 PlagScan GmbH {@link https://www.plagscan.com/}
+* @copyright    2018 PlagScan GmbH {@link https://www.plagscan.com/}
 * @license      http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 */
 
@@ -246,12 +246,19 @@ class plagscan_connection {
     } 
 
     /**
-     * Get an access token to make request to the API
+     *  Get an access token to make request to the API
      * 
+     * @param int $psclient
+     * @param string $pskey
      * @return string
      */
-    function get_access_token(){
-        $data = ["client_id" =>  get_config('plagiarism_plagscan', 'plagscan_id'), "client_secret" => get_config('plagiarism_plagscan', 'plagscan_key')]; 
+    function get_access_token($psclient = null, $pskey = null){
+        if($psclient == null)
+            $psclient = get_config('plagiarism_plagscan', 'plagscan_id');
+        if($pskey == null)
+            $pskey = get_config('plagiarism_plagscan', 'plagscan_key');
+        
+        $data = ["client_id" =>  $psclient, "client_secret" => $pskey]; 
         $token = NULL;
         
         $res = plagscan_api::instance()->request(plagscan_api::API_TOKEN, "POST", $data);
@@ -749,22 +756,14 @@ class plagscan_connection {
                 }
             } else if ($psfile->status != plagscan_file::STATUS_FINISHED) {
                 
-                if($psfile->status == plagscan_file::STATUS_SUBMITTING || $psfile->status == plagscan_file::STATUS_CHECKING){
+                if($psfile->status == plagscan_file::STATUS_SUBMITTING || $psfile->status == plagscan_file::STATUS_CHECKING 
+                        || $psfile->status == plagscan_file::STATUS_ONGOING || $psfile->status == plagscan_file::STATUS_QUEUED){
                     if($viewreport || $viewlinks){
                         $message .= "<span class='psfile_progress'>";
-                        if($psfile->status == plagscan_file::STATUS_CHECKING)
-                            $message .= get_string('process_checking', 'plagiarism_plagscan');
-                        else
+                        if($psfile->status == plagscan_file::STATUS_SUBMITTING)
                             $message .= get_string('process_uploading', 'plagiarism_plagscan');
-                        $message .= "<label style='background-image:url(".new moodle_url('/plagiarism/plagscan/images/loader.gif').");width: 16px;height: 16px;'></label>";
-                        $message .= html_writer::empty_tag('br');
-                        $message .= "</span>";
-                    }
-                }
-                else if($psfile->status == plagscan_file::STATUS_CHECKING){
-                    if($viewreport || $viewlinks){
-                        $message .= "<span class='psfile_progress'>";
-                        $message .= get_string('process_checking', 'plagiarism_plagscan');
+                        else
+                            $message .= get_string('process_checking', 'plagiarism_plagscan');
                         $message .= "<label style='background-image:url(".new moodle_url('/plagiarism/plagscan/images/loader.gif').");width: 16px;height: 16px;'></label>";
                         $message .= html_writer::empty_tag('br');
                         $message .= "</span>";

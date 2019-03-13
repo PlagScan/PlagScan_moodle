@@ -149,10 +149,6 @@ class plagscan_settings_form extends moodleform {
 
         $mform->addElement('select', 'plagscan_docx', get_string('handledocx', 'plagiarism_plagscan'), $docx);
         $mform->setDefault('plagscan_docx', 0);
-        
-        $mform->addElement('text', 'source_percentage', get_string('source_percentage_display','plagiarism_plagscan'),'wrap="virtual" rows="6" cols="50"');
-        $mform->addHelpButton('source_percentage', 'source_percentage_display', 'plagiarism_plagscan');
-        $mform->setDefault('source_percentage', get_string('source_percentage_default','plagiarism_plagscan'));
 
         $mform->addElement('select', 'plagscan_multipleaccounts', get_string('plagscan_multipleaccounts', 'plagiarism_plagscan'), $accountsopts, 0);
         $mform->setDefault('plagscan_multipleaccounts', 1);

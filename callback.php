@@ -26,12 +26,13 @@
  */
 
 use plagiarism_plagscan\classes\plagscan_connection;
+use plagiarism_plagscan\classes\plagscan_file;
 
 require_once(dirname(__FILE__) . '/../../config.php');
 
 $checkcallback = optional_param('checkCallback', 0, PARAM_BOOL);
 $docid = optional_param('docID', 0, PARAM_INT);
-$status = optional_param('status', 0, PARAM_INT);
+$status = optional_param('mode', 0, PARAM_INT);
 
 require_once(dirname(__FILE__) . '/lib.php');
 
@@ -47,9 +48,8 @@ if(!empty($checkcallback) && $checkcallback == true){
     die();
 }
 else if(isset($docid) && $docid > 0 && isset($status)){//If the callback is sent by the convertion process
-    $pid = intval($_GET["docID"]);
-    $status = intval($_GET["status"]);
-    $c= "upload";
+    $pid = $docid;
+    $c= "upload status ".$status." - ";
 }
 else { //if the callback is from the check process
     $pid = intval($_SERVER['QUERY_STRING']);
@@ -77,10 +77,9 @@ if(isset($docid) && $docid > 0 && isset($status)){ //If the callback is sent by 
     if($status == 254)
         $status = 1000;
     $upd->status = $status;
-    
 }
 else{ //If the callback is sent by the check process that means it has finished 
-    $upd->status = 3;
+    $upd->status = plagscan_file::STATUS_FINISHED;
     require_once($CFG->dirroot.'/plagiarism/plagscan/lib.php');
     $connection = new plagscan_connection();
     

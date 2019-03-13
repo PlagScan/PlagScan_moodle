@@ -91,12 +91,12 @@ $string['optout_explanation'] = 'Usted ha elegido desactivar el plagio. Desde ah
 $string['plagscan']  ='PlagScan';
 $string['plagscan:control'] = 'Enviar/Reenviar entregas PlagScan';
 $string['plagscan:enable'] = 'Activar/Desactivar PlagScan en una actividad';
-$string['plagscan:viewfullreport'] = 'View/Download PlagScan Reports';
+$string['plagscan:viewfullreport'] = 'Ver/Descargar reportes de PlagScan';
 $string['pluginname'] = 'PlagScan';
 $string['plagscan_admin_email']='Admin Email';
-$string['plagscan_admin_email_help']='Your PlagScan admin account registered email. This is necessary if you associate uploaded files with the main PlagScan account';
+$string['plagscan_admin_email_help']='Email de la cuenta de administrador de PlagScan. Esto es necesario si quiere asociar los archivos subidos con su cuenta principal de PlagScan.';
 $string['plagscan_API_key'] = 'Clave API';
-$string['plagscan_API_key_help'] = 'You can see your API key on <a href="https://www.plagscan.com/apisetup" target="_blank">https://www.plagscan.com/apisetup</a>';
+$string['plagscan_API_key_help'] = 'Puede obtener su clave de API en <a href="https://www.plagscan.com/apisetup" target="_blank">https://www.plagscan.com/apisetup</a>';
 $string['plagscan_API_method'] = 'm&eacute;todo';
 $string['plagscan_API_username']='API Usuario';
 $string['plagscan_API_version'] = 'API versi&oacute;n';
@@ -107,11 +107,11 @@ $string['plagscan_nondisclosure_notice_email'] = 'Documentos confidenciales';
 $string['plagscan_nondisclosure_notice_email_desc'] = 'nombre@ejemplo.com';
 $string['plagscan_nondisclosure_notice_email_help'] = 'Todos los documentos con el bloqueo de notificaci&oacute;n ser&aacute;n entregados a una cuenta separada PlagScan. Todos los documentos que se encuentran en la cuenta <b>no se compartiran</b> con otros usuarios de la organizaci&oacute;. El <b>correo no puede ser parte de otra cuenta de PlagScan</b>.';
 $string['plagscan_studentpermission'] = 'Los estudiantes pueden elegir no enviar documentos a PlagScan';
-$string['plagscan_web_policy'] = "Compare with Web sources";
-$string['plagscan_own_workspace_policy'] = "Check againts my documents";
-$string['plagscan_own_repository_policy'] = "Check againts my documents in the repository";
-$string['plagscan_orga_repository_policy'] = "Check againts my organization repository";
-$string['plagscan_ppp_policy'] = "Check againts the Plagiarism Prevention Tool";
+$string['plagscan_web_policy'] = "Comparar con fuentes de internet";
+$string['plagscan_own_workspace_policy'] = "Comparar con documentos propios";
+$string['plagscan_own_repository_policy'] = "Comparar con mis documentos en el repositorio de la organización";
+$string['plagscan_orga_repository_policy'] = "Comparar con el repositorio de la organización";
+$string['plagscan_ppp_policy'] = "Comparar con la Biblioteca Anti-plagio de PlagScan";
 $string['plagscanerror'] = 'Error desde el servidor de PlagScan: {$a}';
 $string['plagscanexplain'] = 'PlagScan es el detector de plagio: los documentos de su organizaci&oacute;n y el texto de Internet sera considerado para analizar.<br/><br/>Para registrarse en PlagScan puede hacerlo <a href="https://www.plagscan.com/">aqu&iacute;</a> y preg&uacute;ntenos por la prueba gratuita <a href="mailto:pro@plagscan.com">pro@plagscan.com</a><br><br>Informacion general puede ser encontrada en <a href="http://www.plagscan.com">www.PlagScan.com</a>';
 $string['plagscanmethod']  ='enviar';
@@ -134,7 +134,7 @@ $string['savedapiconfigerror'] = 'Hubo un error mientras se actualiza la configu
 $string['savedconfigsuccess'] = 'Configuraci&oacute;n de PlagScan guardada!';
 $string['savedapiconfigerror_admin_email'] = 'Make sure you entered a valid user email as "Admin Email"';
 $string['serverconnectionproblem'] = 'Problema al conectar a PlagScan';
-$string['serverrejected'] = 'El servidor de PlagScan rechazo el archivo - Est&aacute; protegido o corrupto.';
+$string['serverrejected'] = 'El servidor de PlagScan rechaz&oacute; el archivo - Est&aacute; protegido, corrupto o puede que contenta poco texto (min. 50 caracteres)';
 $string['settings_cancelled'] = 'Configuraci&oacute;n antiplagio ha sido cancelada';
 $string['settings_saved'] = 'Configuraci&oacute;n antiplagio guardada correctamente';
 $string['settingsfor'] = 'Actualizar configuraci&oacute;n de PlagScan para \'{$a}\'';
@@ -163,8 +163,10 @@ $string['testconnection_fail']='Fallo al conectar';
 $string['testconnection_success']='La conexi&oacute;n fue un exito';
 $string['unsupportedfiletype'] = 'Este archivo no es soportado por PlagScan';
 $string['updateyoursettings'] = 'Actualice su configuraci&oacute;n de PlagScan';
-$string['useplagscan'] = 'Activar PlagScan';
-$string['useplagscan_help'] = '';
+$string['useplagscan'] = 'Activar PlagScan';$string['useplagscan_help'] = '* <b>Start manually</b>: you will have to check each document manually.<br />'
+        . '* <b>Start immediately</b>: the PlagScan plugin will start analyzing documents automatically and immediately after uploading. <br />'
+        . '* <b>Start immediately after the first due date</b>: the PlagScan plugin only starts when the first due date has passed. <br />'
+        . '* <b>Start immediately after all due dates</b>: the plugin will begin analyzing the documents right after every deadline.';
 $string['useroptedout'] = 'Desactivar la detecci&oacute;n de plagio';
 $string['viewmatches'] = 'Ver coincidencias';
 $string['viewreport'] = 'Ver informe';

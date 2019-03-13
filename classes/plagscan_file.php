@@ -30,6 +30,10 @@ namespace plagiarism_plagscan\classes;
 use plagiarism_plagscan\classes\plagscan_connection;
 use moodle_exception;
 
+if (!defined('MOODLE_INTERNAL')) {
+    die('Direct access to this script is forbidden.');
+}
+
 class plagscan_file {
     
     /**
@@ -182,7 +186,7 @@ class plagscan_file {
         $allowedtypes = array('docx', 'doc', 'pdf', 'txt', 'html', 'wps', 'wpd',
                               'odt', 'ott', 'rtf', 'sdw', 'sxw', 'xml', 'pdb', 'ltx','pages' , 'key', 'numbers');
         $extn = pathinfo($filename, PATHINFO_EXTENSION);
-        var_dump($extn);
+        
         return in_array($extn, $allowedtypes);
     }
     
@@ -224,13 +228,6 @@ class plagscan_file {
             }
             $DB->delete_records('plagiarism_plagscan', array('id' => $oldrecord->id));
         }*/
-        
-        // Insert a new record for this file
-        $psfile->pid = 0;
-        $psfile->pstatus = '';
-        $psfile->status = self::STATUS_SUBMITTING;
-        
-        self::update($psfile);
 
         try {
             //Check if the assignment was created from a previous versions without creating it on PS too
