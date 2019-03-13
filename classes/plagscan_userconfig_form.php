@@ -26,6 +26,9 @@
 
 namespace plagiarism_plagscan\classes;
 
+use plagiarism_plagscan\classes\plagscan_connection;
+use moodleform;
+
 if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.');
 }

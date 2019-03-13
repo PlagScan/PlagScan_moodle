@@ -21,7 +21,7 @@
 * @package      plagiarism_plagscan
 * @subpackage   plagiarism
 * @author       Jesús Prieto <jprieto@plagscan.com>
-* @copyright    2016 PlagScan GmbH {@link https://www.plagscan.com/}
+* @copyright    2018 PlagScan GmbH {@link https://www.plagscan.com/}
 * @license      http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 */
 namespace plagiarism_plagscan\handlers;
@@ -150,7 +150,7 @@ class file_handler {
                 $psfile->filehash = $file->get_contenthash();
                 
                 $psfile->pid = 0;
-                $psfile->pstatus = '';
+                $psfile->pstatus = '';                    
                 $psfile->status = plagscan_file::STATUS_SUBMITTING;
 
                 $psfile->id = plagscan_file::save($psfile);

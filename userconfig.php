@@ -25,6 +25,7 @@
  */
 
 use plagiarism_plagscan\classes\plagscan_connection;
+use plagiarism_plagscan\classes\plagscan_userconfig_form;
 
 require_once(dirname(__FILE__).'/../../config.php');
 require_once($CFG->dirroot.'/plagiarism/plagscan/lib.php');

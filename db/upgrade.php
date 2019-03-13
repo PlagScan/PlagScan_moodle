@@ -264,18 +264,18 @@ function xmldb_plagiarism_plagscan_upgrade($oldversion) {
         }
         
         $table = new xmldb_table('plagiarism_plagscan_config');
-        $field = new xmldb_field('ownerid', XMLDB_TYPE_CHAR, '255', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, 'cmid');
+        $field = new xmldb_field('ownerid', XMLDB_TYPE_CHAR, '255', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, 'show_students_links');
         
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
         
-        $field = new xmldb_field('submissionid', XMLDB_TYPE_CHAR, '255', null, XMLDB_UNSIGNED, null, 'show_students_links'); 
+        $field = new xmldb_field('submissionid', XMLDB_TYPE_CHAR, '255', null, XMLDB_UNSIGNED, null, 'ownerid'); 
          if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
         
-        $field = new xmldb_field('enable_online_text', XMLDB_TYPE_INTEGER, '1', XMLDB_NOTNULL, XMLDB_UNSIGNED, "0", 'ownerid'); 
+        $field = new xmldb_field('enable_online_text', XMLDB_TYPE_INTEGER, '1', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0', 'submissionid'); 
          if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
@@ -286,17 +286,17 @@ function xmldb_plagiarism_plagscan_upgrade($oldversion) {
            $dbman->create_table($table);
        }
        
-        $field = new xmldb_field('id', XMLDB_TYPE_INTEGER, '10', XMLDB_NOTNULL, XMLDB_UNSIGNED, '1');
+        $field = new xmldb_field('id', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0');
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
         
-        $field = new xmldb_field('userid', XMLDB_TYPE_INTEGER, '10', XMLDB_NOTNULL, XMLDB_UNSIGNED, null, 'id'); 
+        $field = new xmldb_field('userid', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, 'id'); 
          if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
         
-        $field = new xmldb_field('psuserid', XMLDB_TYPE_INTEGER, '10', XMLDB_NOTNULL, XMLDB_UNSIGNED, null, 'userid'); 
+        $field = new xmldb_field('psuserid', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, 'userid'); 
          if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }

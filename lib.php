@@ -231,14 +231,13 @@ class plagiarism_plugin_plagscan extends plagiarism_plugin {
                 else
                     $config->ownerid = $oldconfig->ownerid;
                 
+                $connection = new plagscan_connection();
                 if(!isset($oldconfig->upload) ||empty($oldconfig->upload)){
-                    $connection = new plagscan_connection();
                     $submissionid = $connection->create_submissionid($cmid, $module, $config, $user);
                 }
                 else{
                     $submissionid = $oldconfig->submissionid;
                     if($submissionid != NULL){
-                        $connection = new plagscan_connection();
                         $assign_owner = $DB->get_record("user", array("id" => $oldconfig->ownerid));
                         $connection->update_submission($cmid, $module, $config, $submissionid, $assign_owner);
                     }

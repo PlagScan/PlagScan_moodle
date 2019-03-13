@@ -107,11 +107,11 @@ $string['plagscan_nondisclosure_notice_email'] = 'Sperrvermerkdokumente';
 $string['plagscan_nondisclosure_notice_email_desc'] = 'name@example.com';
 $string['plagscan_nondisclosure_notice_email_help'] = 'Sperrvermerkdokumente werden in einem gesonderten Account abgelegt. Alle Dokumente im gesonderten Account werden für andere Nutzer der Organisation <b>nicht freigegeben</b>. Die <b>E-Mail sollte zu keinem anderen PlagScan-Account gehören</b>.';
 $string['plagscan_studentpermission'] = 'Studenten k&ouml;nnen den Einsatz von PlagScan verweigern';
-$string['plagscan_web_policy'] = "Compare with Web sources";
-$string['plagscan_own_workspace_policy'] = "Check againts my documents";
-$string['plagscan_own_repository_policy'] = "Check againts my documents in the repository";
-$string['plagscan_orga_repository_policy'] = "Check againts my organization repository";
-$string['plagscan_ppp_policy'] = "Check againts the Plagiarism Prevention Tool";
+$string['plagscan_web_policy'] = "Mit Webquellen abgleichen";
+$string['plagscan_own_workspace_policy'] = "Mit eigenen Dokumenten abgleichen";
+$string['plagscan_own_repository_policy'] = "Mit meinen Dokumenten aus dem Organisationsarchiv vergleichen";
+$string['plagscan_orga_repository_policy'] = "Mit dem gesamten Organisationsarchiv vergleichen";
+$string['plagscan_ppp_policy'] = "Mit dem Plagiat-Präventions-Pool vergleichen";
 $string['plagscanerror'] = 'Fehler von PlagScan Server: {$a}';
 $string['plagscanexplain'] = 'PlagScan ist ein Werkzeug zur Plagiatpr&uuml;fung. <br />Es vergleicht Arbeiten innerhalb einer Organisation sowie m&ouml;gliches Kopieren aus dem Internet und Verlagsdatenbanken. <br> F&uuml;r die Nutzung des Plugins ist ein <a href="https://www.plagscan.com" target="_blank">Organisations-Account</a> erforderlich.<br /><br />Eine Erkl&auml;rung zum PlagScan Moodle Plugin finden Sie unter <a href="https://www.plagscan.com/system-integration-moodle" target="_blank">www.plagscan.com/system-integration-moodle</a>.<br>Kontaktieren Sie uns f&uuml;r einen kostenlosen Test <a href="mailto:pro@plagscan.com">pro@plagscan.com</a><br>und verpassen Sie keine Neuigkeiten auf <a href="https://twitter.com/plagscan" target="_blank">Twitter</a><br /><br />Generelle Informationen finden Sie auf unserer Website: <a href="https://www.plagscan.com" target="_blank">www.PlagScan.com</a><hr />';
 $string['plagscanmethod']  ='Einreichen';
@@ -135,7 +135,7 @@ $string['savedapiconfigerror'] = 'Es gab einen Fehler beim Speichern der PlagSca
 $string['savedconfigsuccess'] = 'PlagScan Einstellungen gespeichert';
 $string['savedapiconfigerror_admin_email'] = 'Make sure you entered a valid user email as "Admin Email"';
 $string['serverconnectionproblem'] = 'Problem mit der Verbindung zum PlagScan Server';
-$string['serverrejected'] = 'Der PlagScan Server hat diese Datei abgelehnt - sie ist besch&auml;digt oder gesch&uuml;tzt.';
+$string['serverrejected'] = 'Der PlagScan Server hat diese Datei abgelehnt - sie ist besch&auml;digt, gesch&uuml;tzt oder enthält wenige Zeichen (Mindestens 50 Zeichen verwenden).';
 $string['settings_cancelled'] = 'Einstellungen nicht gespeichert';
 $string['settings_saved'] = 'Einstellungen erfolgreich gespeichert';
 $string['settingsfor'] = 'Aktualisiere Einstellungen f&uuml;r PlagScan Konto \'{$a}\'';
@@ -166,7 +166,10 @@ $string['testconnection_success']='Verbindung war erfolgreich!';
 $string['unsupportedfiletype'] = 'Dieses Dateiformat wird nicht von PlagScan unterst&uuml;tzt';
 $string['updateyoursettings'] = 'Zu Ihren PlagScan Einstellungen';
 $string['useplagscan'] = 'Aktiviere PlagScan';
-$string['useplagscan_help'] = 'Verarbeitung <b>kann</b> bei der automatischen Abgabe bis zu <b>15 Minuten</b> dauern (Cronjob-Zyklus)';
+$string['useplagscan_help'] = '* <b>Start manually</b>: you will have to check each document manually.<br />'
+        . '* <b>Start immediately</b>: the PlagScan plugin will start analyzing documents automatically and immediately after uploading. <br />'
+        . '* <b>Start immediately after the first due date</b>: the PlagScan plugin only starts when the first due date has passed. <br />'
+        . '* <b>Start immediately after all due dates</b>: the plugin will begin analyzing the documents right after every deadline.';
 $string['useroptedout'] = 'Plagiatpr&uuml;fung verweigert';
 $string['viewmatches'] = 'Zeige Liste';
 $string['viewreport'] = 'Zeige Textbericht';

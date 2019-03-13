@@ -29,7 +29,6 @@ $data = optional_param('data', array(), PARAM_RAW);
 $data = json_decode($data);
 
 require_login();
-require_sesskey();
 
 $cmid = $data->cmid;
 if ($CFG->version < 2011120100) {
