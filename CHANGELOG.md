@@ -6,4 +6,4 @@
 
 - Alpha Release
 
-Jesüs Prieto © PlagScan.com
+Jesús Prieto © PlagScan.com
