@@ -431,6 +431,7 @@ public $PS_CFG_YELLOW=null;
                }
         }
         
+        $result = '';
      if($is_file || ($is_content && $instanceconfig->enable_online_text == 1)){ 
         
         if($is_file){
@@ -506,13 +507,12 @@ public $PS_CFG_YELLOW=null;
         
         //END create message
       
-    }
-        //END create submit
-    
-        $result = '';
         if ($viewreport || $viewlinksb || has_capability('plagiarism/plagscan:viewfullreport', $context)) {
             $result = ' ' . $message;
         }
+    }
+        //END create submit
+    
         
         return $result;
     }

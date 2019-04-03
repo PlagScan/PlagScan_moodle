@@ -1,8 +1,8 @@
-# PlagScan Moodle Plugin 3.1.0 Release Notes
+# PlagScan Moodle Plugin 3.1.1 Release Notes
 
 The advanced plagiarism checker plugin for moodle.
 
-Release date: March 13th 2019
+Release date: April 4th 2019
 -------------
 
 System requirements:
@@ -24,7 +24,9 @@ https://api.plagscan.com/PlagScan_Moodle_Manual-Admin_EN.pdf
 Bug Fix:
 --------
 
-    - Stable release
+    - Fix bug on upgrade process from previous versions
+    - Fix bug updating file status when it file during the upload process
+    - Removed unneeded code and files
 
 Special thanks:
 ---------------
