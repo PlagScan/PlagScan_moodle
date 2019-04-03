@@ -244,7 +244,7 @@ class plagscan_file {
         
         if ($result <= 0) {
             self::set_status($psfile, self::STATUS_FAILED_UNKNOWN);
-            return plagscan_connection::SUBMIT_FAILE;
+            return plagscan_connection::SUBMIT_FAILED_BY_CONNECTION;
         } 
         
         $psfile->pid = intval($result);

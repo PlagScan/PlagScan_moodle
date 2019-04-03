@@ -259,36 +259,9 @@ class plagiarism_plugin_plagscan extends plagiarism_plugin {
             plagscan_set_instance_config($cmid, $config);
         
     }
-
-    /**
-     * called by admin/cron.php
-     *
-     */
-    public function plagiarism_cron() {
-		return cron();
-    }
     
     public function cron() {
-        //do any scheduled task stuff
-        global $CFG;
         
-        // Make sure multiple plagscan cron sessions don't overlap (as uploads could take a long time).
-
-        $running = get_config('plagiarism_plagscan', 'plagscan_cronrunning');
-        
-        if ($running && $running > time()) {
-            mtrace("Plagscan cron still running");
-            return true; // Already running.
-        }   
-        $running = time() + 86400; // Timeout after 1 day and allow another cron job to start
-	
-        set_config('plagscan_cronrunning', $running, 'plagiarism_plagscan');
-
-        require_once($CFG->dirroot.'/plagiarism/plagscan/cronscript.php');
-
-        set_config('plagscan_cronrunning', 0, 'plagiarism_plagscan');
-        
-        return true;
     }
 
     public function print_disclosure($cmid) {
@@ -458,6 +431,7 @@ public $PS_CFG_YELLOW=null;
                }
         }
         
+        $result = '';
      if($is_file || ($is_content && $instanceconfig->enable_online_text == 1)){ 
         
         if($is_file){
@@ -533,13 +507,12 @@ public $PS_CFG_YELLOW=null;
         
         //END create message
       
-    }
-        //END create submit
-    
-        $result = '';
         if ($viewreport || $viewlinksb || has_capability('plagiarism/plagscan:viewfullreport', $context)) {
             $result = ' ' . $message;
         }
+    }
+        //END create submit
+    
         
         return $result;
     }
