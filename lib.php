@@ -259,9 +259,9 @@ class plagiarism_plugin_plagscan extends plagiarism_plugin {
             plagscan_set_instance_config($cmid, $config);
         
     }
-    
+
     public function cron() {
-        
+    
     }
 
     public function print_disclosure($cmid) {
