@@ -1,3 +1,5 @@
+# Note: this version is not available currently in PlagScan boxes. Please do not install or upgrade to this version if you are using PlagScan into a box. 
+
 # PlagScan Moodle Plugin 3.1.1 Release Notes
 
 The advanced plagiarism checker plugin for moodle.
