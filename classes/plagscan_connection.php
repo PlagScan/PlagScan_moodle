@@ -618,7 +618,6 @@ class plagscan_connection {
      */
     function find_user($user) {
         global $DB;
-        
         //First check if the user is registered in the Moodle DB with the PS id
         $psuser = $DB->get_record("plagiarism_plagscan_user", array("userid" => $user->id));
         $psuserid = null;
@@ -629,6 +628,7 @@ class plagscan_connection {
         else{
             $access_token = $this->get_access_token();
             
+            plagscan_log("User does not exist in PlagScan. Creating...");
             $url = plagscan_api::API_USERS."?access_token=$access_token&searchByEmail=$user->email";
 
             $res = plagscan_api::instance()->request($url, "GET", null);
@@ -640,7 +640,7 @@ class plagscan_connection {
                 $insert->userid = $user->id;
                 $insert->psuserid = $psuserid;
                 $DB->insert_record('plagiarism_plagscan_user', $insert);
-                
+                plagscan_log("Created user with id: ".$psuserid);
             }
         }
         
@@ -783,10 +783,12 @@ class plagscan_connection {
                         $message .= html_writer::empty_tag('br');
                     }
                 }
-                $checkurl = new moodle_url('/plagiarism/plagscan/reports/check_status.php', array('pid' => $psfile->pid, 'return' => urlencode($PAGE->url)));
-
-                if ($viewlinks) {
-                    $message .= ' '.html_writer::link($checkurl, get_string('checkstatus', 'plagiarism_plagscan'));
+                
+                if($psfile->pid > 0){
+                    $checkurl = new moodle_url('/plagiarism/plagscan/reports/check_status.php', array('pid' => $psfile->pid, 'return' => urlencode($PAGE->url)));
+                    if ($viewlinks) {
+                        $message .= ' '.html_writer::link($checkurl, get_string('checkstatus', 'plagiarism_plagscan'));
+                    }
                 }
                 
             } else {

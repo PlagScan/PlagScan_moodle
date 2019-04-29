@@ -208,7 +208,7 @@ class plagiarism_plugin_plagscan extends plagiarism_plugin {
             $config->upload = $data->plagscan_upload; 
 
             if ($config->upload !== self::RUN_NO) {
-                
+                plagscan_log("Creating assignment in PlagScan...");
                 $is_multiaccount = get_config('plagiarism_plagscan', 'plagscan_multipleaccounts');
                 
                 if($is_multiaccount){
@@ -217,7 +217,7 @@ class plagiarism_plugin_plagscan extends plagiarism_plugin {
                 else {
                     $user = $DB->get_record("user", array("email" => get_config('plagiarism_plagscan', 'plagscan_admin_email')));
                 }
-   
+                plagscan_log("owner email: ".$user->email);
                 $oldconfig = plagscan_get_instance_config($cmid, false);
                 if (!isset($oldconfig->username) || empty($oldconfig->username)) {
                     $config->username = $user->email;
@@ -234,12 +234,14 @@ class plagiarism_plugin_plagscan extends plagiarism_plugin {
                 $connection = new plagscan_connection();
                 if(!isset($oldconfig->upload) ||empty($oldconfig->upload)){
                     $submissionid = $connection->create_submissionid($cmid, $module, $config, $user);
+                    plagscan_log("Created assignment in PlagScan with id: ".$submissionid);
                 }
                 else{
                     $submissionid = $oldconfig->submissionid;
                     if($submissionid != NULL){
                         $assign_owner = $DB->get_record("user", array("id" => $oldconfig->ownerid));
                         $connection->update_submission($cmid, $module, $config, $submissionid, $assign_owner);
+                        plagscan_log("Updated assignment in PlagScan with id: ".$submissionid);
                     }
                 }
                 
@@ -609,6 +611,7 @@ function plagscan_set_instance_config($cmid, $data) {
         $data->cm = $cmid;
         $DB->insert_record('plagiarism_plagscan_config', $data);
     }
+    plagscan_log("Assignment saved with id: ".$data->submissionid);
 }
 
 function plagscan_get_instance_config($cmid, $defaultconfig = true) {

@@ -1,3 +1,8 @@
+### Version: 3.1.2 Build: 2019042900
+
+- Fix a bug in the plugin table creation
+- Add more logs
+
 ### Version: 3.1.1 Build: 2019040300
 
 - Fix bug on upgrade process from previous versions

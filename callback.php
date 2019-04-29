@@ -44,19 +44,19 @@ if(!empty($checkcallback) && $checkcallback == true){
 
     // Make sure multiple plagscan cron sessions don't overlap (as uploads could take a long time).
     set_config('plagscan_callbackworking', 1, 'plagiarism_plagscan');
-    $c = "callback set up";
+    $c = "Callback set up";
     die();
 }
 else if(isset($docid) && $docid > 0 && isset($status)){//If the callback is sent by the convertion process
     $pid = $docid;
-    $c= "upload status ".$status." - ";
+    $c= "Upload status ".$status;
 }
 else { //if the callback is from the check process
     $pid = intval($_SERVER['QUERY_STRING']);
-    $c= "check";
+    $c= "Check";
 }
 
-plagscan_log("callback received ".$c." ".$pid);
+plagscan_log("Callback received - ".$c." - id: ".$pid);
 
 if (empty($pid) || $pid <= 0) {
     die(); // No PID or wrong - ignore the request

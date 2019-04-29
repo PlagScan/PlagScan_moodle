@@ -67,9 +67,9 @@ class plagscan_file_upload_task extends adhoc_task {
         $filedata['mimetype'] = $file->get_mimetype();
         
         
-        plagscan_log("Executing task for file upload ".$filedata['filename']."\n");
+        plagscan_log('Executing task for file upload '.$filedata['filename'].'');
         
-        mtrace('PlagScan: Uploading file '.$filedata['filename'].'\n');
+        mtrace('PlagScan: Uploading file '.$filedata['filename'].'');
         
         try {
             $result = plagscan_file::submit($psfile,$filedata);
@@ -77,23 +77,23 @@ class plagscan_file_upload_task extends adhoc_task {
             mtrace($e->getMessage());
         }
         
-        $mtracemsg = "";
+        $mtracemsg = '';
         switch($result){
             case plagscan_connection::SUBMIT_UNSUPPORTED:
-                $mtracemsg = 'PlagScan: '.$filedata['filename'].' is a type of file not supported by the PlagScan server\n';
+                $mtracemsg = 'PlagScan: '.$filedata['filename'].' is a type of file not supported by the PlagScan server';
                 break;
             case plagscan_connection::SUBMIT_OPTOUT:
-                $mtracemsg = 'Plagscan: User '.$filedata->userid.' has opted-out of plagiarism detection - '.$filedata['filename'].' not uploaded\n';
+                $mtracemsg = 'Plagscan: User '.$filedata->userid.' has opted-out of plagiarism detection - '.$filedata['filename'].' not uploaded';
                 break;
             case plagscan_connection::SUBMIT_FAILED_BY_CONNECTION:
-                $mtracemsg = 'PlagScan: '.$filedata['filename'].' failed on upload process\n';
+                $mtracemsg = 'PlagScan: '.$filedata['filename'].' failed on upload process';
                 break;
             case plagscan_connection::SUBMIT_OK:
-                $mtracemsg = 'PlagScan: '.$filedata['filename'].' sucessfully uploaded\n';
+                $mtracemsg = 'PlagScan: '.$filedata['filename'].' sucessfully uploaded';
                 break;
         }
         mtrace($mtracemsg);
         plagscan_log($mtracemsg);
-        plagscan_log("Finished task for file upload ".$filedata['filename']."\n");
+        plagscan_log('Finished task for file upload '.$filedata['filename'].'');
     }
 }
