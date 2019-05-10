@@ -16,18 +16,17 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
-* version.php
-*
-* @package 	plagiarism_plagscan
-* @subpackage 	plagiarism
-* @author 	Ruben Olmedo <rolmedo@plagscan.com>
-* @copyright  	@2018 PlagScan GmbH
-* @license    	http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
-*/
-
-$plugin->version =  2019042900;
+ * version.php
+ *
+ * @package 	plagiarism_plagscan
+ * @subpackage 	plagiarism
+ * @author 	Ruben Olmedo <rolmedo@plagscan.com>
+ * @copyright  	@2018 PlagScan GmbH
+ * @license    	http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+$plugin->version = 2019051008;
 $plugin->requires = 2010112400;
-$plugin->cron     = 60;
+$plugin->cron = 60;
 $plugin->maturity = MATURITY_STABLE;
 $plugin->component = 'plagiarism_plagscan';
-$plugin->release = '3.1.2';
+$plugin->release = '3.1.4';

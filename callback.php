@@ -24,39 +24,43 @@
  * @copyright  2018 PlagScan GmbH {@link https://www.plagscan.com/}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 use plagiarism_plagscan\classes\plagscan_connection;
 use plagiarism_plagscan\classes\plagscan_file;
+use plagiarism_plagscan\event\callback_received;
 
-require_once(dirname(__FILE__) . '/../../config.php');
+require(__DIR__ . '/../../config.php');
 
 $checkcallback = optional_param('checkCallback', 0, PARAM_BOOL);
 $docid = optional_param('docID', 0, PARAM_INT);
 $status = optional_param('mode', 0, PARAM_INT);
 
-require_once(dirname(__FILE__) . '/lib.php');
+require_once($CFG->dirroot . '/plagiarism/plagscan/lib.php');
 
 //If the callback is from the setup check method
-if(!empty($checkcallback) && $checkcallback == true){
-    
-    require_once($CFG->dirroot.'/plagiarism/plagscan/lib.php');
+if (!empty($checkcallback) && $checkcallback == true) {
+
+    require_once($CFG->dirroot . '/plagiarism/plagscan/lib.php');
     global $CFG, $DB;
 
     // Make sure multiple plagscan cron sessions don't overlap (as uploads could take a long time).
     set_config('plagscan_callbackworking', 1, 'plagiarism_plagscan');
-    $c = "Callback set up";
-    die();
-}
-else if(isset($docid) && $docid > 0 && isset($status)){//If the callback is sent by the convertion process
+    $c = 'Callback set up';
+    $pid = 0;
+} else if (isset($docid) && $docid > 0 && isset($status)) {//If the callback is sent by the convertion process
     $pid = $docid;
-    $c= "Upload status ".$status;
-}
-else { //if the callback is from the check process
+    $c = 'Upload status ' . $status;
+} else { //if the callback is from the check process
     $pid = intval($_SERVER['QUERY_STRING']);
-    $c= "Check";
+    $c = 'Check';
 }
 
-plagscan_log("Callback received - ".$c." - id: ".$pid);
+callback_received::create(array(
+    'context' => \context_system::instance(),
+    'other' => [
+        'action' => $c,
+        'pid' => $pid
+    ]
+))->trigger();
 
 if (empty($pid) || $pid <= 0) {
     die(); // No PID or wrong - ignore the request
@@ -73,21 +77,21 @@ if ($currentrecord->status == 3 && !is_null($currentrecord->pstatus)) {
 $upd = new \stdClass();
 $upd->id = $currentrecord->id;
 $upd->updatestatus = 1;
-if(isset($docid) && $docid > 0 && isset($status)){ //If the callback is sent by the convertion process
-    if($status == 254)
+if (isset($docid) && $docid > 0 && isset($status)) { //If the callback is sent by the convertion process
+    if ($status == 254) {
         $status = 1000;
+    }
     $upd->status = $status;
-}
-else{ //If the callback is sent by the check process that means it has finished 
+} else { //If the callback is sent by the check process that means it has finished 
     $upd->status = plagscan_file::STATUS_FINISHED;
-    require_once($CFG->dirroot.'/plagiarism/plagscan/lib.php');
+    require_once($CFG->dirroot . '/plagiarism/plagscan/lib.php');
     $connection = new plagscan_connection();
-    
+
     $result = $connection->plaglevel_retrieve($pid);
-    
-     if($result >= 0){
+
+    if ($result >= 0) {
         $upd->pstatus = $result;
-     }
+    }
 }
 
 $DB->update_record('plagiarism_plagscan', $upd);

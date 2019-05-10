@@ -1,4 +1,5 @@
 <?php
+
 // This file is part of the PlagScan plugin for Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -23,13 +24,12 @@
  * @copyright   2018 PlagScan GmbH {@link https://www.plagscan.com/}
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 use plagiarism_plagscan\classes\plagscan_connection;
 use plagiarism_plagscan\classes\plagscan_userconfig_form;
 
-require_once(dirname(__FILE__).'/../../config.php');
-require_once($CFG->dirroot.'/plagiarism/plagscan/lib.php');
-require_once($CFG->dirroot.'/plagiarism/plagscan/classes/plagscan_userconfig_form.php');
+require(__DIR__ . '/../../config.php');
+require_once($CFG->dirroot . '/plagiarism/plagscan/lib.php');
+require_once($CFG->dirroot . '/plagiarism/plagscan/classes/plagscan_userconfig_form.php');
 
 $url = new moodle_url('/plagiarism/plagscan/userconfig.php');
 $PAGE->set_url($url);
@@ -50,7 +50,7 @@ if (!get_config('plagiarism_plagscan', 'plagscan_multipleaccounts')) {
 global $USER;
 $connection = new plagscan_connection();
 //$connection->set_username($USER->email);
-$serversettings = (array)$connection->get_user_settings($USER);
+$serversettings = (array) $connection->get_user_settings($USER);
 
 $settings = new stdClass();
 $apimapping = $connection->get_user_settings_mapping();
@@ -58,9 +58,10 @@ $apimapping = $connection->get_user_settings_mapping();
 foreach ($apimapping as $field => $serverfield) {
     if (isset($serversettings[$serverfield])) {
         $value = $serversettings[$serverfield];
-        if($serverfield == "redLevel" || $serverfield == "yellowLevel")
+        if ($serverfield == "redLevel" || $serverfield == "yellowLevel") {
             $value = $value / 10;
-        
+        }
+
         $settings->$field = $value;
     }
 }
@@ -73,25 +74,26 @@ if ($data = $form->get_data()) {
     //set autostart for plagscan analysis
     //$connection->enable_auto_analysis();
     //END set autostart for plagscan analysis
-    
+
     $result = true;
     $updatesettings = new stdClass();
     // Send settings back to the server.
     foreach ($apimapping as $field => $serverfield) {
         //if (isset($data->$field) && $data->$field != $settings->$field) {
-            // Setting has changed - update the server.
-        
-        if($data->$field == null)
+        // Setting has changed - update the server.
+
+        if ($data->$field == null) {
             $data->$field = 0;
-        
-            $updatesettings->$serverfield = $data->$field;
-            
-            //$result = $connection->set_user_setting($USER, $serverfield, $data->$field) & $result;
+        }
+
+        $updatesettings->$serverfield = $data->$field;
+
+        //$result = $connection->set_user_setting($USER, $serverfield, $data->$field) & $result;
         //}
     }
-    
-    $result = $connection->set_user_settings($USER,$updatesettings);
-    
+
+    $result = $connection->set_user_settings($USER, $updatesettings);
+
 
     if ($result) {
         $msg = get_string('savedconfigsuccess', 'plagiarism_plagscan');
@@ -100,7 +102,7 @@ if ($data = $form->get_data()) {
     }
 }
 
-$username = fullname($USER)." ({$USER->email})";
+$username = fullname($USER) . " ({$USER->email})";
 
 $PAGE->set_title(get_string('pluginname', 'plagiarism_plagscan'));
 

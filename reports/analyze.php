@@ -16,7 +16,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /* plagiarism/plagscan/reports/analyze triggers the check proccess of a file that has been submitted to PlagScan, generating the report for the plagiarism result
- */ 
+ */
 
 /**
  *
@@ -26,12 +26,11 @@
  * @copyright   2018 PlagScan GmbH {@link https://www.plagscan.com/}
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 use plagiarism_plagscan\classes\plagscan_connection;
 
-require_once(dirname(__FILE__) . '/../../../config.php');
-require_once($CFG->dirroot.'/plagiarism/plagscan/lib.php');
-global $CFG, $DB; 
+require_once(__DIR__ . '/../../../config.php');
+require_once($CFG->dirroot . '/plagiarism/plagscan/lib.php');
+global $CFG, $DB;
 
 $cmid = optional_param('cmid', 0, PARAM_INT);
 $pid = optional_param('pid', 0, PARAM_INT);
@@ -46,7 +45,7 @@ if (!$cmid && !$pid) {
 if ($pid) {
     $plagscan = $DB->get_record('plagiarism_plagscan', array('pid' => $pid), '*', MUST_EXIST);
     $cmid = $plagscan->cmid;
-} 
+}
 
 if ($CFG->version < 2011120100) {
     $context = get_context_instance(CONTEXT_MODULE, $cmid);
@@ -78,15 +77,14 @@ if ($pid) {
     $msg = get_string('filechecked', 'plagiarism_plagscan');
 
     $result = $connection->analyze($pid);
-    if($result != null){
+    if ($result != null) {
         $msg = $result;
         $notification = \core\output\notification::NOTIFY_ERROR;
     }
-        
 } else {
     $msg = get_string('allfileschecked', 'plagiarism_plagscan');
     $connection->update_module_status($cmid);
 }
-$return = $return."&action=grading";
+$return = $return . "&action=grading";
 $return = urldecode($return);
 redirect($return, $msg, 2, $notification);

@@ -1,4 +1,5 @@
 <?php
+
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -17,7 +18,7 @@
 /* plagiarism/plagscan/view helps in generating report view the plaglevel and other details; 
  * It allows a interactive report view with a lot of details.
  * visible to students if the teacher gives permission;
- */ 
+ */
 
 /**
  *
@@ -27,11 +28,10 @@
  * @copyright   2018 PlagScan GmbH {@link https://www.plagscan.com/}
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 use plagiarism_plagscan\classes\plagscan_connection;
 
-require_once(dirname(__FILE__) . '/../../../config.php');
-require_once($CFG->dirroot.'/plagiarism/plagscan/lib.php');
+require(__DIR__ . '/../../../config.php');
+require_once($CFG->dirroot . '/plagiarism/plagscan/lib.php');
 global $CFG, $DB, $USER;
 
 $pid = intval(required_param('pid', PARAM_TEXT));
@@ -51,9 +51,9 @@ $PAGE->set_context($context);
 
 if (!(has_capability('plagiarism/plagscan:viewfullreport', $context) || has_capability('plagiarism/plagscan:control', $context))) {
     $instanceconfig = plagscan_get_instance_config($cmid);
-    if ($instanceconfig->show_students_links != plagiarism_plugin_plagscan::SHOWS_LINKS){
+    if ($instanceconfig->show_students_links != plagiarism_plugin_plagscan::SHOWS_LINKS) {
         throw new moodle_exception('Permission denied! You do not have the right capabilities.', 'plagiarism_plagscan');
-    }    
+    }
 }
 
 if (!get_config('plagiarism', 'plagscan_use')) {
@@ -76,23 +76,22 @@ $is_teacher = has_capability('plagiarism/plagscan:control', $context);
 
 $user = $DB->get_record('plagiarism_plagscan_user', array('userid' => $USER->id));
 
-if(!$is_multiaccount || $instanceconfig->submissionid == null)
+if (!$is_multiaccount || $instanceconfig->submissionid == null) {
     $mode = 7;
-else
+} else {
     $mode = 10;
+}
 
 $res = $connection->report_retrieve($pid, $user, $mode);
-        
-if(isset($res["reportLink"])){
+
+if (isset($res["reportLink"])) {
     redirect($res["reportLink"]);
-}
-else if(isset($res["message"])){
+} else if (isset($res["message"])) {
     $msg = $res["message"];
-}
-else{
+} else {
     $msg = get_string('report_retrieve_error', 'plagiarism_plagscan');
 }
 
-$return = $return."&action=grading";
+$return = $return . "&action=grading";
 $return = urldecode($return);
 redirect($return, $msg, 2);

@@ -24,29 +24,28 @@
  * @copyright  2018 PlagScan GmbH {@link https://www.plagscan.com/}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 use plagiarism_plagscan\classes\plagscan_connection;
 
-require_once(dirname(__FILE__) . '/../../config.php');
-require_once($CFG->dirroot.'/plagiarism/plagscan/lib.php');
-require_once($CFG->dirroot.'/plagiarism/plagscan/classes/plagscan_connection.php');
+require(__DIR__ . '/../../config.php');
+require_once($CFG->dirroot . '/plagiarism/plagscan/lib.php');
+require_once($CFG->dirroot . '/plagiarism/plagscan/classes/plagscan_connection.php');
 global $CFG, $DB;
 
 $connection = new plagscan_connection();
 $res = $connection->check_callback_config();
 
-if($res["httpcode"] == 204){
+if ($res['httpcode'] == 204) {
     $msg = get_string('callback_setup', 'plagiarism_plagscan');
     $time = 5;
     $notification = \core\output\notification::NOTIFY_SUCCESS;
-}
-else{
-    if(isset($res["response"]["error"]))
-        $msg = $res["response"]["error"]["message"];
-    else 
-        $msg= $res["response"];
-    $time=10;
+} else {
+    if (isset($res['response']['error'])) {
+        $msg = $res['response']['error']['message'];
+    } else {
+        $msg = $res['response'];
+    }
+    $time = 10;
     $notification = \core\output\notification::NOTIFY_ERROR;
 }
 
-redirect("./settings.php", $msg, $time, $notification);
+redirect('./settings.php', $msg, $time, $notification);

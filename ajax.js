@@ -6,25 +6,26 @@
 
 
 M.plagiarism_plagscan = {
-    reports : []
+    reports: []
 };
 
-M.plagiarism_plagscan.init = function(Y, contextid, viewlinks, showlinks, viewreport) {
-    
-    var handleReport = function( report) {
-        var reportArea = Y.one('.psreport.pid-'+report.id);
-        
-        if(!report.content.includes('psfile_progress')){
+M.plagiarism_plagscan.init = function (Y, contextid, viewlinks, showlinks, viewreport, ps_yellow_level, ps_red_level) {
+
+    var handleReport = function (report) {
+        var reportArea = Y.one('.psreport.pid-' + report.id);
+
+        if (!report.content.includes('psfile_progress')) {
             reportArea.insert(report.content, 'after').remove();
             var reports = M.plagiarism_plagscan.reports;
-            reports.splice(reports.indexOf(report.id),1);
+            reports.splice(reports.indexOf(report.id), 1);
         }
     };
-    
-    var checkReportStatus = function(Y, reports, contextid, viewlinks, showlinks, viewreport) {
-        
-        if(!reports[0])
+
+    var checkReportStatus = function (Y, reports, contextid, viewlinks, showlinks, viewreport, ps_yellow_level, ps_red_level) {
+
+        if (!reports[0]) {
             return;
+        }
 
         var url = M.cfg.wwwroot + '/plagiarism/plagscan/ajax.php';
 
@@ -39,17 +40,19 @@ M.plagiarism_plagscan.init = function(Y, contextid, viewlinks, showlinks, viewre
                     cmid: contextid,
                     viewlinks: viewlinks,
                     showlinks: showlinks,
-                    viewreport: viewreport
+                    viewreport: viewreport,
+                    ps_yellow_level: ps_yellow_level,
+                    ps_red_level: ps_red_level
                 })
             },
             on: {
-                success: function(tid, response) {
+                success: function (tid, response) {
                     var jsondata = Y.JSON.parse(response.responseText);
-                    
+
                     Y.each(jsondata, handleReport);
 
                 },
-                failure: function() {
+                failure: function () {
                     M.plagiarism_plagscan.reports = [];
                 }
             }
@@ -57,13 +60,14 @@ M.plagiarism_plagscan.init = function(Y, contextid, viewlinks, showlinks, viewre
 
         Y.io(url, callback);
     };
-        
-        Y.all(".psreport").each(function(row) {
-            if(row._node.childNodes[0].className == 'psfile_progress')
-                M.plagiarism_plagscan.reports.push(row._node.classList[1].substring(4));
-        });
-        
-        setInterval(function() {
-            checkReportStatus(Y, M.plagiarism_plagscan.reports, contextid, viewlinks, showlinks, viewreport)
-        },3000);
+
+    Y.all(".psreport").each(function (row) {
+        if (row._node.childNodes[0].className == 'psfile_progress') {
+            M.plagiarism_plagscan.reports.push(row._node.classList[1].substring(4));
+        }
+    });
+
+    setInterval(function () {
+        checkReportStatus(Y, M.plagiarism_plagscan.reports, contextid, viewlinks, showlinks, viewreport, ps_yellow_level, ps_red_level)
+    }, 3000);
 };

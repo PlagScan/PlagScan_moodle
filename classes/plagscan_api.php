@@ -16,14 +16,14 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
-* plagscan_api.php - Class to help working with the PlagScan API.
-*
-* @package      plagiarism_plagscan
-* @subpackage   plagiarism
-* @author       Jesús Prieto <jprieto@plagscan.com>  
-* @copyright    2018 PlagScan GmbH {@link https://www.plagscan.com/}
-* @license      http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
-*/
+ * plagscan_api.php - Class to help working with the PlagScan API.
+ *
+ * @package      plagiarism_plagscan
+ * @subpackage   plagiarism
+ * @author       Jesús Prieto <jprieto@plagscan.com>  
+ * @copyright    2018 PlagScan GmbH {@link https://www.plagscan.com/}
+ * @license      http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 
 namespace plagiarism_plagscan\classes;
 
@@ -32,48 +32,66 @@ if (!defined('MOODLE_INTERNAL')) {
 }
 
 class plagscan_api {
+
     /**
      * API_FILES
      */
     const API_FILES = "/documents";
+
     /**
      * API_USERS
      */
     const API_USERS = "/users";
+
     /**
      * API_SUBMISSIONS
      */
     const API_SUBMISSIONS = "/submissions";
+
     /**
      * API_TOKEN
      */
     const API_TOKEN = "/token";
+
     /**
      * API_CHECK_CALLBACK
      */
     const API_CHECK_CALLBACK = "/checkcallback";
+
     /**
      * API_URL
      */
     const API_URL = "https://api.plagscan.com/v3";
+
+    /**
+     * API_INTEGRATION_CONSUMER_KEY
+     */
+    const API_INTEGRATION_CONSUMER_KEY = "APIconsumer";
+
+    /**
+     * API_INTEGRATION_CONSUMER_VALUE
+     */
+    const API_INTEGRATION_CONSUMER_VALUE = "Moodle";
+
     /**
      *
      * @var null|plagscan_api
      */
     private static $instance = null;
-    
+
     /**
      * Returns a plagscan_api instance
      * 
      * @return null|static
      */
-    public final static function instance(){
-        if(isset(self::$instance))
+    public final static function instance() {
+        if (isset(self::$instance)) {
             return self::$instance;
-        else
-            return self::$instance = new plagscan_api();    
+        } else {
+            return self::$instance = new plagscan_api();
+        }
     }
-    
+
     /**
      * Make a HTTP request to the API
      * 
@@ -85,25 +103,29 @@ class plagscan_api {
      * 
      * @return array
      */
-    public function request($endPoint, $requestType ,$data, $filedata = null, $urlencodeddata = false) {
-        
+    public function request($endPoint, $requestType, $data, $filedata = null, $urlencodeddata = false) {
+
         $ch = curl_init();
-        
-        $url = self::API_URL.$endPoint;
-        
-        if($urlencodeddata){
-                foreach($data as $param => $value) {
-                    $url .="&$param=".urlencode($value);
-                }
+
+        $url = self::API_URL . $endPoint;
+
+        if ($endPoint != self::API_TOKEN) {
+            $url .= "&" . self::API_INTEGRATION_CONSUMER_KEY . "=" . self::API_INTEGRATION_CONSUMER_VALUE;
         }
-        
-        if($requestType == "POST" && $filedata != null){
+
+        if ($urlencodeddata) {
+            foreach ($data as $param => $value) {
+                $url .="&$param=" . urlencode($value);
+            }
+        }
+
+        if ($requestType == "POST" && $filedata != null) {
             $boundary = uniqid();
             $delimiter = '-------------' . $boundary;
-            
+
             $data = $this->build_data_files($boundary, $data, $filedata);
-    
-            $curlopt =array(
+
+            $curlopt = array(
                 CURLOPT_URL => $url,
                 CURLOPT_RETURNTRANSFER => 1,
                 CURLOPT_MAXREDIRS => 10,
@@ -112,27 +134,23 @@ class plagscan_api {
                 CURLOPT_POST => 1,
                 CURLOPT_POSTFIELDS => $data,
                 CURLOPT_HTTPHEADER => array(
-                  //"Authorization: Bearer $TOKEN",
-                  "Content-Type: multipart/form-data; boundary=" . $delimiter,
-                  "Content-Length: " . strlen($data)
-
+                    //"Authorization: Bearer $TOKEN",
+                    "Content-Type: multipart/form-data; boundary=" . $delimiter,
+                    "Content-Length: " . strlen($data)
                 ),
             );
-        }
-        else if($requestType == "PATCH"){
-            $curlopt =array(
+        } else if ($requestType == "PATCH") {
+            $curlopt = array(
                 CURLOPT_URL => $url,
                 CURLOPT_RETURNTRANSFER => 1,
                 CURLOPT_CUSTOMREQUEST => $requestType,
                 CURLOPT_HTTPHEADER => array(
-                  //"Authorization: Bearer $TOKEN",
-                  "Content-Type: application/json-patch+json" 
-
+                    //"Authorization: Bearer $TOKEN",
+                    "Content-Type: application/json-patch+json"
                 ),
             );
-        }
-        else{
-            $curlopt =array(
+        } else {
+            $curlopt = array(
                 CURLOPT_URL => $url,
                 CURLOPT_CUSTOMREQUEST => $requestType,
                 CURLOPT_RETURNTRANSFER => 1,
@@ -140,37 +158,37 @@ class plagscan_api {
             );
         }
         curl_setopt_array($ch, $curlopt);
-        
+
         $response = curl_exec($ch);
 
         $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
-        
+
         return $this->handle_response($response, $httpcode);
-   }
-   
-   /**
-    * Returns the reponse within in array with response json decoded and http code
-    * 
-    * @param string $response
-    * @param int $httpcode
-    * @return array
-    */
-    private function handle_response($response, $httpcode){
+    }
+
+    /**
+     * Returns the reponse within in array with response json decoded and http code
+     * 
+     * @param string $response
+     * @param int $httpcode
+     * @return array
+     */
+    private function handle_response($response, $httpcode) {
         $response = json_decode($response, true);
-        
-        return array("response" => $response , "httpcode" => $httpcode);
-   }
-   
-   /**
-    * Helps to build a HTTP content with a given files data
-    * 
-    * @param string $boundary
-    * @param array $fields
-    * @param array $files
-    * @return string
-    */
-   private function build_data_files($boundary, $fields, $files){
+
+        return array("response" => $response, "httpcode" => $httpcode);
+    }
+
+    /**
+     * Helps to build a HTTP content with a given files data
+     * 
+     * @param string $boundary
+     * @param array $fields
+     * @param array $files
+     * @return string
+     */
+    private function build_data_files($boundary, $fields, $files) {
         $data = '';
         $eol = "\r\n";
 
@@ -178,24 +196,25 @@ class plagscan_api {
 
         foreach ($fields as $name => $content) {
             $data .= "--" . $delimiter . $eol
-                . 'Content-Disposition: form-data; name="' . $name . "\"".$eol.$eol
-                . $content . $eol;
+                    . 'Content-Disposition: form-data; name="' . $name . "\"" . $eol . $eol
+                    . $content . $eol;
         }
 
 
         foreach ($files as $file) {
             $data .= "--" . $delimiter . $eol
-                . 'Content-Disposition: form-data; name="fileUpload"; filename="' . $file->get_filename(). '"' . $eol
-                . 'Content-Type: '.$file->get_mimetype().''.$eol
-                . 'Content-Transfer-Encoding: binary'.$eol
-                ;
+                    . 'Content-Disposition: form-data; name="fileUpload"; filename="' . $file->get_filename() . '"' . $eol
+                    . 'Content-Type: ' . $file->get_mimetype() . '' . $eol
+                    . 'Content-Transfer-Encoding: binary' . $eol
+            ;
 
             $data .= $eol;
             $data .= $file->get_content() . $eol;
         }
-        $data .= "--" . $delimiter . "--".$eol;
+        $data .= "--" . $delimiter . "--" . $eol;
 
 
         return $data;
     }
+
 }

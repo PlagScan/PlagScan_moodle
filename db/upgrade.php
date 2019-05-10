@@ -16,15 +16,14 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
-* database upgrade code for plagscan plugin
-*
-* @package      plagiarism_plagscan
-* @subpackage   plagiarism
-* @author       Daniel Gockel <dgockel@plagscan.com>
-* @copyright    @2015 PlagScan GmbH
-* @license      http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
-*/
-
+ * database upgrade code for plagscan plugin
+ *
+ * @package      plagiarism_plagscan
+ * @subpackage   plagiarism
+ * @author       Daniel Gockel <dgockel@plagscan.com>
+ * @copyright    @2015 PlagScan GmbH
+ * @license      http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 function xmldb_plagiarism_plagscan_upgrade($oldversion) {
     global $DB;
 
@@ -193,7 +192,7 @@ function xmldb_plagiarism_plagscan_upgrade($oldversion) {
         //add nondisclosure field to plagiarism_plagscan_config
         $table = new xmldb_table('plagiarism_plagscan_config');
         $field = new xmldb_field('nondisclosure', XMLDB_TYPE_INTEGER, '1', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0', 'username');
-        
+
         // Conditionally launch add field nondisclosure
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
@@ -210,95 +209,94 @@ function xmldb_plagiarism_plagscan_upgrade($oldversion) {
         // plagscan savepoint reached
         upgrade_plugin_savepoint(true, 2015110700, 'plagiarism', 'plagscan');
     }
-    
-    
+
+
     if ($oldversion < 2016052501) {
         //add groups_capabilities field to plagiarism_plagscan_config
         $table = new xmldb_table('plagiarism_plagscan_config');
         $field = new xmldb_field('show_students_links', XMLDB_TYPE_INTEGER, '1', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0', 'show_report_to_students');
-       
-        
+
+
         // Conditionally launch add field groups
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
-        
-        
+
+
         // plagscan savepoint reached
         upgrade_plugin_savepoint(true, 2016052501, 'plagiarism', 'plagscan');
     }
-    
-        if ($oldversion < 2016052502) {
-        
+
+    if ($oldversion < 2016052502) {
+
         // plagscan savepoint reached
         upgrade_plugin_savepoint(true, 2016052502, 'plagiarism', 'plagscan');
     }
-        
-        if ($oldversion < 2016061401) {
-        
+
+    if ($oldversion < 2016061401) {
+
         // plagscan savepoint reached
         upgrade_plugin_savepoint(true, 2016061401, 'plagiarism', 'plagscan');
-    }    
-        if ($oldversion < 2017120601) {
-        
+    }
+    if ($oldversion < 2017120601) {
+
         // plagscan savepoint reached
         upgrade_plugin_savepoint(true, 2017120601, 'plagiarism', 'plagscan');
     }
-    
+
     if ($oldversion < 2018072301) {
-        
+
         // plagscan savepoint reached
         upgrade_plugin_savepoint(true, 2018072301, 'plagiarism', 'plagscan');
     }
 
-    
+
     if ($oldversion < 2018112000) {
-        
+
         //add groups_capabilities field to plagiarism_plagscan_config
         $table = new xmldb_table('plagiarism_plagscan');
         $field = new xmldb_field('submissiontype', XMLDB_TYPE_INTEGER, '1', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0', 'updatestatus');
-       
+
         // Conditionally launch add field groups
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
-        
+
         $table = new xmldb_table('plagiarism_plagscan_config');
         $field = new xmldb_field('ownerid', XMLDB_TYPE_CHAR, '255', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, 'show_students_links');
-        
+
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
-        
-        $field = new xmldb_field('submissionid', XMLDB_TYPE_CHAR, '255', XMLDB_UNSIGNED, null, null, 'ownerid'); 
-         if (!$dbman->field_exists($table, $field)) {
+
+        $field = new xmldb_field('submissionid', XMLDB_TYPE_CHAR, '255', XMLDB_UNSIGNED, null, null, 'ownerid');
+        if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
-        
-        $field = new xmldb_field('enable_online_text', XMLDB_TYPE_INTEGER, '1', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0', 'submissionid'); 
-         if (!$dbman->field_exists($table, $field)) {
+
+        $field = new xmldb_field('enable_online_text', XMLDB_TYPE_INTEGER, '1', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0', 'submissionid');
+        if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
-        
+
         $table = new xmldb_table('plagiarism_plagscan_user');
-        
+
         $table->add_field('id', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
-        
+
         $table->add_field('userid', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, null, 'id');
-        
+
         $table->add_field('psuserid', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, null, 'userid');
-        
+
         $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'), null, null);
-        $table->add_key('userid', XMLDB_KEY_FOREIGN, array('userid'), 'user', array('id')); 
-        
+        $table->add_key('userid', XMLDB_KEY_FOREIGN, array('userid'), 'user', array('id'));
+
         if (!$dbman->table_exists($table)) {
-           $dbman->create_table($table);
+            $dbman->create_table($table);
         }
-        
+
         // plagscan savepoint reached
         upgrade_plugin_savepoint(true, 2018112000, 'plagiarism', 'plagscan');
-        
     }
-    
+
     return true;
 }

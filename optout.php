@@ -1,4 +1,5 @@
 <?php
+
 // This file is part of the Plagscan plugin for Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -22,11 +23,11 @@
  * @copyright  @2012 Synergy Learning
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
-require_once(dirname(__FILE__).'/../../config.php');
+require(__DIR__ . '/../../config.php');
 
 $optout = required_param('optout', PARAM_BOOL);
-$return = urldecode(required_param('return', PARAM_TEXT));
+$cmid = required_param('cmid', PARAM_INT);
+$return = $CFG->wwwroot . '/mod/assign/view.php?id=' . $cmid . '&action=editsubmission';
 
 $PAGE->set_url($return);
 if ($CFG->version < 2011120100) {
@@ -50,5 +51,4 @@ if ($optout) {
     $msg = get_string('optin_explanation', 'plagiarism_plagscan');
 }
 
-echo $OUTPUT->header();
-notice($msg, $return);
+redirect($return, $msg);

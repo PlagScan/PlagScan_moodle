@@ -16,98 +16,117 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
-* plagscan_file.php - This class help to manage the documents submitted to PlagScan through the plugin
-*
-* @package      plagiarism_plagscan
-* @subpackage   plagiarism
-* @author       Jesús Prieto <jprieto@plagscan.com>  
-* @copyright    2018 PlagScan GmbH {@link https://www.plagscan.com/}
-* @license      http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
-*/
+ * plagscan_file.php - This class help to manage the documents submitted to PlagScan through the plugin
+ *
+ * @package      plagiarism_plagscan
+ * @subpackage   plagiarism
+ * @author       Jesús Prieto <jprieto@plagscan.com>  
+ * @copyright    2018 PlagScan GmbH {@link https://www.plagscan.com/}
+ * @license      http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 
 namespace plagiarism_plagscan\classes;
 
 use plagiarism_plagscan\classes\plagscan_connection;
 use moodle_exception;
 
+require_once($CFG->dirroot . '/plagiarism/plagscan/lib.php');
 if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.');
 }
 
 class plagscan_file {
-    
+
     /**
      * STATUS_NOT_STARTED
      */
     const STATUS_NOT_STARTED = 0;
+
     /**
      * STATUS_CHECKING
      */
     const STATUS_CHECKING = 1;
+
     /**
      * STATUS_ONGOING
      */
     const STATUS_ONGOING = 2;
+
     /**
      * STATUS_FINISHED
      */
     const STATUS_FINISHED = 3;
+
     /**
      * STATUS_QUEUED
      */
     const STATUS_QUEUED = 4;
+
     /**
      * STATUS_SUBMITTING
      */
     const STATUS_SUBMITTING = 100;
+
     /**
      * STATUS_FAILED
      */
     const STATUS_FAILED = 1000;
+
     /**
      * STATUS_FAILED_FILETYPE
      */
     const STATUS_FAILED_FILETYPE = 1001;
+
     /**
      * STATUS_FAILED_UNKNOWN
      */
     const STATUS_FAILED_UNKNOWN = 1002;
+
     /**
      * STATUS_FAILED_OPTOUT
      */
     const STATUS_FAILED_OPTOUT = 1003;
+
     /**
      * STATUS_FAILED_CONNECTION
      */
     const STATUS_FAILED_CONNECTION = 1004;
+
     /**
      * REPORT_STATS
      */
     const REPORT_STATS = 0;
+
     /**
      * REPORT_LINKS
      */
     const REPORT_LINKS = 1;
+
     /**
      * REPORT_SOURCES
      */
     const REPORT_SOURCES = 2;
+
     /**
      * REPORT_DOCX
      */
     const REPORT_DOCX = 3;
+
     /**
      * REPORT_HTML
      */
     const REPORT_HTML = 4;
+
     /**
      * REPORT_MATCHES
      */
     const REPORT_MATCHES = 5;
+
     /**
      * REPORT_PS
      */
     const REPORT_PS = 6;
+
     /**
      * NEW_REPORT
      */
@@ -117,19 +136,22 @@ class plagscan_file {
      * REPORT_PDFHTML
      */
     const REPORT_PDFHTML = 8;
+
     /**
      * REPORT_PDFREPORT
      */
     const REPORT_PDFREPORT = 9;
+
     /**
      * REPORT_HIGHLIGHT
      */
     const REPORT_HIGHLIGHT = 25;
+
     /**
      * REPORT_GETSOURCE
      */
     const REPORT_GETSOURCE = 26;
-    
+
     /**
      * Check if the file/online text content exist on the PlagScan table
      * 
@@ -138,58 +160,58 @@ class plagscan_file {
      * @param string $filehash
      * @return \stdClass
      */
-    public static function find($cmid,$userid,$filehash){
+    public static function find($cmid, $userid, $filehash) {
         global $DB;
-        
+
         return $DB->get_record('plagiarism_plagscan', array('cmid' => $cmid,
-                                                      'userid' => $userid,
-                                                      'filehash' => $filehash));
+                    'userid' => $userid,
+                    'filehash' => $filehash));
     }
-    
-    public static function find_by_psids($ids){
+
+    public static function find_by_psids($ids) {
         global $DB;
-        
-        return $DB->get_records_list('plagiarism_plagscan', 'id',$ids);
+
+        return $DB->get_records_list('plagiarism_plagscan', 'id', $ids);
     }
-    
+
     /**
      * Saves the file data on the PlagScan table
      * 
      * @param \stdClass $file
      * @return int
      */
-    public static function save($file){
+    public static function save($file) {
         global $DB;
-        
+
         return $DB->insert_record('plagiarism_plagscan', $file);
     }
-    
+
     /**
      * Updates the file data on the PlagScan table
      * 
      * @param \stdClass $file
      * @return int
      */
-    public static function update($file){
+    public static function update($file) {
         global $DB;
-        
+
         return $DB->update_record('plagiarism_plagscan', $file);
     }
-    
+
     /**
      * Returns an array with the supported filetypes in PlagScan
      * 
      * @param string $filename
      * @return bool
      */
-    public static function plagscan_supported_filetype($filename) {   
+    public static function plagscan_supported_filetype($filename) {
         $allowedtypes = array('docx', 'doc', 'pdf', 'txt', 'html', 'wps', 'wpd',
-                              'odt', 'ott', 'rtf', 'sdw', 'sxw', 'xml', 'pdb', 'ltx','pages' , 'key', 'numbers');
+            'odt', 'ott', 'rtf', 'sdw', 'sxw', 'xml', 'pdb', 'ltx', 'pages', 'key', 'numbers');
         $extn = pathinfo($filename, PATHINFO_EXTENSION);
-        
+
         return in_array($extn, $allowedtypes);
     }
-    
+
     /**
      * Submit a file/online text content to PlagScan
      * 
@@ -198,62 +220,61 @@ class plagscan_file {
      * @return int
      * @throws moodle_exception
      */
-    public static function submit($psfile, $filedata){
-        global $DB,$CFG;
-        
+    public static function submit($psfile, $filedata) {
+        global $DB, $CFG;
+
         $connection = new plagscan_connection();
         
-        
+
         if (!self::plagscan_supported_filetype($filedata['filename'])) {
             self::set_status($psfile, self::STATUS_FAILED_FILETYPE);
             return plagscan_connection::SUBMIT_UNSUPPORTED; // Unsupported file type.
-        } 
- 
+        }
+
         if (plagscan_user_opted_out($psfile->userid)) {
             self::set_status($psfile, self::STATUS_FAILED_OPTOUT);
             return plagscan_connection::SUBMIT_OPTOUT; // User has opted-out of PlagScan uploads.
         }
-        
-        /*// Delete any existing reports / records for this file 
-        // mostly works with re_submit
-        $oldrecords = $DB->get_records('plagiarism_plagscan', array('cmid' => $psfile->cmid,
-                          'userid' => $psfile->userid,
-                          'filehash' => $psfile->filehash, 'submissiontype' => $psfile->submissiontype), 'id');
-        
-        foreach ($oldrecords as $oldrecord) {
-            self::delete_reports($psfile->cmid, $oldrecord->id);
-            
-            if (!$connection->delete_submitted_file($oldrecord->pid)) {
-                throw new moodle_exception('oldsubmission_notdeleted', 'plagiarism_plagscan');
-            }
-            $DB->delete_records('plagiarism_plagscan', array('id' => $oldrecord->id));
-        }*/
+
+        /* // Delete any existing reports / records for this file 
+          // mostly works with re_submit
+          $oldrecords = $DB->get_records('plagiarism_plagscan', array('cmid' => $psfile->cmid,
+          'userid' => $psfile->userid,
+          'filehash' => $psfile->filehash, 'submissiontype' => $psfile->submissiontype), 'id');
+
+          foreach ($oldrecords as $oldrecord) {
+          self::delete_reports($psfile->cmid, $oldrecord->id);
+
+          if (!$connection->delete_submitted_file($oldrecord->pid)) {
+          throw new moodle_exception('oldsubmission_notdeleted', 'plagiarism_plagscan');
+          }
+          $DB->delete_records('plagiarism_plagscan', array('id' => $oldrecord->id));
+          } */
 
         try {
             //Check if the assignment was created from a previous versions without creating it on PS too
-            if($filedata['submissionid'] == null){
-                $result = $connection->submit_single_file ($filedata);
-            }
-            else{
+            if ($filedata['submissionid'] == null) {
+                $result = $connection->submit_single_file($filedata);
+            } else {
                 $result = $connection->submit_into_submission($filedata);
             }
         } catch (moodle_exception $e) {
             self::set_status($psfile, self::STATUS_FAILED_CONNECTION);
             throw($e);
         }
-        
+
+
         if ($result <= 0) {
             self::set_status($psfile, self::STATUS_FAILED_UNKNOWN);
             return plagscan_connection::SUBMIT_FAILED_BY_CONNECTION;
-        } 
-        
+        }
+
         $psfile->pid = intval($result);
         self::update($psfile);
-        
+
         return plagscan_connection::SUBMIT_OK;
-            
     }
-    
+
     /**
      * Deletes previously saved reports for the file
      * 
@@ -263,13 +284,13 @@ class plagscan_file {
      */
     protected static function delete_reports($cmid, $pid = false) {
         global $CFG;
-        
+
         if ($CFG->version < 2011120100) {
             $context = get_context_instance(CONTEXT_MODULE, $cmid);
         } else {
             $context = \context_module::instance($cmid);
         }
-        
+
         $fs = get_file_storage();
         $fs->delete_area_files($context->id, 'plagiarism_plagscan', self::file_area_from_type(self::REPORT_DOCX), $pid);
         $fs->delete_area_files($context->id, 'plagiarism_plagscan', self::file_area_from_type(self::REPORT_HTML), $pid);
@@ -280,7 +301,7 @@ class plagscan_file {
         $fs->delete_area_files($context->id, 'plagiarism_plagscan', self::file_area_from_type(self::REPORT_HIGHLIGHT), $pid);
         $fs->delete_area_files($context->id, 'plagiarism_plagscan', self::file_area_from_type(self::REPORT_GETSOURCE), $pid);
     }
-    
+
     /**
      * Returns an array with the file area mapping from type of report
      * 
@@ -289,18 +310,18 @@ class plagscan_file {
      */
     protected static function file_area_from_type($reporttype) {
         $mapping = array(self::REPORT_DOCX => 'reportdocx',
-                         self::REPORT_HTML => 'reporthtml',
-                         self::REPORT_MATCHES => 'reportmatches',
-                         self::REPORT_PS => 'reportps',
-                         self::REPORT_PDFHTML => 'reportpdfhtml',
-                         self::REPORT_PDFREPORT => 'reportpdfreport',
-                         self::REPORT_HIGHLIGHT => 'reporthighlight',
-                         self::REPORT_GETSOURCE => 'reportgetsource',
-                         self::NEW_REPORT => 'new_report');
+            self::REPORT_HTML => 'reporthtml',
+            self::REPORT_MATCHES => 'reportmatches',
+            self::REPORT_PS => 'reportps',
+            self::REPORT_PDFHTML => 'reportpdfhtml',
+            self::REPORT_PDFREPORT => 'reportpdfreport',
+            self::REPORT_HIGHLIGHT => 'reporthighlight',
+            self::REPORT_GETSOURCE => 'reportgetsource',
+            self::NEW_REPORT => 'new_report');
 
         return $mapping[$reporttype];
     }
-    
+
     /**
      * Set the status of a file
      * 
@@ -309,10 +330,10 @@ class plagscan_file {
      */
     protected static function set_status($psfile, $status) {
         global $DB;
-        
+
         $current = $DB->get_record('plagiarism_plagscan', array('userid' => $psfile->userid,
-                                                                'cmid' => $psfile->cmid,
-                                                                'filehash' => $psfile->filehash));
+            'cmid' => $psfile->cmid,
+            'filehash' => $psfile->filehash));
         if ($current) {
             if ($status != $current->status) {
                 $upd = new \stdClass();
@@ -326,7 +347,7 @@ class plagscan_file {
             $psfile->id = $DB->insert_record('plagiarism_plagscan', $psfile);
         }
     }
-    
+
     /**
      * Updates the status of a file
      * 
@@ -339,7 +360,7 @@ class plagscan_file {
             // Don't retrieve status if already finished
             return false;
         }
-        
+
         $pid = $psfile->pid;
         if ($pid <= 0) {
             // File was not submitted properly in the first place - skip it.
@@ -348,7 +369,7 @@ class plagscan_file {
 
         $connection = new plagscan_connection();
         $result = $connection->plaglevel_retrieve($pid);
-        
+
         $pstatus = null;
         if (intval($result) >= 0) {
             $status = self::STATUS_FINISHED;
@@ -357,10 +378,9 @@ class plagscan_file {
             } else {
                 $pstatus = floatval($result) / 10;
             }
-        }
-        else
+        } else
             return false;
-        
+
         if ($status == $psfile->status && $pstatus == $psfile->pstatus && !$psfile->updatestatus) {
             return false; // Nothing has changed
         }
@@ -370,7 +390,7 @@ class plagscan_file {
         $update->pstatus = $result;
         $update->pid = $psfile->pid;
         $update->updatestatus = 0;
-        
+
         if (isset($psfile->id)) {
             $update->id = $psfile->id;
             self::update($update);
@@ -379,14 +399,14 @@ class plagscan_file {
             $update->userid = $psfile->userid;
             $update->cmid = $psfile->cmid;
             $update->filehash = $psfile->filehash;
-
         } else {
             $update->userid = $psfile->userid;
             $update->cmid = $psfile->cmid;
             $update->filehash = $psfile->filehash;
             $update->id = self::save($update);
         }
-        
+
         return true;
     }
+
 }

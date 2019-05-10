@@ -16,7 +16,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * plagiarism_plagscan_observer.php - Class for the observer event of Moodle
+ * file_upload_completed.php
  *
  * @package      plagiarism_plagscan
  * @subpackage   plagiarism
@@ -24,36 +24,27 @@
  * @copyright    2018 PlagScan GmbH {@link https://www.plagscan.com/}
  * @license      http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
+namespace plagiarism_plagscan\event;
+
 if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.');
 }
 
-require_once($CFG->dirroot . '/plagiarism/plagscan/lib.php');
+class file_upload_completed extends \core\event\base {
 
-use plagiarism_plagscan\handlers\file_handler;
-
-class plagiarism_plagscan_observer {
-
-    /**
-     * Controls the file upload event
-     * 
-     * @param \assignsubmission_file\event\assessable_uploaded $event
-     */
-    public static function assignsubmission_file_uploaded(
-    \assignsubmission_file\event\assessable_uploaded $event) {
-
-        file_handler::instance()->file_uploaded($event);
+    protected function init() {
+        $this->data['crud'] = 'u';
+        $this->data['edulevel'] = self::LEVEL_PARTICIPATING;
+        $this->data['objecttable'] = 'plagiarism_plagscan';
     }
 
-    /**
-     * Controls the onlinetext upload event
-     * 
-     * @param \assignsubmission_onlinetext\event\assessable_uploaded $event
-     */
-    public static function assignsubmission_onlinetext_uploaded(
-    \assignsubmission_onlinetext\event\assessable_uploaded $event) {
+    public static function get_name() {
+        return get_string('event_file_upload_completed', 'plagiarism_plagscan');
+    }
 
-        file_handler::instance()->onlinetext_uploaded($event);
+    public function get_description() {
+        return 'The file ' . $this->other['filename'] . ' from user ' . $this->userid . ' from course ' . $this->contextinstanceid . ' has been upload to PlagScan.';
     }
 
 }

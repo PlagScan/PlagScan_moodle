@@ -1,4 +1,5 @@
 <?php
+
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -23,13 +24,12 @@
  * @copyright   2015 PlagScan GmbH {@link https://www.plagscan.com/}
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 $capabilities = array(
     //capability to enable/disable plagscan inside an activity
     'plagiarism/plagscan:enable' => array(
         'captype' => 'write',
         'contextlevel' => CONTEXT_COURSE,
-         'legacy' => array(
+        'legacy' => array(
             'manager' => CAP_ALLOW,
             'editingteacher' => CAP_ALLOW
         )

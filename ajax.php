@@ -1,6 +1,6 @@
 <?php
 
-/* 
+/*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
@@ -16,19 +16,36 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * 
  */
-
 define('AJAX_SCRIPT', true);
 
-require_once(dirname(__FILE__) . '/../../config.php');
-require_once(dirname(__FILE__).'/lib.php');
+require(__DIR__ . '/../../config.php');
+require_once($CFG->dirroot . '/plagiarism/plagscan/lib.php');
 
 use plagiarism_plagscan\classes\plagscan_connection;
 
 $data = optional_param('data', array(), PARAM_RAW);
 
+require_login();
+
 $data = json_decode($data);
 
-require_login();
+if ($data == null) {
+    die('No data sent');
+}
+
+if (!is_array($data->psreports)) {
+    die('Reports ids are not sent properly');
+}
+
+$psreports = array_filter($data->psreports, 'ctype_digit');
+
+$viewlinks = filter_var($data->viewlinks, FILTER_VALIDATE_BOOLEAN);
+$showlinks = filter_var($data->showlinks, FILTER_VALIDATE_BOOLEAN);
+$viewreport = filter_var($data->viewreport, FILTER_VALIDATE_BOOLEAN);
+
+$ps_yellow_level = filter_var($data->ps_yellow_level, FILTER_VALIDATE_INT);
+$ps_red_level = filter_var($data->ps_red_level, FILTER_VALIDATE_INT);
+
 
 $cmid = $data->cmid;
 if ($CFG->version < 2011120100) {
@@ -39,15 +56,14 @@ if ($CFG->version < 2011120100) {
 $PAGE->set_context($context);
 if (!(has_capability('plagiarism/plagscan:viewfullreport', $context) || has_capability('plagiarism/plagscan:control', $context))) {
     $instanceconfig = plagscan_get_instance_config($cmid);
-    if ($instanceconfig->show_students_links != plagiarism_plugin_plagscan::SHOWS_LINKS){
+    if ($instanceconfig->show_students_links != plagiarism_plugin_plagscan::SHOWS_LINKS) {
         throw new moodle_exception('Permission denied! You do not have the right capabilities.', 'plagiarism_plagscan');
-    }    
+    }
 }
-
 
 $connection = new plagscan_connection();
 
-$results = $connection->check_report_status($data->psreports,$context, $data->viewlinks, $data->showlinks, $data->viewreport);
+$results = $connection->check_report_status($data->psreports, $context, $viewlinks, $showlinks, $viewreport, $ps_yellow_level, $ps_red_level);
 
-echo json_encode($results,true);
+echo json_encode($results, true);
 die;

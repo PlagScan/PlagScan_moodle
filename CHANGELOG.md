@@ -1,3 +1,11 @@
+### Version: 3.1.4 Build: 2019051008
+
+ - Delete unused code and files
+ - Better organization
+ - Code review following Moodle standars and code styling guidelines
+ - Added Moodle Event 2 system for logs
+ - Added metadata provider using Moodle Privacy API for GDPR
+
 ### Version: 3.1.2 Build: 2019042900
 
 - Fix a bug in the plugin table creation
