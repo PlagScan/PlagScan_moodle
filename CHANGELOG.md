@@ -1,3 +1,7 @@
+### Version: 3.1.5 Build: 2019051400
+
+- Fix a bug where a task was showing an error when trying to get a file to upload that did not exist no longer during the process
+
 ### Version: 3.1.4 Build: 2019051008
 
  - Delete unused code and files

@@ -63,6 +63,12 @@ class plagscan_file_upload_task extends adhoc_task {
         $filedata = json_decode(json_encode($data->filedata), true);
 
         $file = get_file_storage()->get_file_by_hash($data->pathnamehash);
+        if(!$file){
+            mtrace('PlagScan: file from user '.$psfile->userid.' deleted on Moodle before sent to PlagScan.');
+            plagscan_file::delete($psfile);
+            return;
+        }
+        
         $filedata['filename'] = $file->get_filename();
         $filedata['file'] = $file;
         $filedata['mimetype'] = $file->get_mimetype();

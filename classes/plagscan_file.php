@@ -197,6 +197,15 @@ class plagscan_file {
 
         return $DB->update_record('plagiarism_plagscan', $file);
     }
+    
+    /**
+     * 
+     */
+    public static function delete($file){
+        global $DB;
+        
+        return $DB->delete_records('plagiarism_plagscan', array('id' => $file->id));
+    }
 
     /**
      * Returns an array with the supported filetypes in PlagScan
@@ -274,6 +283,7 @@ class plagscan_file {
 
         return plagscan_connection::SUBMIT_OK;
     }
+   
 
     /**
      * Deletes previously saved reports for the file
