@@ -199,7 +199,10 @@ class plagscan_file {
     }
     
     /**
+     * Deltes the file data on the PlagScan table
      * 
+     * @param \stdClass $file
+     * @return int
      */
     public static function delete($file){
         global $DB;
