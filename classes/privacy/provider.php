@@ -206,7 +206,7 @@ class provider implements
             $records = $DB->get_records_sql($sql, $params);
         }
 
-        if (!$records) {
+        if (!isset($records) || !$records) {
             return;
         }
 
