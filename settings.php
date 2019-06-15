@@ -76,6 +76,7 @@ if (($data = $mform->get_data()) && confirm_sesskey()) {
     // Save all local only settings first (as these could affect the server connection parameters).
     $localonlysettings = array('plagscan_id' => true,
         'plagscan_key' => true,
+        'plagscan_server' => true,
         'plagscan_student_disclosure' => false,
         'plagscan_studentpermission' => false,
         'plagscan_multipleaccounts' => false,
@@ -127,6 +128,10 @@ if (($data = $mform->get_data()) && confirm_sesskey()) {
             $updatesettings->$serverfield = $value;
         }
     }
+    
+    $try_connection = $connection->check_connection_to_plagscan_server();
+    if($try_connection['httpcode'] != 200)
+        echo $OUTPUT->notification(get_string('connectionfailed', 'plagiarism_plagscan'), 'notifyerror');
 
     $token = $connection->get_access_token($data->plagscan_id, $data->plagscan_key);
     if ($token == NULL)

@@ -220,7 +220,7 @@ class plagscan_connection {
         $url = plagscan_api::API_USERS . "/$psuserid?access_token=" . $access_token;
 
         $res = plagscan_api::instance()->request($url, "PATCH", null);
-
+        
         return $res["response"]["data"];
     }
 
@@ -513,7 +513,6 @@ class plagscan_connection {
         $res = plagscan_api::instance()->request($url, "POST", $data);
 
         return $res["response"]["data"]["submissionID"];
-        ;
     }
 
     /**
@@ -749,6 +748,15 @@ class plagscan_connection {
 
         return plagscan_api::instance()->request($url, "PUT", null);
     }
+    
+    /**
+     * Send a request to check the connection is with the PlagScan API
+     */
+    public function check_connection_to_plagscan_server(){
+        $url = "/ping";
+        
+        return plagscan_api::instance()->request($url, "GET", null);
+    }
 
     /**
      * Check the status of the files from an array of PlagScan file ids. It returns an array with one pair, file id and message/content
@@ -810,10 +818,14 @@ class plagscan_connection {
                     }
                 } else {
                     $message .= get_string('notprocessed', 'plagiarism_plagscan');
-
+                    
+                    
                     if ($viewlinks) {
                         //  $message .= html_writer::empty_tag('br');
-                        //$message .= ' '.html_writer::link($checkurl, get_string('checkstatus', 'plagiarism_plagscan')); 
+                        //$message .= ' '.html_writer::link($checkurl, get_string('checkstatus', 'plagiarism_plagscan')); if($psfile->pstatus == -2)
+                        if($psfile->pstatus == -2)
+                            $message.=html_writer::tag('i', '', array('title' => get_string('report_check_error_cred','plagiarism_plagscan'), 
+                        'class' => 'fa fa-exclamation-triangle', 'style' => 'color:#f0ad4e'));
                         $message .= html_writer::empty_tag('br');
                         $submiturl = new moodle_url('/plagiarism/plagscan/reports/analyze.php', array('pid' => s($psfile->pid),
                             'return' => urlencode($PAGE->url)));

@@ -33,9 +33,11 @@ require(__DIR__ . '/../../config.php');
 $checkcallback = optional_param('checkCallback', 0, PARAM_BOOL);
 $docid = optional_param('docID', 0, PARAM_INT);
 $status = optional_param('mode', 0, PARAM_INT);
+$error = optional_param('error', 0, PARAM_TEXT);
+
+
 
 require_once($CFG->dirroot . '/plagiarism/plagscan/lib.php');
-
 //If the callback is from the setup check method
 if (!empty($checkcallback) && $checkcallback == true) {
 
@@ -48,7 +50,10 @@ if (!empty($checkcallback) && $checkcallback == true) {
     $pid = 0;
 } else if (isset($docid) && $docid > 0 && isset($status)) {//If the callback is sent by the convertion process
     $pid = $docid;
-    $c = 'Upload status ' . $status;
+    if(isset($error) && strlen($error) >0)
+        $c = 'Check error: '. $error;
+    else
+        $c = 'Upload status ' . $status;
 } else { //if the callback is from the check process
     $pid = intval($_SERVER['QUERY_STRING']);
     $c = 'Check';
@@ -82,6 +87,8 @@ if (isset($docid) && $docid > 0 && isset($status)) { //If the callback is sent b
         $status = 1000;
     }
     $upd->status = $status;
+    if(isset($error) && strlen($error) >0 && $error == "NOCRED")
+        $upd->pstatus = -2;
 } else { //If the callback is sent by the check process that means it has finished 
     $upd->status = plagscan_file::STATUS_FINISHED;
     require_once($CFG->dirroot . '/plagiarism/plagscan/lib.php');

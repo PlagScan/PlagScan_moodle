@@ -141,6 +141,14 @@ class plagscan_settings_form extends moodleform {
         $mform->addHelpButton('plagscan_admin_email', 'plagscan_admin_email', 'plagiarism_plagscan');
         $mform->setType('plagscan_admin_email', PARAM_TEXT);
         $mform->disabledIf('plagscan_admin_email', 'plagscan_multipleaccounts', 'eq', 1);
+        
+        $mform->addElement('text', 'plagscan_server', get_string('plagscanserver', 'plagiarism_plagscan'), array('size' => '40', 'style' => 'height: 33px'));
+        $mform->addHelpButton('plagscan_server', 'plagscanserver', 'plagiarism_plagscan');
+        $mform->setDefault('plagscan_server', 'https://api.plagscan.com/v3');
+        $mform->addRule('plagscan_server', null, 'required', null, 'client');
+        $mform->setType('plagscan_server', PARAM_TEXT);
+        
+
 
         $mform->addElement('html', "</div>");
 

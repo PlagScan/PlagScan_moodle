@@ -52,6 +52,11 @@ class plagscan_api {
      * API_TOKEN
      */
     const API_TOKEN = "/token";
+    
+    /**
+     * API_TOKEN
+     */
+    const API_PING = "/ping";
 
     /**
      * API_CHECK_CALLBACK
@@ -59,9 +64,9 @@ class plagscan_api {
     const API_CHECK_CALLBACK = "/checkcallback";
 
     /**
-     * API_URL
+     * API_DEFAULT_URL
      */
-    const API_URL = "https://api.plagscan.com/v3";
+    const API_DEFAULT_URL = "https://api.plagscan.com/v3";
 
     /**
      * API_INTEGRATION_CONSUMER_KEY
@@ -106,10 +111,11 @@ class plagscan_api {
     public function request($endPoint, $requestType, $data, $filedata = null, $urlencodeddata = false) {
 
         $ch = curl_init();
+        $url = filter_var(get_config('plagiarism_plagscan', 'plagscan_server'), FILTER_SANITIZE_URL);
+        
+        $url = $url . $endPoint;
 
-        $url = self::API_URL . $endPoint;
-
-        if ($endPoint != self::API_TOKEN) {
+        if ($endPoint != self::API_TOKEN && $endPoint != self::API_PING) {
             $url .= "&" . self::API_INTEGRATION_CONSUMER_KEY . "=" . self::API_INTEGRATION_CONSUMER_VALUE;
         }
 
