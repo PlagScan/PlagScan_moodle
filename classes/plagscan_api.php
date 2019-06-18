@@ -27,6 +27,8 @@
 
 namespace plagiarism_plagscan\classes;
 
+use plagiarism_plagscan\event\error_happened;
+
 if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.');
 }
@@ -164,9 +166,17 @@ class plagscan_api {
             );
         }
         curl_setopt_array($ch, $curlopt);
+        
+        if(curl_errno($ch)){
+            $pslog = array(
+                'other' => [
+                    'errormsg' => curl_error($ch)
+                ]
+            );
+            error_happened::create($pslog)->trigger();
+        }
 
         $response = curl_exec($ch);
-
         $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
 

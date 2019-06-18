@@ -127,7 +127,7 @@ $string['plagscan_own_workspace_policy'] = "Check against my documents";
 $string['plagscan_own_repository_policy'] = "Check against my documents in the repository";
 $string['plagscan_orga_repository_policy'] = "Check against my organization repository";
 $string['plagscan_ppp_policy'] = "Check against the Plagiarism Prevention Tool";
-$string['plagscanerror'] = ' PlagScan server Error: {$a}';
+$string['plagscanerror'] = ' PlagScan Error';
 $string['plagscanexplain'] = 'PlagScan is a plagiarism checker. <br />The software compares documents within your own institution and external web sources. <br/>To take advantage of this plugin, you will need to create an <a href="https://www.plagscan.com" target="_blank">organization account</a>. <br /><br />You can find a guideline at <a href="https://www.plagscan.com/system-integration-moodle" target="_blank">www.plagscan.com/system-integration-moodle</a>. <br />Ask us for a free trial <a href="mailto:pro@plagscan.com">pro@plagscan.com</a> and read about our latest news on <a href="https://twitter.com/plagscan" target="_blank">Twitter</a>. <br /><br />General information can be found at <a href="https://www.plagscan.com" target="_blank">www.PlagScan.com</a><hr />';
 $string['plagscanmethod'] = 'Submit';
 $string['plagscanserver'] = 'PlagScan server';

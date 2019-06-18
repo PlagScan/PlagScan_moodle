@@ -114,7 +114,7 @@ $string['plagscan_own_workspace_policy'] = "Comparar con documentos propios";
 $string['plagscan_own_repository_policy'] = "Comparar con mis documentos en el repositorio de la organización";
 $string['plagscan_orga_repository_policy'] = "Comparar con el repositorio de la organización";
 $string['plagscan_ppp_policy'] = "Comparar con la Biblioteca Anti-plagio de PlagScan";
-$string['plagscanerror'] = 'Error desde el servidor de PlagScan: {$a}';
+$string['plagscanerror'] = 'Error de PlagScan';
 $string['plagscanexplain'] = 'PlagScan es el detector de plagio: los documentos de su organizaci&oacute;n y el texto de Internet sera considerado para analizar.<br/><br/>Para registrarse en PlagScan puede hacerlo <a href="https://www.plagscan.com/">aqu&iacute;</a> y preg&uacute;ntenos por la prueba gratuita <a href="mailto:pro@plagscan.com">pro@plagscan.com</a><br><br>Informacion general puede ser encontrada en <a href="http://www.plagscan.com">www.PlagScan.com</a>';
 $string['plagscanmethod'] = 'enviar';
 $string['plagscanserver'] = 'Servidor PlagScan';

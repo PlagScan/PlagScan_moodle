@@ -1,3 +1,7 @@
+### Version: 3.1.7 Build: 2019061700
+
+- Add more Moodle Event 2 system for log general errors
+
 ### Version: 3.1.6 Build: 2019061101
 
     - Improve callback to receive information when a file check fails due to run out of Plagpoint credit

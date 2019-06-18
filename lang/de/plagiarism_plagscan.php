@@ -114,7 +114,7 @@ $string['plagscan_own_workspace_policy'] = "Mit eigenen Dokumenten abgleichen";
 $string['plagscan_own_repository_policy'] = "Mit meinen Dokumenten aus dem Organisationsarchiv vergleichen";
 $string['plagscan_orga_repository_policy'] = "Mit dem gesamten Organisationsarchiv vergleichen";
 $string['plagscan_ppp_policy'] = "Mit dem Plagiat-Präventions-Pool vergleichen";
-$string['plagscanerror'] = 'Fehler von PlagScan Server: {$a}';
+$string['plagscanerror'] = 'Fehler von PlagScan';
 $string['plagscanexplain'] = 'PlagScan ist ein Werkzeug zur Plagiatpr&uuml;fung. <br />Es vergleicht Arbeiten innerhalb einer Organisation sowie m&ouml;gliches Kopieren aus dem Internet und Verlagsdatenbanken. <br> F&uuml;r die Nutzung des Plugins ist ein <a href="https://www.plagscan.com" target="_blank">Organisations-Account</a> erforderlich.<br /><br />Eine Erkl&auml;rung zum PlagScan Moodle Plugin finden Sie unter <a href="https://www.plagscan.com/system-integration-moodle" target="_blank">www.plagscan.com/system-integration-moodle</a>.<br>Kontaktieren Sie uns f&uuml;r einen kostenlosen Test <a href="mailto:pro@plagscan.com">pro@plagscan.com</a><br>und verpassen Sie keine Neuigkeiten auf <a href="https://twitter.com/plagscan" target="_blank">Twitter</a><br /><br />Generelle Informationen finden Sie auf unserer Website: <a href="https://www.plagscan.com" target="_blank">www.PlagScan.com</a><hr />';
 $string['plagscanmethod'] = 'Einreichen';
 $string['plagscanserver'] = 'PlagScan API Server';

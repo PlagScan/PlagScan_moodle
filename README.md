@@ -1,6 +1,6 @@
-# Note: this version is not available currently in PlagScan boxes. Please do not install or upgrade to this version if you are using PlagScan into a box. 
+# Note: this version works with PlagScan boxes after 2019 update. Please do not install or upgrade to this version if you are using PlagScan-in-a-Box and did not receive the 2019 update. 
 
-# PlagScan Moodle Plugin 3.1.6 Release Notes
+# PlagScan Moodle Plugin 3.1.7 Release Notes
 
 The advanced plagiarism checker plugin for moodle.
 
@@ -25,10 +25,7 @@ https://api.plagscan.com/PlagScan_Moodle_Manual-Admin_EN.pdf
 Bug Fix:
 --------
 
-    - Improve callback to receive information when a file check fails due to run out of Plagpoint credit
-    - Add a warning icon in case a file check fails due to run out of Plagpoint credit
-    - Add a check for connection to PlagScan server
-    - Add a input to change PlagScan server (used for PlagScan-in-a-Box)
+    - Add more Moodle Event 2 system for log general errors
 
 Special thanks:
 ---------------
