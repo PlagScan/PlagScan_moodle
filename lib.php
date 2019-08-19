@@ -435,7 +435,7 @@ class plagiarism_plugin_plagscan extends plagiarism_plugin {
 
             if ($is_file) {
                 $file = $linkarray['file'];
-                $filehash = $file->get_contenthash();
+                $filehash = $file->get_pathnamehash();
             } else if ($is_content) {
                 $filehash = sha1($linkarray['content']);
             }
@@ -447,6 +447,8 @@ class plagiarism_plugin_plagscan extends plagiarism_plugin {
 
             // Find the plagscan entry for this file
             $psfile = plagscan_file::find($cmid, $userid, $filehash);
+            if(!$psfile && $is_file)
+                $psfile = plagscan_file::find($cmid, $userid, $file->get_contenthash());
 
 
 

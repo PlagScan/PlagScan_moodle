@@ -143,7 +143,8 @@ class file_handler {
 
         foreach ($this->filesqueue as $key => $file) {
 
-            if (!plagscan_file::find($cmid, $userid, $file->get_contenthash())) {
+            if (!plagscan_file::find($cmid, $userid, $file->get_pathnamehash())
+                    && !plagscan_file::find($cmid, $userid, $file->get_contenthash())) {
                 $filedata = array(
                     'submissionid' => $instanceconfig->submissionid,
                     'ownerid' => $assign_psownerid,
@@ -156,7 +157,7 @@ class file_handler {
                 $psfile = new \stdClass();
                 $psfile->userid = $userid;
                 $psfile->cmid = $cmid;
-                $psfile->filehash = $file->get_contenthash();
+                $psfile->filehash = $file->get_pathnamehash();
 
                 $psfile->pid = 0;
                 $psfile->pstatus = '';

@@ -169,7 +169,7 @@ class provider implements
         global $DB;
 
         if (isset($linkarray['file'])) {
-            $params = ['userid' => $userid, 'cmid' => $context->instanceid, 'filehash' => $linkarray['file']->get_contenthash()];
+            $params = ['userid' => $userid, 'cmid' => $context->instanceid, 'filehash' => $linkarray['file']->get_pathnamehash()];
             $sql = "SELECT 'id',            
                 'userid',        
                 'pid',           

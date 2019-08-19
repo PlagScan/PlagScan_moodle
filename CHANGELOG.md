@@ -1,3 +1,8 @@
+### Version: 3.1.8 Build: 2019081900
+
+- Fix the problem that showed 'Not Submitted to PlagScan' message in files already submitted from previous versions (2.x)
+- Allows the access to report from sources matched for old versions using 'Internal Link URL' in PlagScan configuration
+
 ### Version: 3.1.7 Build: 2019061700
 
 - Add more Moodle Event 2 system for log general errors
