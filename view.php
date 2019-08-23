@@ -26,7 +26,9 @@ use plagiarism_plagscan\classes\plagscan_connection;
 
 require_once(dirname(__FILE__) . '/../../config.php');
 require_once($CFG->dirroot.'/plagiarism/plagscan/lib.php');
-global $CFG, $DB;
+global $CFG, $DB, $PAGE;
+
+$PAGE->set_url(new moodle_url('/plagiarism/plagscan/view.php'));
 
 $pid = intval($_SERVER["QUERY_STRING"]);
 
@@ -42,6 +44,6 @@ if (isset($res["indocLink"])) {
     $msg = get_string('report_retrieve_error', 'plagiarism_plagscan');
 }
 
-$return = $return . "&action=grading";
+$return = new moodle_url('/course');
 $return = urldecode($return);
-redirect($return, $msg, 2);
+redirect($return, $msg, 2, \core\output\notification::NOTIFY_ERROR);

@@ -297,6 +297,25 @@ function xmldb_plagiarism_plagscan_upgrade($oldversion) {
         // plagscan savepoint reached
         upgrade_plugin_savepoint(true, 2018112000, 'plagiarism', 'plagscan');
     }
+    
+    if ($oldversion < 2019082201) {
+        $table = new xmldb_table('plagiarism_plagscan_config');
+        $DB->execute('UPDATE {plagiarism_plagscan_config} SET submissionid = ? WHERE submissionid = ?', 
+            [NULL, 'ownerid']);
+        
+        $field = new xmldb_field('ownerid', XMLDB_TYPE_CHAR, '255', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, 0);
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->change_field_default($table, $field);
+        }
+        
+        $field = new xmldb_field('submissionid', XMLDB_TYPE_CHAR, '255', XMLDB_UNSIGNED, null, null, null);
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->change_field_default($table, $field);
+        }
+        
+        // plagscan savepoint reached
+        upgrade_plugin_savepoint(true, 2019082201, 'plagiarism', 'plagscan');
+    }
 
     return true;
 }

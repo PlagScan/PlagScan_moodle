@@ -1,3 +1,8 @@
+### Version: 3.1.9 Build: 2019082201
+
+- Improve the access to report from sources matched for old versions using 'Internal Link URL' in PlagScan configuration
+- Fix bugs with upgraded version of plugin from old versions (2.x) to see the report but also for involving teacher in the assignment
+
 ### Version: 3.1.8 Build: 2019081900
 
 - Fix the problem that showed 'Not Submitted to PlagScan' message in files already submitted from previous versions (2.x)

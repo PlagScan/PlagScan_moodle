@@ -238,12 +238,17 @@ class plagiarism_plugin_plagscan extends plagiarism_plugin {
                     $config->username = $oldconfig->username;
                 }
 
-                if (!isset($oldconfig->ownerid) || empty($oldconfig->ownerid)) {
-                    $config->ownerid = $user->id;
+                
+                if ( !isset($oldconfig->ownerid) || empty($oldconfig->ownerid) || intval($oldconfig->ownerid) <= 0 ) {
+                    if (!isset($oldconfig->username) || empty($oldconfig->username)) {
+                        $config->ownerid = $user->id;
+                    } else {
+                        $owner = $DB->get_record('user', array("email" => $oldconfig->username));
+                        $config->ownerid = $owner->id;
+                    }
                 } else {
                     $config->ownerid = $oldconfig->ownerid;
                 }
-
                 $connection = new plagscan_connection();
                 if (!isset($oldconfig->upload) || empty($oldconfig->upload)) {
                     $submissionid = $connection->create_submissionid($cmid, $module, $config, $user);
@@ -411,17 +416,19 @@ class plagiarism_plugin_plagscan extends plagiarism_plugin {
         }
 
         //Check if the assignment was created from a previous versions without creating it on PS too
-        if ($instanceconfig->ownerid != null) {
+        if ($instanceconfig->ownerid != null && intval($instanceconfig->ownerid) > 0 ) {
             $assign_owner = $DB->get_record('user', array("id" => $instanceconfig->ownerid));
             $assign_psownerid = $connection->find_user($assign_owner);
         } else {
             $assign_owner = $DB->get_record('user', array("email" => $instanceconfig->username));
             $assign_psownerid = $connection->find_user($assign_owner);
         }
-
+        
         //INVOLVE TEACHER - TODO: Maybe should go in another place
         static $involved;
-        if ($is_multiaccount && $instanceconfig->submissionid != null && $instanceconfig->ownerid != null && $assign_psownerid != null && !isset($involved[$cmid][$USER->id])) {
+        if ($is_multiaccount && $instanceconfig->submissionid != null && $instanceconfig->submissionid != 'ownerid' && $instanceconfig->ownerid != null 
+                && $assign_psownerid != null && $assign_owner->id != $USER->id && !isset($involved[$cmid][$USER->id])) {
+            
             if ($connection->is_assistant($context, $instanceconfig, $USER)) {
                 $is_involved = $connection->involve_assistant($instanceconfig, $assign_psownerid, $USER);
                 if ($is_involved) {
@@ -451,15 +458,16 @@ class plagiarism_plugin_plagscan extends plagiarism_plugin {
                 $psfile = plagscan_file::find($cmid, $userid, $file->get_contenthash());
 
 
-
-            if ($this->ps_red_level == null && $this->ps_yellow_level == null) {
+            
+            static $ps_red_level, $ps_yellow_level;
+            if ($ps_red_level[$cmid][$USER->id] == null && $ps_yellow_level[$cmid][$USER->id] == null) {
                 try {
                     if ($instanceconfig->nondisclosure == 1) {
                         $connection->enable_nondisclosure();
                     }
                     $data = (array) $connection->get_user_settings($assign_owner);
-                    $this->ps_red_level = $data['redLevel'];
-                    $this->ps_yellow_level = $data['yellowLevel'];
+                    $ps_red_level[$cmid][$USER->id] = $data['redLevel'];
+                    $ps_yellow_level[$cmid][$USER->id] = $data['yellowLevel'];
                 } catch (moodle_exception $exce) {
                     return get_string('connectionfailed', 'plagiarism_plagscan');
                 }

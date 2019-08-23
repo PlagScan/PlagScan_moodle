@@ -111,7 +111,7 @@ class file_handler {
         $instanceconfig = plagscan_get_instance_config($cmid);
 
         //Check if the assignment was created from a previous versions without creating it on PS too
-        if (isset($instanceconfig->ownerid) && $instanceconfig->ownerid != null) {
+        if (isset($instanceconfig->ownerid) && $instanceconfig->ownerid != null && intval($instanceconfig->ownerid) > 0) {
             $assign_owner = $DB->get_record('user', array("id" => $instanceconfig->ownerid));
         } else {
             $assign_owner = $DB->get_record('user', array("email" => $instanceconfig->username));

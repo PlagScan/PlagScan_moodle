@@ -217,8 +217,9 @@ class plagscan_file {
      * @return bool
      */
     public static function plagscan_supported_filetype($filename) {
-        $allowedtypes = array('docx', 'doc', 'pdf', 'txt', 'html', 'wps', 'wpd',
-            'odt', 'ott', 'rtf', 'sdw', 'sxw', 'xml', 'pdb', 'ltx', 'pages', 'key', 'numbers');
+        $allowedtypes = array('docx', 'doc', 'pdf', 'txt', 'html', 'wps', 'wpd', 'ppt', 'pptx',
+            'odt', 'ott', 'rtf', 'sdw', 'sxw', 'xml', 'pdb', 'ltx', 'pages', 'key', 'numbers',
+            'xls', 'xlsx', 'pptx');
         $extn = pathinfo($filename, PATHINFO_EXTENSION);
 
         return in_array($extn, $allowedtypes);
@@ -265,7 +266,7 @@ class plagscan_file {
 
         try {
             //Check if the assignment was created from a previous versions without creating it on PS too
-            if ($filedata['submissionid'] == null) {
+            if ($filedata['submissionid'] == null || $filedata['submissionid'] == 'ownerid') {
                 $result = $connection->submit_single_file($filedata);
             } else {
                 $result = $connection->submit_into_submission($filedata);

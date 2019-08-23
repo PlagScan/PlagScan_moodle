@@ -118,7 +118,7 @@ class plagscan_api {
         $url = $url . $endPoint;
 
         if ($endPoint != self::API_TOKEN && $endPoint != self::API_PING) {
-            $url .= "&" . self::API_INTEGRATION_CONSUMER_KEY . "=" . self::API_INTEGRATION_CONSUMER_VALUE;
+            $url .= "&" . self::API_INTEGRATION_CONSUMER_KEY . "=" . self::API_INTEGRATION_CONSUMER_VALUE.get_config('plagiarism_plagscan', 'version');
         }
 
         if ($urlencodeddata) {

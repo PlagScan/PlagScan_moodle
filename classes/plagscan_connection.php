@@ -405,17 +405,17 @@ class plagscan_connection {
      * Retrieves the link to access to the report 
      * 
      * @param int $pid
-     * @param \stdClass $user
+     * @param \stdClass $psuserid
      * @param int $mode
      * @return array
      */
-    function report_retrieve($pid, $user, $mode) {
+    function report_retrieve($pid, $psuserid, $mode) {
         $access_token = $this->get_access_token();
 
         $url = plagscan_api::API_FILES . "/$pid/retrieve?mode=" . $mode . "&access_token=$access_token";
 
         if ($mode == 10) {
-            $url .= "&userID=" . $user->psuserid;
+            $url .= "&userID=" . $psuserid;
         }
 
         $res = plagscan_api::instance()->request($url, "GET", null);
@@ -665,12 +665,11 @@ class plagscan_connection {
 
             $res = plagscan_api::instance()->request($url, "GET", null);
 
-            $psuserid = 0;
             if (isset($res["response"]["data"]["userID"])) {
                 $psuserid = $res["response"]["data"]["userID"];
             }
 
-            if (intval($psuserid) > 0) {
+            if ($psuserid != null && intval($psuserid) > 0) {
                 $insert = new \stdClass();
                 $insert->userid = $user->id;
                 $insert->psuserid = $psuserid;

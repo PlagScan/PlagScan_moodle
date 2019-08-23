@@ -74,15 +74,15 @@ $connection = new plagscan_connection();
 $is_multiaccount = get_config('plagiarism_plagscan', 'plagscan_multipleaccounts');
 $is_teacher = has_capability('plagiarism/plagscan:control', $context);
 
-$user = $DB->get_record('plagiarism_plagscan_user', array('userid' => $USER->id));
+$psuserid = $connection->find_user($USER);
 
-if (!$is_multiaccount || $instanceconfig->submissionid == null) {
+if (!$is_multiaccount || $instanceconfig->submissionid == null || $instanceconfig->submissionid == 'ownerid') {
     $mode = 7;
 } else {
     $mode = 10;
 }
 
-$res = $connection->report_retrieve($pid, $user, $mode);
+$res = $connection->report_retrieve($pid, $psuserid, $mode);
 
 if (isset($res["reportLink"])) {
     redirect($res["reportLink"]);
@@ -94,4 +94,4 @@ if (isset($res["reportLink"])) {
 
 $return = $return . "&action=grading";
 $return = urldecode($return);
-redirect($return, $msg, 2);
+redirect($return, $msg, 2, \core\output\notification::NOTIFY_ERROR);
