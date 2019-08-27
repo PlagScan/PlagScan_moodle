@@ -778,16 +778,93 @@ class plagscan_connection {
         }
         return $results;
     }
-
-    public function get_message_view_from_report_status($psfile, $context, $viewlinks, $showlinks, $viewreport, $ps_yellow_level, $ps_red_level) {
+    
+    /**
+     * Return a message in html format to show inside the moodle interface from a linkarray
+     * 
+     * @global stdClass $PAGE
+     * @param array $linkarray
+     * @param context $context
+     * @param boolean $viewlinks
+     * @param boolean $showlinks
+     * @param boolean $viewreport
+     * @param int $ps_yellow_level
+     * @param int $ps_red_level
+     * @return String
+     */
+    public function get_message_view_from_linkarray($linkarray, $context, $viewlinks, $showlinks, $viewreport, $ps_yellow_level, $ps_red_level){
         global $PAGE;
+        
+        $userid = $linkarray['userid'];
+        $cmid = $linkarray['cmid'];
+        $is_file = isset($linkarray['file']);
+        $is_content = isset($linkarray['content']);
+        
+        if ($is_file) {
+            $file = $linkarray['file'];
+            $filehash = $file->get_pathnamehash();
+        } else if ($is_content) {
+//            $filehash = sha1($linkarray['content']);
+            $assign = new \assign($context, false, false);
+            $user_submission = $assign->get_user_submission($userid,false);
+            $files = get_file_storage()->get_area_files($context->id,
+            'plagiarism_plagscan', 'assign_submission', $user_submission->id, null, false
+            );
+            $file = array_shift($files);
+            $filehash = $file->get_pathnamehash();
+        }
+        
+        if (plagscan_user_opted_out($userid)) {
+            return get_string('useroptedout', 'plagiarism_plagscan');
+        }
 
-        $message = "";
-
+        // Find the plagscan entry for this file
+        $psfile = plagscan_file::find($cmid, $userid, $filehash);
+        if(!$psfile && $is_file){
+            $psfile = plagscan_file::find($cmid, $userid, $file->get_contenthash());
+        }
+        
         //create $message 
         if (!$psfile) {
             $message = get_string('notsubmitted', 'plagiarism_plagscan');
+            if ($viewlinks) {
+                if($is_file){
+                    $message .= html_writer::empty_tag('br');
+                    $params = array('cmid' => s($cmid), 
+                        'userid' => s($userid), 
+                        'return' => urlencode($PAGE->url),
+                        'pathnamehash' => s($file->get_pathnamehash()));
+
+                    $submiturl = new moodle_url('/plagiarism/plagscan/reports/submit.php', $params);
+                    $message .= html_writer::link($submiturl, get_string('submit', 'plagiarism_plagscan'));
+                    $message .= html_writer::empty_tag('br');
+                }
+            }
         } else {
+            $message = $this->get_message_view_from_report_status($psfile, $context, $viewlinks, $showlinks, $viewreport, $ps_yellow_level, $ps_red_level);
+        }
+        
+        return $message;
+    }
+
+    /**
+     * Return a message in html format to show inside the moodle interface from a PlagScan file
+     * 
+     * @global \plagiarism_plagscan\classes\stdClass $PAGE
+     * @param stdClass $psfile
+     * @param context $context
+     * @param boolean $viewlinks
+     * @param boolean $showlinks
+     * @param bolean $viewreport
+     * @param int $ps_yellow_level
+     * @param int $ps_red_level
+     * @return string
+     */
+    public function get_message_view_from_report_status($psfile, $context, $viewlinks, $showlinks, $viewreport, $ps_yellow_level, $ps_red_level) {
+        global $PAGE;
+        
+        $message = "";
+        
 
             $message .= "<div class='psreport pid-" . s($psfile->id) . "'>";
 
@@ -867,7 +944,7 @@ class plagscan_connection {
                 $message .= html_writer::empty_tag('br');
             }
             $message .="</div>";
-        }
+        
 
         return $message;
     }

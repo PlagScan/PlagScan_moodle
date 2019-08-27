@@ -71,7 +71,6 @@ class file_handler {
      */
     public function file_uploaded(
     \assignsubmission_file\event\assessable_uploaded $event) {
-
         foreach ($event->other['pathnamehashes'] as $pathnamehash) {
             $file = get_file_storage()->get_file_by_hash($pathnamehash);
             if ($file && !$file->is_directory()) {
@@ -79,6 +78,23 @@ class file_handler {
             }
         }
         $this->handle_files_queue($event->get_context()->instanceid, $event->userid);
+    }
+    
+    /**
+     * Fill the queue to upload files from received pathnamehashes
+     * 
+     * @param int $cmid
+     * @param int $userid
+     * @param array $pathnamehashes
+     */
+    public function file_uploaded_without_event($context, $userid, $pathnamehashes){
+        foreach ($pathnamehashes as $pathnamehash) {
+            $file = get_file_storage()->get_file_by_hash($pathnamehash);
+            if ($file && !$file->is_directory()) {
+                array_push($this->filesqueue, $file);
+            }
+        }
+        $this->handle_files_queue($context->instanceid, $userid);
     }
 
     /**
@@ -95,6 +111,24 @@ class file_handler {
         }
 
         $this->handle_files_queue($event->get_context()->instanceid, $event->userid);
+    }
+    
+    /**
+     * Fill the queue to upload files from received content
+     * 
+     * @param context $context
+     * @param int $userid
+     * @param String $content
+     * @param int $objectid
+     */
+    public function onlinetext_uploaded_without_event($context, $userid, $content, $objectid){
+        $file = $this->create_file_from_onlinetext_content_without_event($context, $userid, $content, $objectid);
+
+        if ($file != null) {
+            array_push($this->filesqueue, $file);
+        }
+
+        $this->handle_files_queue($context->instanceid, $userid);
     }
 
     /**
@@ -143,8 +177,9 @@ class file_handler {
 
         foreach ($this->filesqueue as $key => $file) {
 
+            
             if (!plagscan_file::find($cmid, $userid, $file->get_pathnamehash())
-                    && !plagscan_file::find($cmid, $userid, $file->get_contenthash())) {
+                && !plagscan_file::find($cmid, $userid, $file->get_contenthash())) {
                 $filedata = array(
                     'submissionid' => $instanceconfig->submissionid,
                     'ownerid' => $assign_psownerid,
@@ -171,6 +206,7 @@ class file_handler {
                     'pathnamehash' => $file->get_pathnamehash()));
             }
             unset($this->filesqueue[$key]);
+                    
         }
     }
 
@@ -203,9 +239,9 @@ class file_handler {
             'author' => $author->firstname . ' ' . $author->lastname,
             'license' => 'allrightsreserved'
         );
-
+        
         $filestorage = get_file_storage();
-
+        
         $previousfile = $filestorage->get_file($filedata['contextid'], $filedata['component'], $filedata['filearea'], $filedata['itemid'], $filedata['filepath'], $filedata['filename']
         );
 
@@ -215,6 +251,69 @@ class file_handler {
             }
 
             $previousfile->delete();
+            $cmid = $event->get_context()->instanceid;
+            $userid = $event->userid;
+            $psfile = plagscan_file::find($cmid, $userid, $previousfile->get_pathnamehash());
+            if(!$psfile)
+                $psfile = plagscan_file::find($cmid, $userid, $previousfile->get_contenthash());
+            
+            if($psfile)           
+                plagscan_file::delete($psfile);
+        }
+
+        return $filestorage->create_file_from_string($filedata, $content);
+    }
+    
+    /**
+     * 
+     * 
+     * @global \plagiarism_plagscan\handlers\stdClass $DB
+     * @param context $context
+     * @param int $userid
+     * @param String $content
+     * @param int $objectid
+     * @return stored_file
+     */
+    public function create_file_from_onlinetext_content_without_event($context, $userid, $content, $objectid) {
+        global $DB;
+
+        if (empty($content)) {
+            return null;
+        }
+
+        $author = $DB->get_record('user', array('id' => $userid));
+
+        $filedata = array(
+            'component' => 'plagiarism_plagscan',
+            'contextid' => $context->id,
+            'filearea' => "assign_submission",
+            'filepath' => '/',
+            'itemid' => $objectid,
+            'filename' => 'onlinetext_' . $context->id . '_' . $context->instanceid . '_' . $objectid . "_" . $author->lastname . ".html",
+            'userid' => $userid,
+            'author' => $author->firstname . ' ' . $author->lastname,
+            'license' => 'allrightsreserved'
+        );
+        
+        $filestorage = get_file_storage();
+        
+        $previousfile = $filestorage->get_file($filedata['contextid'], $filedata['component'], $filedata['filearea'], $filedata['itemid'], $filedata['filepath'], $filedata['filename']
+        );
+
+        if ($previousfile) {
+            if ($previousfile->get_contenthash() == sha1($content)) {
+                return $previousfile;
+            }
+
+            $previousfile->delete();
+            $cmid = $context->instanceid;
+            $userid = $userid;
+            $psfile = plagscan_file::find($cmid, $userid, $previousfile->get_pathnamehash());
+            if(!$psfile)
+                $psfile = plagscan_file::find($cmid, $userid, $previousfile->get_contenthash());
+            
+            if($psfile)           
+                plagscan_file::delete($psfile);
         }
 
         return $filestorage->create_file_from_string($filedata, $content);
