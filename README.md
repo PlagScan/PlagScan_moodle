@@ -1,4 +1,4 @@
-# PlagScan Moodle Plugin 3.1.11 Release Notes
+# PlagScan Moodle Plugin 3.1.12 Release Notes
 
 The advanced plagiarism checker plugin for moodle.
 
@@ -24,7 +24,9 @@ Bug Fix:
 --------
 
 - Add the assignment option to exclude assignment submissions from the institution repository
-- Add the assignment option to ignore self-matches from the same participant's content across multiple submission attempts
+- Add the assignment option to ignore self-matches from the same participant's content across multiple submission 
+- Remove the assignment exclude options in the edit menu for assignments created from the old versions of the plugin (2.x)
+
 
 Special thanks:
 ---------------

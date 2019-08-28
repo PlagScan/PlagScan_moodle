@@ -104,6 +104,9 @@ class plagiarism_plugin_plagscan extends plagiarism_plugin {
 
 
         if ($modulename != "mod_forum") {
+            //cm update
+            $cmid = optional_param('update', 0, PARAM_INT);
+            
             $psfileopts = array(self::RUN_NO => get_string('no'),
                 self::RUN_MANUAL => get_string('runmanual', 'plagiarism_plagscan'),
                 self::RUN_ALL => get_string('runalways', 'plagiarism_plagscan'),
@@ -132,11 +135,21 @@ class plagiarism_plugin_plagscan extends plagiarism_plugin {
                 $mform->addElement('static', 'nondisclosure_notice_desc', '', get_string('nondisclosure_notice_desc', 'plagiarism_plagscan', get_config('plagiarism_plagscan', 'plagscan_nondisclosure_notice_email')));
             }
             
-            $mform->addElement('checkbox', 'exclude_self_matches', get_string('exclude_self_matches', 'plagiarism_plagscan'));
-            $mform->addHelpButton('exclude_self_matches', 'exclude_self_matches', 'plagiarism_plagscan');
+            $show_exclude_options = true;
+            if($cmid){
+                $instanceconfig = plagscan_get_instance_config($cmid);
+                if(!empty($instanceconfig->username) && ($instanceconfig->submissionid == NULL || intval($instanceconfig->submissionid) <= 0 )){
+                    $show_exclude_options = false;
+                }            
+            }
             
-            $mform->addElement('checkbox', 'exclude_from_repository', get_string('exclude_from_repository', 'plagiarism_plagscan'));
-            $mform->addHelpButton('exclude_from_repository', 'exclude_from_repository', 'plagiarism_plagscan');
+            if($show_exclude_options){
+                $mform->addElement('checkbox', 'exclude_self_matches', get_string('exclude_self_matches', 'plagiarism_plagscan'));
+                $mform->addHelpButton('exclude_self_matches', 'exclude_self_matches', 'plagiarism_plagscan');
+
+                $mform->addElement('checkbox', 'exclude_from_repository', get_string('exclude_from_repository', 'plagiarism_plagscan'));
+                $mform->addHelpButton('exclude_from_repository', 'exclude_from_repository', 'plagiarism_plagscan');
+            }
             
             $mform->addElement('select', 'online_text', get_string('online_submission', 'plagiarism_plagscan'), $onlinetextsubmission);
             $mform->addHelpButton('online_text', 'online_submission', 'plagiarism_plagscan');
@@ -155,23 +168,21 @@ class plagiarism_plugin_plagscan extends plagiarism_plugin {
               $mform->addElement('html', '</div>');
               $this->add_action_buttons(true); */
 
-            //cm update
-            $cmid = optional_param('update', 0, PARAM_INT);
             if ($cmid) {
-                $instanceconfig = plagscan_get_instance_config($cmid);
                 $mform->setDefault('plagscan_upload', $instanceconfig->upload);
                 if (isset($instanceconfig->enable_online_text)) {
                     $mform->setDefault('online_text', $instanceconfig->enable_online_text);
                 }
                 
-                if(isset($instanceconfig->exclude_self_matches)){
-                    $mform->setDefault('exclude_self_matches', $instanceconfig->exclude_self_matches);
-                }
-                
-                if(isset($instanceconfig->exclude_from_repository)){
-                    $mform->setDefault('exclude_from_repository', $instanceconfig->exclude_from_repository);
-                }
-                    
+                if($show_exclude_options){
+                    if(isset($instanceconfig->exclude_self_matches)){
+                        $mform->setDefault('exclude_self_matches', $instanceconfig->exclude_self_matches);
+                    }
+
+                    if(isset($instanceconfig->exclude_from_repository)){
+                        $mform->setDefault('exclude_from_repository', $instanceconfig->exclude_from_repository);
+                    }
+                }                    
 
                 $mform->setDefault('show_to_students', $instanceconfig->show_report_to_students);
                 $mform->setDefault('show_students_links', $instanceconfig->show_students_links);

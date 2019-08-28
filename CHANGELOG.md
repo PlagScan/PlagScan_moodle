@@ -1,3 +1,7 @@
+### Version: 3.1.12 Build: 2019082805
+
+- Remove the assignment exclude options in the edit menu for assignments created from the old versions of the plugin (2.x)
+
 ### Version: 3.1.11 Build: 2019082804
 
 - Add the assignment option to exclude assignment submissions from the institution repository
