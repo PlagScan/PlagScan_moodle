@@ -33,7 +33,7 @@ require(__DIR__ . '/../../config.php');
 $checkcallback = optional_param('checkCallback', 0, PARAM_BOOL);
 $docid = optional_param('docID', 0, PARAM_INT);
 $status = optional_param('mode', 0, PARAM_INT);
-$error = optional_param('error', 0, PARAM_TEXT);
+$error = optional_param('error', '', PARAM_TEXT);
 
 
 

@@ -39,6 +39,8 @@
                 <FIELD NAME="ownerid" TYPE="char" LENGTH="255" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" COMMENT="The id of the owner who created the submission" PREVIOUS="show_students_links" NEXT="submissionid"/>
                 <FIELD NAME="submissionid" TYPE="char" LENGTH="255" NOTNULL="false" DEFAULT="NULL" UNSIGNED="true" SEQUENCE="false" COMMENT="Unique PlagScan submission ID" PREVIOUS="ownerid" NEXT="enable_online_text"/>   
                 <FIELD NAME="enable_online_text" TYPE="int" LENGTH="1" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" COMMENT="Enable Plagiarism check for online text (not file)" PREVIOUS="submissionid"/>
+                <FIELD NAME="exclude_from_repository" TYPE="int" LENGTH="1" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" COMMENT="Flag to exclude submissions from the repository" PREVIOUS="enable_online_text"/>
+                <FIELD NAME="exclude_self_matches" TYPE="int" LENGTH="1" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" COMMENT="Indicates if should flag the submissions from the same user across multiple submission attempts" PREVIOUS="exclude_from_repository"/>
             </FIELDS>
             <KEYS>
                 <KEY NAME="primary" TYPE="primary" FIELDS="id" NEXT="cm"/>

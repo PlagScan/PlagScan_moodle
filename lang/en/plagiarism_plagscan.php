@@ -61,6 +61,10 @@ $string['english'] = 'English';
 $string['error_involving_assistant'] = 'Error trying to involving the assistant into the submission';
 $string['error_assignment_creation'] = 'Error creating assignment';
 $string['error_user_creation'] = 'Error creating user';
+$string['exclude_from_repository'] = 'Exclude from repository';
+$string['exclude_from_repository_help'] = 'Exclude all documents submitted for this assignment from the repository';
+$string['exclude_self_matches'] = 'Ignore self-matches';
+$string['exclude_self_matches_help'] = 'Do not flag the same participant\'s content across multiple submission attempts';
 $string['filechecked'] = 'Document status checked on PlagScan server';
 $string['filesassociated'] = 'Document will be uploaded to account \'{$a}\'';
 $string['filesubmitted'] = 'Document \'{$a}\' is submitted to PlagScan';
@@ -245,6 +249,8 @@ $string['privacy:metadata:plagiarism_plagscan_config:show_students_links'] = 'In
 $string['privacy:metadata:plagiarism_plagscan_config:ownerid'] = 'The ID of the teacher who created the assignment.';
 $string['privacy:metadata:plagiarism_plagscan_config:submissionid'] = 'The ID of the assignment in the PlagScan system.';
 $string['privacy:metadata:plagiarism_plagscan_config:enable_online_text'] = 'Indicates if Online Text submission will be enabled.';
+$string['privacy:metadata:plagiarism_plagscan_config:exclude_self_matches'] = 'Indicates if should flag the submissions from the same user across multiple submission attempts';
+$string['privacy:metadata:plagiarism_plagscan_config:exclude_from_repository'] = 'Flag to exclude submissions from the repository.';
 
 
 $string['privacy:metadata:plagiarism_plagscan_user'] = 'Stores PlagScan user data.';

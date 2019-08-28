@@ -1,6 +1,4 @@
-# Note: this version works with PlagScan boxes after 2019 update. Please do not install or upgrade to this version if you are using PlagScan-in-a-Box and did not receive the 2019 update. 
-
-# PlagScan Moodle Plugin 3.1.9 Release Notes
+# PlagScan Moodle Plugin 3.1.11 Release Notes
 
 The advanced plagiarism checker plugin for moodle.
 
@@ -25,8 +23,8 @@ https://api.plagscan.com/PlagScan_Moodle_Manual-Admin_EN.pdf
 Bug Fix:
 --------
 
-    - Improve the access to report from sources matched for old versions using 'Internal Link URL' in PlagScan configuration
-    - Fix bugs with upgraded version of plugin from old versions (2.x) to see the report but also for involving teacher in the assignment
+- Add the assignment option to exclude assignment submissions from the institution repository
+- Add the assignment option to ignore self-matches from the same participant's content across multiple submission attempts
 
 Special thanks:
 ---------------

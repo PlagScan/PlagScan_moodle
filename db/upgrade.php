@@ -316,6 +316,22 @@ function xmldb_plagiarism_plagscan_upgrade($oldversion) {
         // plagscan savepoint reached
         upgrade_plugin_savepoint(true, 2019082201, 'plagiarism', 'plagscan');
     }
+    
+    if ($oldversion < 2019082804) {
+        $table = new xmldb_table('plagiarism_plagscan_config');
+        
+        $field = new xmldb_field('exclude_from_repository', XMLDB_TYPE_INTEGER, '1', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0', 'enable_online_text');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        
+        $field = new xmldb_field('exclude_self_matches', XMLDB_TYPE_INTEGER, '1', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0', 'exclude_from_repository');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        
+        upgrade_plugin_savepoint(true, 2019082804, 'plagiarism', 'plagscan');
+    }
 
     return true;
 }

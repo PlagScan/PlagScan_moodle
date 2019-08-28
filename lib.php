@@ -131,9 +131,16 @@ class plagiarism_plugin_plagscan extends plagiarism_plugin {
                 $mform->addHelpButton('nondisclosure_notice', 'plagscan_nondisclosure_notice_email', 'plagiarism_plagscan');
                 $mform->addElement('static', 'nondisclosure_notice_desc', '', get_string('nondisclosure_notice_desc', 'plagiarism_plagscan', get_config('plagiarism_plagscan', 'plagscan_nondisclosure_notice_email')));
             }
+            
+            $mform->addElement('checkbox', 'exclude_self_matches', get_string('exclude_self_matches', 'plagiarism_plagscan'));
+            $mform->addHelpButton('exclude_self_matches', 'exclude_self_matches', 'plagiarism_plagscan');
+            
+            $mform->addElement('checkbox', 'exclude_from_repository', get_string('exclude_from_repository', 'plagiarism_plagscan'));
+            $mform->addHelpButton('exclude_from_repository', 'exclude_from_repository', 'plagiarism_plagscan');
+            
             $mform->addElement('select', 'online_text', get_string('online_submission', 'plagiarism_plagscan'), $onlinetextsubmission);
             $mform->addHelpButton('online_text', 'online_submission', 'plagiarism_plagscan');
-
+            
             $mform->addElement('select', 'show_to_students', get_string("show_to_students", "plagiarism_plagscan"), $showstudentsopt);
             $mform->addHelpButton('show_to_students', 'show_to_students', 'plagiarism_plagscan');
             $mform->setDefault('show_to_students', self::SHOWSTUDENTS_NEVER);
@@ -156,6 +163,15 @@ class plagiarism_plugin_plagscan extends plagiarism_plugin {
                 if (isset($instanceconfig->enable_online_text)) {
                     $mform->setDefault('online_text', $instanceconfig->enable_online_text);
                 }
+                
+                if(isset($instanceconfig->exclude_self_matches)){
+                    $mform->setDefault('exclude_self_matches', $instanceconfig->exclude_self_matches);
+                }
+                
+                if(isset($instanceconfig->exclude_from_repository)){
+                    $mform->setDefault('exclude_from_repository', $instanceconfig->exclude_from_repository);
+                }
+                    
 
                 $mform->setDefault('show_to_students', $instanceconfig->show_report_to_students);
                 $mform->setDefault('show_students_links', $instanceconfig->show_students_links);
@@ -183,6 +199,7 @@ class plagiarism_plugin_plagscan extends plagiarism_plugin {
                 }
             } else {
                 $mform->setDefault('plagscan_upload', self::RUN_NO);
+                $mform->setDefault('exclude_self_matches', true);
             }
         }
     }
@@ -249,6 +266,23 @@ class plagiarism_plugin_plagscan extends plagiarism_plugin {
                 } else {
                     $config->ownerid = $oldconfig->ownerid;
                 }
+                
+                $validation_default = array('options' => array('default' => 0));
+                
+                if(isset($data->exclude_self_matches)){
+                    $config->exclude_self_matches = filter_var($data->exclude_self_matches, FILTER_VALIDATE_INT, $validation_default);
+                }
+                else{
+                    $config->exclude_self_matches = 0;
+                }
+                
+                if(isset($data->exclude_from_repository)){
+                    $config->exclude_from_repository = filter_var($data->exclude_from_repository, FILTER_VALIDATE_INT, $validation_default);
+                }
+                else {
+                    $config->exclude_from_repository = 0;
+                }
+                
                 $connection = new plagscan_connection();
                 if (!isset($oldconfig->upload) || empty($oldconfig->upload)) {
                     $submissionid = $connection->create_submissionid($cmid, $module, $config, $user);
@@ -260,14 +294,12 @@ class plagiarism_plugin_plagscan extends plagiarism_plugin {
                 else {
                     $submissionid = $oldconfig->submissionid;
                     if ($submissionid != NULL) {
-                        $assign_owner = $DB->get_record("user", array("id" => $oldconfig->ownerid));
+                        $assign_owner = $DB->get_record("user", array("id" => $config->ownerid));
                         $connection->update_submission($cmid, $module, $config, $submissionid, $assign_owner);
                         assign_update_completed::create($assignlog)->trigger();
                     }
                 }
-
-                $validation_default = array('options' => array('default' => 0));
-
+                
                 $config->show_report_to_students = filter_var($data->show_to_students, FILTER_VALIDATE_INT, $validation_default);
                 $config->show_students_links = filter_var($data->show_students_links, FILTER_VALIDATE_INT, $validation_default);
                 $config->enable_online_text = filter_var($data->online_text, FILTER_VALIDATE_INT, $validation_default);
@@ -326,7 +358,6 @@ class plagiarism_plugin_plagscan extends plagiarism_plugin {
         global $CFG, $USER, $COURSE, $DB, $PAGE, $cm;
 
         $cmid = $linkarray['cmid'];
-        $userid = $linkarray['userid'];
 
         $is_file = isset($linkarray['file']);
         $is_content = isset($linkarray['content']);
@@ -439,25 +470,6 @@ class plagiarism_plugin_plagscan extends plagiarism_plugin {
 
         $result = '';
         if ($is_file || ($is_content && $instanceconfig->enable_online_text == 1)) {
-
-            if ($is_file) {
-                $file = $linkarray['file'];
-                $filehash = $file->get_pathnamehash();
-            } else if ($is_content) {
-                $filehash = sha1($linkarray['content']);
-            }
-
-            if (plagscan_user_opted_out($userid)) {
-                return get_string('useroptedout', 'plagiarism_plagscan');
-            }
-
-
-            // Find the plagscan entry for this file
-            $psfile = plagscan_file::find($cmid, $userid, $filehash);
-            if(!$psfile && $is_file)
-                $psfile = plagscan_file::find($cmid, $userid, $file->get_contenthash());
-
-
             
             static $ps_red_level, $ps_yellow_level;
             if ($ps_red_level[$cmid][$USER->id] == null && $ps_yellow_level[$cmid][$USER->id] == null) {
@@ -512,7 +524,7 @@ class plagiarism_plugin_plagscan extends plagiarism_plugin {
             $message = html_writer::empty_tag('br') .
                     html_writer::tag('img', "", array('src' => new moodle_url('/plagiarism/plagscan/images/plagscan_icon.png'),
                         'width' => '25px', 'height' => '24px'));
-            $message .= $connection->get_message_view_from_report_status($psfile, $context, $viewlinksb, $showlinks, $viewreport, $this->ps_yellow_level, $this->ps_red_level);
+            $message .= $connection->get_message_view_from_linkarray($linkarray, $context, $viewlinksb, $showlinks, $viewreport, $this->ps_yellow_level, $this->ps_red_level);
 
             //END create message
 

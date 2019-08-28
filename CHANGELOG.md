@@ -1,3 +1,13 @@
+### Version: 3.1.11 Build: 2019082804
+
+- Add the assignment option to exclude assignment submissions from the institution repository
+- Add the assignment option to ignore self-matches from the same participant's content across multiple submission attempts
+
+### Version: 3.1.10 Build: 2019082700
+
+- Add the submit option for files within old assignments created from old versions of the plugin (2.x) that were not submitted to PlagScan before
+- Fix Ajax behaviour updating the status of the report
+
 ### Version: 3.1.9 Build: 2019082201
 
 - Improve the access to report from sources matched for old versions using 'Internal Link URL' in PlagScan configuration

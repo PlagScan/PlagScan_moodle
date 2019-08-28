@@ -503,7 +503,9 @@ class plagscan_connection {
             "checkDeadline" => $checkdeadline,
             "enableResubmission" => $enableresub,
             "checkOnUpload" => $checkonupload,
-            "type" => $type];
+            "type" => $type,
+            "excludeSelfMatches" => $config->exclude_self_matches,
+            "excludeFromRepository" => $config->exclude_from_repository];
 
 
         $access_token = $this->get_access_token();
@@ -583,7 +585,9 @@ class plagscan_connection {
             "endTime" => "" . $endtime,
             "checkDeadline" => $checkdeadline,
             "enableResubmission" => $enableresub,
-            "checkOnUpload" => $checkonupload];
+            "checkOnUpload" => $checkonupload,
+            "excludeSelfMatches" => $config->exclude_self_matches,
+            "excludeFromRepository" => $config->exclude_from_repository];
 
         $access_token = $this->get_access_token();
 
