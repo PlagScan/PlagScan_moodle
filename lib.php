@@ -54,6 +54,7 @@ class plagiarism_plugin_plagscan extends plagiarism_plugin {
     const RUN_AUTO = 2;
     const RUN_ALL = 3;
     const RUN_DUE = 4;
+    const RUN_SUBMIT_MANUAL = 5;
     const SHOWSTUDENTS_NEVER = 0;
     const SHOWSTUDENTS_ALWAYS = 1;
     const SHOWSTUDENTS_ACTCLOSED = 2;
@@ -108,6 +109,7 @@ class plagiarism_plugin_plagscan extends plagiarism_plugin {
             $cmid = optional_param('update', 0, PARAM_INT);
             
             $psfileopts = array(self::RUN_NO => get_string('no'),
+                self::RUN_SUBMIT_MANUAL => get_string('runsubmitmanual', 'plagiarism_plagscan'),
                 self::RUN_MANUAL => get_string('runmanual', 'plagiarism_plagscan'),
                 self::RUN_ALL => get_string('runalways', 'plagiarism_plagscan'),
                 self::RUN_AUTO => get_string('runautomatic', 'plagiarism_plagscan'),
@@ -125,8 +127,8 @@ class plagiarism_plugin_plagscan extends plagiarism_plugin {
 
             $mform->addElement('header', 'plagscandesc', get_string('plagscan', 'plagiarism_plagscan'));
 
-            $mform->addElement('select', 'plagscan_upload', get_string("useplagscan", "plagiarism_plagscan"), $psfileopts);
-            $mform->addHelpButton('plagscan_upload', 'useplagscan', 'plagiarism_plagscan');
+            $mform->addElement('select', 'plagscan_upload', get_string("useplagscan_filessubmission", "plagiarism_plagscan"), $psfileopts);
+            $mform->addHelpButton('plagscan_upload', 'useplagscan_filessubmission', 'plagiarism_plagscan');
 
 // prints non-disclosure notice if it's activated
             if (get_config('plagiarism_plagscan', 'plagscan_nondisclosure_notice_email')) {
@@ -295,7 +297,8 @@ class plagiarism_plugin_plagscan extends plagiarism_plugin {
                 }
                 
                 $connection = new plagscan_connection();
-                if (!isset($oldconfig->upload) || empty($oldconfig->upload)) {
+                
+                if ((!isset($oldconfig->upload) || empty($oldconfig->upload)) && (!isset($oldconfig->submissionid) || intval($oldconfig->submissionid) <= 0)) {
                     $submissionid = $connection->create_submissionid($cmid, $module, $config, $user);
                     if (intval($submissionid) <= 0)
                         throw new moodle_exception('error_assignment_creation', 'plagiarism_plagscan');
@@ -323,8 +326,8 @@ class plagiarism_plugin_plagscan extends plagiarism_plugin {
                 }
                 //END nondisclosure document
             }
+            plagscan_set_instance_config($cmid, $config);
         }
-        plagscan_set_instance_config($cmid, $config);
     }
 
     public function cron() {

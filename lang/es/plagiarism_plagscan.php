@@ -60,7 +60,7 @@ $string['error_user_creation'] = 'Error creando el usuario';
 $string['exclude_from_repository'] = 'Excluir del repositorio';
 $string['exclude_from_repository_help'] = 'Excluir del repositorio todos los documentos subidos para esta entrega';
 $string['exclude_self_matches'] = 'Excluir coincidencias propias';
-$string['exclude_self_matches_help'] = 'No marque el mismo contenido del participante en múltiples envíos';
+$string['exclude_self_matches_help'] = 'No marque el mismo contenido del participante en m&uacute;ltiples env&iacute;os';
 $string['filechecked'] = 'Estado del documento analizado en PlagScan';
 $string['filesassociated'] = 'Los documentos ser&aacute;n enviados a la cuenta de \'{$a}\'';
 $string['filesubmitted'] = 'Documento: \'{$a}\' enviado a PlagScan';
@@ -119,8 +119,8 @@ $string['plagscan_nondisclosure_notice_email_help'] = 'Todos los documentos con 
 $string['plagscan_studentpermission'] = 'Los estudiantes pueden elegir no enviar documentos a PlagScan';
 $string['plagscan_web_policy'] = "Comparar con fuentes de internet";
 $string['plagscan_own_workspace_policy'] = "Comparar con documentos propios";
-$string['plagscan_own_repository_policy'] = "Comparar con mis documentos en el repositorio de la organización";
-$string['plagscan_orga_repository_policy'] = "Comparar con el repositorio de la organización";
+$string['plagscan_own_repository_policy'] = "Comparar con mis documentos en el repositorio de la organizaci&oacute;n";
+$string['plagscan_orga_repository_policy'] = "Comparar con el repositorio de la organizaci&oacute;n";
 $string['plagscan_ppp_policy'] = "Comparar con la Biblioteca Anti-plagio de PlagScan";
 $string['plagscanerror'] = 'Error de PlagScan';
 $string['plagscanexplain'] = 'PlagScan es el detector de plagio: los documentos de su organizaci&oacute;n y el texto de Internet sera considerado para analizar.<br/><br/>Para registrarse en PlagScan puede hacerlo <a href="https://www.plagscan.com/">aqu&iacute;</a> y preg&uacute;ntenos por la prueba gratuita <a href="mailto:pro@plagscan.com">pro@plagscan.com</a><br><br>Informacion general puede ser encontrada en <a href="http://www.plagscan.com">www.PlagScan.com</a>';
@@ -129,17 +129,18 @@ $string['plagscanserver'] = 'Servidor PlagScan';
 $string['plagscanserver_help'] = 'La configuraci&oacute;n est&aacute;ndar es "<b>ssl://api.plagscan.com/v3</b>" o "<b>https://api.plagscan.com/v3</b>" si usas un proxy.';
 $string['plagscanversion'] = '2.3';
 $string['psreport'] = 'Informe PS';
-$string['process_checking'] = "El archivo está siendo analizado...";
+$string['process_checking'] = "El archivo est&aacute; siendo analizado...";
 $string['process_uploading'] = "Cargando archivo en PlagScan...";
 $string['red'] = 'El PlagLevel rojo comienza en';
 $string['report'] = 'Informe';
 $string['report_retrieve_error'] = 'Error retrieving the report. Could be the user does not have access to this report';
 $string['report_check_error_cred'] = 'No es posible analizar el documento en este momento debido a que el saldo de PlagPoint es insuficiente.';
 $string['resubmit'] = 'Reenviar a PlagScan';
-$string['runalways'] = "Inmediatamente";
-$string['runautomatic'] = 'Inmediatamente despu&eacute;s de la fecha de entrega';
-$string['runduedate'] = 'Inmediatamente despu&eacute;s de la fecha limite';
-$string['runmanual'] = 'Manualmente';
+$string['runalways'] = "Analizar inmediatamente";
+$string['runautomatic'] = 'Analizar inmediatamente despu&eacute;s de la fecha de entrega';
+$string['runduedate'] = 'Analizar inmediatamente despu&eacute;s de la fecha l&iacute;mite';
+$string['runmanual'] = 'Analizar manualmente';
+$string['runsubmitmanual'] = 'Enviar archivos manualmente';
 $string['save'] = 'Guardar';
 $string['savedapiconfigerror'] = 'Hubo un error mientras se actualiza la configuraci&oacute;n de PlagScan';
 $string['savedconfigsuccess'] = 'Configuraci&oacute;n de PlagScan guardada!';
@@ -175,10 +176,12 @@ $string['testconnection_success'] = 'La conexi&oacute;n fue un exito';
 $string['unsupportedfiletype'] = 'Este archivo no es soportado por PlagScan';
 $string['updateyoursettings'] = 'Actualice su configuraci&oacute;n de PlagScan';
 $string['useplagscan'] = 'Activar PlagScan';
-$string['useplagscan_help'] = '* <b>Start manually</b>: you will have to check each document manually.<br />'
-        . '* <b>Start immediately</b>: the PlagScan plugin will start analyzing documents automatically and immediately after uploading. <br />'
-        . '* <b>Start immediately after the first due date</b>: the PlagScan plugin only starts when the first due date has passed. <br />'
-        . '* <b>Start immediately after all due dates</b>: the plugin will begin analyzing the documents right after every deadline.';
+$string['useplagscan_filessubmission'] = "Activar PlagScan para el envio de archivos";
+$string['useplagscan_filessubmission_help'] = '<ul><li><b>Enviar archivos manualmente</b>: puede elegir cu&aacute;ndo enviar el archivo a Plagscan manualmente presionando el bot&oacute;n de enviar. </li>'
+        . '<li><b>Analizar manualmente</b>: debe analizar cada documento manualmente.</li>'
+        . '<li><b>Analizar inmediatamente</b>: el plugin comenzar&aacute; a analizar los documentos autom&aacute;ticamente e inmediatamente despu&eacute;s de su entrega. </li>'
+        . '<li><b>Analizar inmediatamente despu&eacute;s de la fecha de entrega</b>: el plugin comienza el analisis de archivos al finalizar la fecha de entrega. </li>'
+        . '<li><b>Analizar inmediatamente despu&eacute;s de la fecha l&iacute;mite</b>: el plugin comienza el analisis de archivos al finalizar la fecha l&iacute;mite.</li></ul>';
 $string['useroptedout'] = 'Desactivar la detecci&oacute;n de plagio';
 $string['viewmatches'] = 'Ver coincidencias';
 $string['viewreport'] = 'Ver informe';

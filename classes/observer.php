@@ -42,7 +42,13 @@ class plagiarism_plagscan_observer {
     public static function assignsubmission_file_uploaded(
     \assignsubmission_file\event\assessable_uploaded $event) {
 
-        file_handler::instance()->file_uploaded($event);
+        $instanceconfig = plagscan_get_instance_config($event->get_context()->instanceid);
+        
+        if(isset($instanceconfig->upload) && $instanceconfig->upload >= plagiarism_plugin_plagscan::RUN_MANUAL && $instanceconfig->upload <= plagiarism_plugin_plagscan::RUN_DUE){
+            file_handler::instance()->file_uploaded($event);
+        } else{
+            return;
+        }
     }
 
     /**
@@ -53,7 +59,13 @@ class plagiarism_plagscan_observer {
     public static function assignsubmission_onlinetext_uploaded(
     \assignsubmission_onlinetext\event\assessable_uploaded $event) {
 
-        file_handler::instance()->onlinetext_uploaded($event);
+        $instanceconfig = plagscan_get_instance_config($event->get_context()->instanceid);
+        
+        if(isset($instanceconfig->upload) && $instanceconfig->upload >= plagiarism_plugin_plagscan::RUN_MANUAL && $instanceconfig->upload <= plagiarism_plugin_plagscan::RUN_DUE){
+            file_handler::instance()->onlinetext_uploaded($event);
+        } else{
+            return;
+        }
     }
 
 }

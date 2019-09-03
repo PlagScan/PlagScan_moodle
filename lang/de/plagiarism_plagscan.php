@@ -58,7 +58,7 @@ $string['error_involving_assistant'] = 'Error trying to involving the assistant 
 $string['error_assignment_creation'] = 'Fehler beim Anlegen der Zuordnung';
 $string['error_user_creation'] = 'Fehler beim Anlegen des Benutzers';
 $string['exclude_from_repository'] = 'Aus dem Archiv ausschlie&szlig;en';
-$string['exclude_from_repository_help'] = 'Alle Dokumente, die für diese Einreichung hochgeladen werden, aus dem Archiv ausschlie&szlig;en.';
+$string['exclude_from_repository_help'] = 'Alle Dokumente, die f&uuml;r diese Einreichung hochgeladen werden, aus dem Archiv ausschlie&szlig;en.';
 $string['exclude_self_matches'] = 'Eigenplagiate ignorieren';
 $string['exclude_self_matches_help'] = 'Texte desselben Teilnehmers (bei mehreren Einreichungsversuchen) nicht als Plagiat markieren';
 $string['filechecked'] = 'Status des Dokuments auf PlagScan Server gepr&uuml;ft';
@@ -135,12 +135,13 @@ $string['process_uploading'] = "Hochladen der Datei in PlagScan...";
 $string['red'] = 'PlagLevel rot startet bei';
 $string['report'] = 'Bericht';
 $string['report_retrieve_error'] = 'Error retrieving the report. Could be the user does not have access to this report';
-$string['report_check_error_cred'] = 'Eine Überprüfung des Dokuments ist derzeit aufgrund unzureichender PlagPoint Guthaben nicht möglich.';
+$string['report_check_error_cred'] = 'Eine &Uuml;berpr&uuml;fung des Dokuments ist derzeit aufgrund unzureichender PlagPoint Guthaben nicht m&ouml;glich.';
 $string['resubmit'] = 'Nochmal bei PlagScan einreichen';
-$string['runalways'] = "Starte sofort bei Abgabe";
-$string['runautomatic'] = 'Starte sofort nach dem ersten Abgabetermin';
-$string['runduedate'] = 'Starte bei allen Abgabeterminen';
-$string['runmanual'] = 'Starte manuell';
+$string['runalways'] = "Analyse sofort bei Abgabe starten";
+$string['runautomatic'] = 'Analyse sofort nach dem ersten Abgabetermin starten';
+$string['runduedate'] = 'Analyse bei allen Abgabeterminen starten';
+$string['runmanual'] = 'Analyse manuell starten';
+$string['runsubmitmanual'] = 'Datei manuell einreichen';
 $string['save'] = 'Speichern';
 $string['savedapiconfigerror'] = 'Es gab einen Fehler beim Speichern der PlagScan Einstellungen';
 $string['savedconfigsuccess'] = 'PlagScan Einstellungen gespeichert';
@@ -177,10 +178,12 @@ $string['testconnection_success'] = 'Verbindung war erfolgreich!';
 $string['unsupportedfiletype'] = 'Dieses Dateiformat wird nicht von PlagScan unterst&uuml;tzt';
 $string['updateyoursettings'] = 'Zu Ihren PlagScan Einstellungen';
 $string['useplagscan'] = 'Aktiviere PlagScan';
-$string['useplagscan_help'] = '* <b>Starte manuell</b>: Sie m&uuml;ssen jedes Dokument einzeln f&uuml;r die Pr&uuml;fung anw&auml;hlen. <br />'
-        . '* <b>Starte sofort</b>: PlagScan analysiert das Dokument automatisch und sofort nach dem Hochladen. <br />'
-        . '* <b>Starte sofort nach F&auml;lligkeitsdatum</b>: PlagScan startet nachdem die letzte Abgabem&ouml;glichkeit abgelaufen ist. <br />'
-        . '* <b>Starte sofort nachdem alle F&auml;lligkeiten abgelaufen sind. </b>.';
+$string['useplagscan_filessubmission'] = "Aktiviere PlagScan f&uuml;r Einreichung von Dateien";
+$string['useplagscan_filessubmission_help'] = '<ul><li><b>Datei manuell einreichen</b>: Sie k&ouml;nnen die Datei jederzeit manuell an Plagscan senden, indem Sie auf den Button Einreichen bei PlagScan klicken. </li>'
+        . '<li><b>Analyse manuell starten</b>: Sie m&uuml;ssen jedes Dokument einzeln f&uuml;r die Pr&uuml;fung anw&auml;hlen. </li>'
+        . '<li><b>Analyse sofort bei Abgabe starten</b>: PlagScan analysiert das Dokument automatisch und sofort nach dem Hochladen. </li>'
+        . '<li><b>Analyse sofort nach dem ersten Abgabetermin starten</b>: PlagScan startet nachdem die letzte Abgabem&ouml;glichkeit abgelaufen ist. </li>'
+        . '<li><b>Analyse bei allen Abgabeterminen starten: </b>Analyse sofort nachdem alle F&auml;lligkeiten abgelaufen sind.</li></ul>';
 $string['useroptedout'] = 'Plagiatpr&uuml;fung verweigert';
 $string['viewmatches'] = 'Zeige Liste';
 $string['viewreport'] = 'Zeige Textbericht';

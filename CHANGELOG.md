@@ -1,3 +1,8 @@
+### Version: 3.1.13 Build: 2019090304
+
+- Add option inside the assignment settings to enable PlagScan for files submission: submit files manually, with this option the files are send manually and not automatically by the plugin
+- Change lang strings to update options
+
 ### Version: 3.1.12 Build: 2019082805
 
 - Remove the assignment exclude options in the edit menu for assignments created from the old versions of the plugin (2.x)

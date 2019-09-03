@@ -145,10 +145,11 @@ $string['report'] = 'Report';
 $string['report_retrieve_error'] = 'Error retrieving the report. Could be the user does not have access to this report';
 $string['report_check_error_cred'] = 'It is not possible to check the document right now due to insufficient PlagPoint credit';
 $string['resubmit'] = 'Resubmit to PlagScan';
-$string['runalways'] = "Start immediately";
-$string['runautomatic'] = 'Start immediately after the first due date';
-$string['runduedate'] = 'Start immediately after all due dates';
-$string['runmanual'] = 'Start manually';
+$string['runalways'] = "Start check immediately";
+$string['runautomatic'] = 'Start check immediately after the first due date';
+$string['runduedate'] = 'Start check immediately after all due dates';
+$string['runmanual'] = 'Start check manually';
+$string['runsubmitmanual'] = 'Submit files manually';
 $string['save'] = 'Save';
 $string['savedapiconfigerror'] = 'An error occurred updating your PlagScan settings';
 $string['savedconfigsuccess'] = 'PlagScan settings saved successfully';
@@ -187,10 +188,12 @@ $string['testconnection_success'] = 'Connection was successful!';
 $string['unsupportedfiletype'] = 'This file type is not supported by PlagScan';
 $string['updateyoursettings'] = 'To your PlagScan settings';
 $string['useplagscan'] = 'Enable PlagScan';
-$string['useplagscan_help'] = '* <b>Start manually</b>: you will have to check each document manually.<br />'
-        . '* <b>Start immediately</b>: the PlagScan plugin will start analyzing documents automatically and immediately after uploading. <br />'
-        . '* <b>Start immediately after the first due date</b>: the PlagScan plugin only starts when the first due date has passed. <br />'
-        . '* <b>Start immediately after all due dates</b>: the plugin will begin analyzing the documents right after every deadline.';
+$string['useplagscan_filessubmission'] = "Enable PlagScan for files submission";
+$string['useplagscan_filessubmission_help'] = '<ul><li><b>Submit files manually</b>: you can choose when to send the file to Plagscan manually by pressing the submit button.</li>'
+        . '<li><b>Start check manually</b>: you will have to check each document manually.</li>'
+        . '<li><b>Start check immediately</b>: the PlagScan plugin will start analyzing documents automatically and immediately after uploading.</li>'
+        . '<li><b>Start check immediately after the first due date</b>: the PlagScan plugin only starts when the first due date has passed. </li>'
+        . '<li><b>Start check immediately after all due dates</b>: the plugin will begin analyzing the documents right after every deadline.</li></ul>';
 $string['useroptedout'] = 'Opted-out of plagiarism detection';
 $string['viewmatches'] = 'View matches';
 $string['viewreport'] = 'View report';
