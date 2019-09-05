@@ -91,6 +91,11 @@ class plagscan_file {
      * STATUS_FAILED_CONNECTION
      */
     const STATUS_FAILED_CONNECTION = 1004;
+    
+    /**
+     * STATUS_FAILED_USER_CREATION
+     */
+    const STATUS_FAILED_USER_CREATION = 1005;
 
     /**
      * REPORT_STATS
@@ -273,7 +278,6 @@ class plagscan_file {
             }
         } catch (moodle_exception $e) {
             self::set_status($psfile, self::STATUS_FAILED_CONNECTION);
-            throw($e);
         }
 
 

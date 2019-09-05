@@ -300,8 +300,11 @@ class plagiarism_plugin_plagscan extends plagiarism_plugin {
                 
                 if ((!isset($oldconfig->upload) || empty($oldconfig->upload)) && (!isset($oldconfig->submissionid) || intval($oldconfig->submissionid) <= 0)) {
                     $submissionid = $connection->create_submissionid($cmid, $module, $config, $user);
-                    if (intval($submissionid) <= 0)
-                        throw new moodle_exception('error_assignment_creation', 'plagiarism_plagscan');
+                    if (intval($submissionid) <= 0){
+                        //throw new moodle_exception('error_assignment_creation', 'plagiarism_plagscan');
+                        \core\notification::add("PlagScan: ".get_string('error_assignment_creation', 'plagiarism_plagscan'), \core\output\notification::NOTIFY_ERROR);
+                        return;
+                    }
                     $assignlog['other']['submissionid'] = $submissionid;
                     assign_creation_completed::create($assignlog)->trigger();
                 }
@@ -476,8 +479,9 @@ class plagiarism_plugin_plagscan extends plagiarism_plugin {
             
             if ($connection->is_assistant($context, $instanceconfig, $USER)) {
                 $is_involved = $connection->involve_assistant($instanceconfig, $assign_psownerid, $USER);
-                if ($is_involved) {
-                    $involved[$cmid][$USER->id] = true;
+                $involved[$cmid][$USER->id] = $is_involved;
+                if(!$is_involved){
+                    \core\notification::add("PlagScan: ".get_string('error_involving_assistant', 'plagiarism_plagscan'), \core\output\notification::NOTIFY_ERROR);
                 }
             }
         }
@@ -492,8 +496,14 @@ class plagiarism_plugin_plagscan extends plagiarism_plugin {
                         $connection->enable_nondisclosure();
                     }
                     $data = (array) $connection->get_user_settings($assign_owner);
-                    $ps_red_level[$cmid][$USER->id] = $data['redLevel'];
-                    $ps_yellow_level[$cmid][$USER->id] = $data['yellowLevel'];
+                    if(isset($data['redLevel']))
+                        $ps_red_level[$cmid][$USER->id] = $data['redLevel'];
+                    else
+                        $ps_red_level[$cmid][$USER->id] = 50;
+                    if(isset($data['yellowLevel']))
+                        $ps_yellow_level[$cmid][$USER->id] = $data['yellowLevel'];
+                    else
+                        $ps_yellow_level[$cmid][$USER->id] = 10;
                 } catch (moodle_exception $exce) {
                     return get_string('connectionfailed', 'plagiarism_plagscan');
                 }

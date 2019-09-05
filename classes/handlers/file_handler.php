@@ -165,30 +165,26 @@ class file_handler {
         }
 
         if ($submitter_user == null) {
-            return;
+            $submitter_userid = null;
         }
+        else{
+            $submitter_userid = $connection->find_user($submitter_user);
 
-        $submitter_userid = $connection->find_user($submitter_user);
-
-        if ($submitter_userid == null) {
-            $submitter_userid = $connection->add_new_user($submitter_user);
+            if ($submitter_userid == null) {
+                $submitter_userid = $connection->add_new_user($submitter_user);
+            }
         }
 
 
         foreach ($this->filesqueue as $key => $file) {
 
+            $previous_psfile = plagscan_file::find($cmid, $userid, $file->get_pathnamehash());
+            if(!$previous_psfile){
+                $previous_psfile = plagscan_file::find($cmid, $userid, $file->get_contenthash());
+            }
             
-            if (!plagscan_file::find($cmid, $userid, $file->get_pathnamehash())
-                && !plagscan_file::find($cmid, $userid, $file->get_contenthash())) {
-                $filedata = array(
-                    'submissionid' => $instanceconfig->submissionid,
-                    'ownerid' => $assign_psownerid,
-                    'submitterid' => $submitter_userid,
-                    'email' => $submitter_user->email,
-                    'firstname' => $submitter_user->firstname,
-                    'lastname' => $submitter_user->lastname);
-
-
+            if (!$previous_psfile || $previous_psfile->status >= plagscan_file::STATUS_FAILED) {
+                
                 $psfile = new \stdClass();
                 $psfile->userid = $userid;
                 $psfile->cmid = $cmid;
@@ -196,14 +192,36 @@ class file_handler {
 
                 $psfile->pid = 0;
                 $psfile->pstatus = '';
-                $psfile->status = plagscan_file::STATUS_SUBMITTING;
+                
+                if($submitter_userid == null || $submitter_userid == 0){
+                    $psfile->status = plagscan_file::STATUS_FAILED_USER_CREATION;
+                } 
+                else {
+                    $psfile->status = plagscan_file::STATUS_SUBMITTING;
+                }
+                
+                if(!$previous_psfile){
+                    $psfile->id = plagscan_file::save($psfile);
+                }
+                else {
+                    $psfile->id =$previous_psfile->id;
+                    plagscan_file::update($psfile);
+                }
+                
+                if( $psfile->status == plagscan_file::STATUS_SUBMITTING){
+                    $filedata = array(
+                        'submissionid' => $instanceconfig->submissionid,
+                        'ownerid' => $assign_psownerid,
+                        'submitterid' => $submitter_userid,
+                        'email' => $submitter_user->email,
+                        'firstname' => $submitter_user->firstname,
+                        'lastname' => $submitter_user->lastname);
 
-                $psfile->id = plagscan_file::save($psfile);
-
-                plagscan_file_upload_task::add_task(array(
-                    'psfile' => $psfile,
-                    'filedata' => $filedata,
-                    'pathnamehash' => $file->get_pathnamehash()));
+                    plagscan_file_upload_task::add_task(array(
+                        'psfile' => $psfile,
+                        'filedata' => $filedata,
+                        'pathnamehash' => $file->get_pathnamehash()));
+                }
             }
             unset($this->filesqueue[$key]);
                     

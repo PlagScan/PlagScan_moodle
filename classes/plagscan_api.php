@@ -167,6 +167,8 @@ class plagscan_api {
         }
         curl_setopt_array($ch, $curlopt);
         
+        $response = curl_exec($ch);
+        
         if(curl_errno($ch)){
             $pslog = array(
                 'other' => [
@@ -176,11 +178,21 @@ class plagscan_api {
             error_happened::create($pslog)->trigger();
         }
 
-        $response = curl_exec($ch);
         $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
-
-        return $this->handle_response($response, $httpcode);
+        
+        $response_handled = $this->handle_response($response, $httpcode);
+        
+        if($httpcode >= 400 && isset($response_handled["response"]["error"])){
+            $pslog = array(
+                'other' => [
+                    'errormsg' => $response_handled["response"]["error"]["code"]." - ".$response_handled["response"]["error"]["message"]
+                ]
+            );
+            error_happened::create($pslog)->trigger();
+        }
+        
+        return $response_handled;
     }
 
     /**

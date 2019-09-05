@@ -1,4 +1,4 @@
-# PlagScan Moodle Plugin 3.1.13 Release Notes
+# PlagScan Moodle Plugin 3.1.14 Release Notes
 
 The advanced plagiarism checker plugin for moodle.
 
@@ -23,8 +23,10 @@ https://api.plagscan.com/PlagScan_Moodle_Manual-Admin_EN.pdf
 Bug Fix:
 --------
 
-- Add option inside the assignment settings to enable PlagScan for files submission: submit files manually, with this option the files are send manually and not automatically by the plugin
-- Change lang strings to update options
+- Add resubmit button for file submission that were not able to be sent to PlagScan due an error (including API/server unreachable)
+- Improve the submission to PlagScan workflow to detect errors during the process and show it afterwards
+- Improve the assignment creation in PlagScan workflow to detec errors during the process and show it afterwards
+- Added new error control and event for error creating the user in PlagScan
 
 Special thanks:
 ---------------
