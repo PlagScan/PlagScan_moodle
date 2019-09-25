@@ -314,6 +314,12 @@ class plagscan_connection {
         if ($res["httpcode"] == 201) {
             $docid = $res["response"]["data"]["docID"];
         }
+        else if ($res["httpcode"] == 400) {
+            $msg = $res["response"]["error"]["message"];
+            if ($msg == "The user doesn't belong to this institution") {
+                $docid = -2;
+            }
+        }
 
         return $docid;
     }
@@ -395,6 +401,13 @@ class plagscan_connection {
 
         if ($httpcode != 200) {
             $plaglevel = -1;
+            $msg = $res["response"]["error"]["message"];
+            if ($httpcode == 400 && $msg == "The document doesn't belong to this institution") {
+                $plaglevel = -2;
+            }
+            else if ($httpcode == 404 && $msg == "There is no report for the document") {
+                $plaglevel = -3;
+            }
         } else {
             $plaglevel = $res["response"]["data"]["plagLevel"];
         }
@@ -896,6 +909,14 @@ class plagscan_connection {
             } else if ($psfile->status == plagscan_file::STATUS_FAILED_USER_CREATION) {
                 $message .= get_string('error_submit', 'plagiarism_plagscan');
                 $message .= html_writer::tag('i', '', array('title' => get_string('error_user_creation','plagiarism_plagscan'),
+                    'class' => 'fa fa-exclamation-triangle', 'style' => 'color:#f0ad4e'));
+            } else if ($psfile->status == plagscan_file::STATUS_FAILED_USER_DOES_NOT_BELONG_TO_THE_INSTITUTION) {
+                $message .= get_string('error_submit', 'plagiarism_plagscan');
+                $message .= html_writer::tag('i', '', array('title' => get_string('error_user_does_not_belong_to_the_institution','plagiarism_plagscan'),
+                    'class' => 'fa fa-exclamation-triangle', 'style' => 'color:#f0ad4e'));
+            } else if ($psfile->status == plagscan_file::STATUS_FAILED_DOCUMENT_DOES_NOT_BELONG_TO_THE_INSTITUTION) {
+                $message .= get_string('error_refresh_status', 'plagiarism_plagscan');
+                $message .= html_writer::tag('i', '', array('title' => get_string('error_document_does_not_belong_to_the_institution','plagiarism_plagscan'),
                     'class' => 'fa fa-exclamation-triangle', 'style' => 'color:#f0ad4e'));
             } else { // STATUS_FAILED_UNKNOWN
                 $message .= get_string('serverrejected', 'plagiarism_plagscan');

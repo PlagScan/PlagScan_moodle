@@ -1,3 +1,11 @@
+### Version: 3.1.15 Build: 2019092503
+
+- Add error message for files failed due to an error in the creation of the user or the user already was existing within another institution
+- Add error message for files that failed during the status refresh of the file if the Client ID was changed on plugin settings
+- Add status update for files that failed during the status refresh due to not have a plagiarism level result
+- Add scheduled task to check frozen files from assignment with the option to check on deadline
+- Add scheduled task to check frozen files from assignment with the option to check automatically
+
 ### Version: 3.1.14 Build: 2019090501
 
 - Add resubmit button for file submission that were not able to be sent to PlagScan due an error (including API/server unreachable)

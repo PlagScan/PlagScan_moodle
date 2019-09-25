@@ -96,7 +96,17 @@ class plagscan_file {
      * STATUS_FAILED_USER_CREATION
      */
     const STATUS_FAILED_USER_CREATION = 1005;
-
+    
+    /**
+     * STATUS_FAILED_USER_DOES_NOT_BELONG_TO_THE_INSTITUTION
+     */
+    const STATUS_FAILED_USER_DOES_NOT_BELONG_TO_THE_INSTITUTION = 1006;
+    
+    /**
+     * STATUS_FAILED_DOCUMENT_DOES_NOT_BELONG_TO_THE_INSTITUTION
+     */
+    const STATUS_FAILED_DOCUMENT_DOES_NOT_BELONG_TO_THE_INSTITUTION = 1007;
+    
     /**
      * REPORT_STATS
      */
@@ -282,8 +292,14 @@ class plagscan_file {
 
 
         if ($result <= 0) {
-            self::set_status($psfile, self::STATUS_FAILED_UNKNOWN);
-            return plagscan_connection::SUBMIT_FAILED_BY_CONNECTION;
+            if($result == -2){
+                self::set_status($psfile, self::STATUS_FAILED_USER_DOES_NOT_BELONG_TO_THE_INSTITUTION);
+                return plagscan_connection::SUBMIT_FAILED_BY_CONNECTION;
+            }
+            else {
+                self::set_status($psfile, self::STATUS_FAILED_UNKNOWN);
+                return plagscan_connection::SUBMIT_FAILED_BY_CONNECTION;
+            }
         }
 
         $psfile->pid = intval($result);
@@ -396,9 +412,21 @@ class plagscan_file {
             } else {
                 $pstatus = floatval($result) / 10;
             }
-        } else
+        } else {
+            $update = new \stdClass();
+            $update->pid = $psfile->pid;
+            $update->id = $psfile->id;
+            if($result == -2){
+                $update->status = self::STATUS_FAILED_DOCUMENT_DOES_NOT_BELONG_TO_THE_INSTITUTION;
+                self::update($update);
+            } else if ($result == -3) {
+                $update->status = 0;
+                self::update($update);
+            }
+            
             return false;
-
+        }
+            
         if ($status == $psfile->status && $pstatus == $psfile->pstatus && !$psfile->updatestatus) {
             return false; // Nothing has changed
         }
