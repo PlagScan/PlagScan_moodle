@@ -393,6 +393,8 @@ class plagscan_connection {
 
         $access_token = $this->get_access_token();
 
+        //Añadir erro en este caso:
+        // {"error":{"code":400,"message":"The document has failed during the upload\/convertion process: Document without text or broken file - minimum length is 50 characters"}}
         $url = plagscan_api::API_FILES . "/$pid/retrieve?access_token=$access_token&mode=0";
 
         $res = plagscan_api::instance()->request($url, "GET", null);
@@ -407,6 +409,9 @@ class plagscan_connection {
             }
             else if ($httpcode == 404 && $msg == "There is no report for the document") {
                 $plaglevel = -3;
+            }
+            else if ($httpcode == 400 && $msg == "The document has failed during the upload/convertion process: Document without text or broken file - minimum length is 50 characters") {
+                $plaglevel = -4;
             }
         } else {
             $plaglevel = $res["response"]["data"]["plagLevel"];

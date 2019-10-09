@@ -183,6 +183,7 @@ $string['testconnection_fail'] = 'Verbindung fehlgeschlagen!';
 $string['testconnection_success'] = 'Verbindung war erfolgreich!';
 $string['unsupportedfiletype'] = 'Dieses Dateiformat wird nicht von PlagScan unterst&uuml;tzt';
 $string['updateyoursettings'] = 'Zu Ihren PlagScan Einstellungen';
+$string['update_frozen_checking_files_task'] = "Update the status of files frozen as checking or in progress";
 $string['useplagscan'] = 'Aktiviere PlagScan';
 $string['useplagscan_filessubmission'] = "Aktiviere PlagScan f&uuml;r Einreichung von Dateien";
 $string['useplagscan_filessubmission_help'] = '<ul><li><b>Datei manuell einreichen</b>: Sie k&ouml;nnen die Datei jederzeit manuell an Plagscan senden, indem Sie auf den Button Einreichen bei PlagScan klicken. </li>'

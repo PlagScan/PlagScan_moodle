@@ -235,7 +235,7 @@ class plagscan_file {
         $allowedtypes = array('docx', 'doc', 'pdf', 'txt', 'html', 'wps', 'wpd', 'ppt', 'pptx',
             'odt', 'ott', 'rtf', 'sdw', 'sxw', 'xml', 'pdb', 'ltx', 'pages', 'key', 'numbers',
             'xls', 'xlsx', 'pptx');
-        $extn = pathinfo($filename, PATHINFO_EXTENSION);
+        $extn = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
 
         return in_array($extn, $allowedtypes);
     }
@@ -421,6 +421,9 @@ class plagscan_file {
                 self::update($update);
             } else if ($result == -3) {
                 $update->status = 0;
+                self::update($update);
+            } else if ($result == -4) {
+                $update->status = self::STATUS_FAILED;
                 self::update($update);
             }
             

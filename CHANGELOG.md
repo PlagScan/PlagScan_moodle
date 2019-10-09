@@ -1,3 +1,9 @@
+### Version: 3.1.16 Build: 2019100902
+
+- Add scheduled task to update status of files got frozen during checking progress
+- Fix a problem when trying to refresh the status of the file it was not receiving the information in case the file was broken or rejected by PlagScan
+- Fix support for files with extension on uppercase
+
 ### Version: 3.1.15 Build: 2019092503
 
 - Add error message for files failed due to an error in the creation of the user or the user already was existing within another institution

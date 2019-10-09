@@ -18,5 +18,14 @@ $tasks = [
         'day' => '*',
         'month' => '*',
         'dayofweek' => '*',
+    ],
+    [
+        'classname' => 'plagiarism_plagscan\tasks\plagscan_update_frozen_checking_files_task',
+        'blocking' => 0,
+        'minute' => '*/5',
+        'hour' => '*',
+        'day' => '*',
+        'month' => '*',
+        'dayofweek' => '*',
     ]
 ];

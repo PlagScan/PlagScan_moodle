@@ -193,6 +193,7 @@ $string['testconnection_fail'] = 'Connection failed!';
 $string['testconnection_success'] = 'Connection was successful!';
 $string['unsupportedfiletype'] = 'This file type is not supported by PlagScan';
 $string['updateyoursettings'] = 'To your PlagScan settings';
+$string['update_frozen_checking_files_task'] = "Update the status of files frozen as checking or in progress";
 $string['useplagscan'] = 'Enable PlagScan';
 $string['useplagscan_filessubmission'] = "Enable PlagScan for files submission";
 $string['useplagscan_filessubmission_help'] = '<ul><li><b>Submit files manually</b>: you can choose when to send the file to Plagscan manually by pressing the submit button.</li>'

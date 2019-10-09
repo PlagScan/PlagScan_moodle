@@ -1,4 +1,4 @@
-# PlagScan Moodle Plugin 3.1.15 Release Notes
+# PlagScan Moodle Plugin 3.1.16 Release Notes
 
 The advanced plagiarism checker plugin for moodle.
 
@@ -23,11 +23,10 @@ https://api.plagscan.com/PlagScan_Moodle_Manual-Admin_EN.pdf
 Bug Fix:
 --------
 
-- Add error message for files failed due to an error in the creation of the user or the user already was existing within another institution
-- Add error message for files that failed during the status refresh of the file if the Client ID was changed on plugin settings
-- Add status update for files that failed during the status refresh due to not have a plagiarism level result
-- Add scheduled task to check frozen files from assignment with the option to check on deadline
-- Add scheduled task to check frozen files from assignment with the option to check automatically
+- Add scheduled task to update status of files got frozen during checking progress
+- Fix a problem when trying to refresh the status of the file it was not receiving the information in case the file was broken or rejected by PlagScan
+- Fix support for files with extension on uppercase
+
 
 Special thanks:
 ---------------
