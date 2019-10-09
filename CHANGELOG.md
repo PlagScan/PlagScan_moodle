@@ -1,3 +1,7 @@
+### Version: 3.1.17 Build: 2019100904
+
+- Add scheduled task to resubmit files on resubmission state
+
 ### Version: 3.1.16 Build: 2019100902
 
 - Add scheduled task to update status of files got frozen during checking progress

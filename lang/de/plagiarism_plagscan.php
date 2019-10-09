@@ -178,6 +178,7 @@ $string['studentdisclosureoptin'] = 'Klicke hier um die Plagiatpr&uuml;fung zu b
 $string['studentdisclosureoptout'] = 'Klicke hier um die Plagiatpr&uuml;fung zu verweigern';
 $string['submit'] = 'Einreichen bei PlagScan';
 $string['submituseroptedout'] = 'Datei \'{$a}\' nicht eingereicht - der Nutzer hat eine Plagiatpr&uuml;fung verweigert';
+$string['submit_rejected_files_task'] = 'Resubmit files on resubmision state';
 $string['testconnection'] = 'Teste Verbindung';
 $string['testconnection_fail'] = 'Verbindung fehlgeschlagen!';
 $string['testconnection_success'] = 'Verbindung war erfolgreich!';
