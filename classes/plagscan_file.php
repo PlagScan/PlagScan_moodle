@@ -108,6 +108,27 @@ class plagscan_file {
     const STATUS_FAILED_DOCUMENT_DOES_NOT_BELONG_TO_THE_INSTITUTION = 1007;
     
     /**
+     * STATUS_NEED_TO_BE_RESUBMITED
+     */
+    const STATUS_NEED_TO_BE_RESUBMITED = 2000;
+    
+    /**
+     * STATUS_FILE_DOES_NOT_EXIST_IN_STORAGE_ANYMORE
+     */
+    const STATUS_FILE_DOES_NOT_EXIST_IN_STORAGE_ANYMORE = 3000;
+    
+    /**
+     * STATUS_CM_DOES_NOT_EXIST_ANYMORE
+     */
+    const STATUS_CM_DOES_NOT_EXIST_ANYMORE = 3001;
+    
+    /**
+     * STATUS_USER_IN_MOODLE_DOES_NOT_EXIST_ANYMORE
+     */
+    const STATUS_USER_IN_MOODLE_DOES_NOT_EXIST_ANYMORE = 3002;
+    
+    
+    /**
      * REPORT_STATS
      */
     const REPORT_STATS = 0;

@@ -1,3 +1,9 @@
+### Version: 3.1.18 Build: 2019101000
+
+- Improve scheduled tasks in general and identify more problems in the process, updating the status of the file
+- Add more status for files that failed during submission
+- Update file status of frozen files
+
 ### Version: 3.1.17 Build: 2019100904
 
 - Add scheduled task to resubmit files on resubmission state

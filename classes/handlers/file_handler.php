@@ -93,6 +93,11 @@ class file_handler {
             if ($file && !$file->is_directory()) {
                 array_push($this->filesqueue, $file);
             }
+            else {
+                $file = plagscan_file::find($context->instanceid, $userid, $pathnamehash);
+                $file->status = plagscan_file::STATUS_FILE_DOES_NOT_EXIST_IN_STORAGE_ANYMORE;
+                $file = plagscan_file::update($file);
+            }
         }
         $this->handle_files_queue($context->instanceid, $userid);
     }

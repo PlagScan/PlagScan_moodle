@@ -76,14 +76,30 @@ class plagscan_submit_rejected_files_task extends scheduled_task {
             $msg = 'PlagScan: Creating task for file with hash ';
             foreach($records as $record){
                 $msg2 = $msg.' '.$record->filehash;
-                if ($CFG->version < 2011120100) {
-                    $context = get_context_instance(CONTEXT_MODULE, $record->cmid);
-                } else {
-                    $context = \context_module::instance($record->cmid);
+                try{
+                    if ($CFG->version < 2011120100) {
+                        $context = get_context_instance(CONTEXT_MODULE, $record->cmid);
+                    } else {
+                        $context = \context_module::instance($record->cmid);
+                    }
+                    
+                    $user = $DB->get_record("user", array("id" => $record->userid));
+                    if($user == false){
+                        $record->status = plagscan_file::STATUS_USER_IN_MOODLE_DOES_NOT_EXIST_ANYMORE;
+                        $record = plagscan_file::update($record);
+                        $msg2 = $msg2.' - Error: user in moodle does not exist anymore. Ignoring file.';
+                    }
+                    else{
+                        $hashes = array();
+                        array_push($hashes, $record->filehash);
+                        file_handler::instance()->file_uploaded_without_event($context,$record->userid, $hashes);
+                    }
+                } catch (\dml_exception $e){
+                    $record->status = plagscan_file::STATUS_CM_DOES_NOT_EXIST_ANYMORE;
+                    $record = plagscan_file::update($record);
+                    $msg2 = $msg2.' - Error: course module does not exist anymore. Ignoring file.';
                 }
-                $hashes = array();
-                array_push($hashes, $record->filehash);
-                file_handler::instance()->file_uploaded_without_event($context,$record->userid, $hashes);
+                
                 mtrace($msg2);
             }
         }

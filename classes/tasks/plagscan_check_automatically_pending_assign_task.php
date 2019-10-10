@@ -74,21 +74,25 @@ class plagscan_check_automatically_pending_assign_task extends scheduled_task {
             $msg = 'PlagScan: Checking file with PlagScan ID ';
             foreach($records as $record){
                 $msg2 = $msg.' '.$record->pid;
-                $result = $connection->analyze($record->pid);
-                if($result == null) {
-                    mtrace($msg2.' started.');
-                    $upd = new \stdClass();
-                    $upd->id = $record->id;
-                    $upd->status = plagscan_file::STATUS_CHECKING;
-                    $DB->update_record('plagiarism_plagscan', $upd);
-                }
-                else if ($result == "This document has a report already"){
-                    mtrace($msg2.', but it has already a report, updating status');
-                    plagscan_file::update_status($record);
-                }
-                else {
-                    mtrace($msg2.' failed - '.$result);
-                }
+                if($record->pid > 0){
+                    $result = $connection->analyze($record->pid);
+                    if($result == null) {
+                        mtrace($msg2.' started.');
+                        $record->status = plagscan_file::STATUS_CHECKING;
+                        $record = plagscan_file::update($record);
+                    }
+                    else if ($result == "This document has a report already"){
+                        mtrace($msg2.', but it has already a report, updating status.');
+                        plagscan_file::update_status($record);
+                    }
+                    else {
+                        mtrace($msg2.' failed - '.$result);
+                    }
+                } else {
+                    mtrace($msg2.' failed - The document has no PlagScan ID, updating status.');
+                    $record->status = plagscan_file::STATUS_FAILED_UNKNOWN;
+                    $record = plagscan_file::update($record);
+                }                    
                 
             }
         }

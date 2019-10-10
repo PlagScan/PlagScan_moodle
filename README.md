@@ -1,4 +1,4 @@
-# PlagScan Moodle Plugin 3.1.17 Release Notes
+# PlagScan Moodle Plugin 3.1.18 Release Notes
 
 The advanced plagiarism checker plugin for moodle.
 
@@ -23,7 +23,9 @@ https://api.plagscan.com/PlagScan_Moodle_Manual-Admin_EN.pdf
 Bug Fix:
 --------
 
-- Add scheduled task to resubmit files on resubmission state
+- Improve scheduled tasks in general and identify more problems in the process, updating the status of the file
+- Add more status for files that failed during submission
+- Update file status of frozen files
 
 Special thanks:
 ---------------

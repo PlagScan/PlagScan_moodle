@@ -53,10 +53,10 @@ class plagscan_update_frozen_checking_files_task extends scheduled_task {
      */
     public function execute() {
         global $DB;
-        $params = ['status' => plagscan_file::STATUS_CHECKING, 'status2' => plagscan_file::STATUS_ONGOING];
+        $params = ['status' => plagscan_file::STATUS_CHECKING, 'status2' => plagscan_file::STATUS_ONGOING, 'pid' => 0];
         $sql = "SELECT *
             FROM {plagiarism_plagscan} AS psfile
-            WHERE psfile.status = :status OR psfile.status = :status2
+            WHERE ( psfile.status = :status OR psfile.status = :status2 ) AND psfile.pid > :pid
                 LIMIT 50
                 ";
         $records = $DB->get_records_sql($sql, $params);

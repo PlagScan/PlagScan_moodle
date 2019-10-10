@@ -332,6 +332,13 @@ function xmldb_plagiarism_plagscan_upgrade($oldversion) {
         
         upgrade_plugin_savepoint(true, 2019082804, 'plagiarism', 'plagscan');
     }
+    
+    if ($oldversion < 2019101000) {
+        $DB->execute('UPDATE {plagiarism_plagscan} SET status = ? WHERE (status = ? OR status = ? OR status = ?) AND pid = ?', 
+            [2000, 1000, 1002, 1004, 0]);
+        
+        upgrade_plugin_savepoint(true, 2019101000, 'plagiarism', 'plagscan');
+    }
 
     return true;
 }
