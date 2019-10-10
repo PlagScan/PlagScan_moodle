@@ -238,7 +238,7 @@ class plagscan_connection {
         $psuserid = $this->find_user($user);
 
         if ($psuserid == NULL) {
-            $psuserid = $connection->add_new_user($user);
+            $psuserid = $this->add_new_user($user);
         }
 
         $access_token = $this->get_access_token();
@@ -856,6 +856,7 @@ class plagscan_connection {
 
         // Find the plagscan entry for this file
         $psfile = plagscan_file::find($cmid, $userid, $filehash);
+        
         if(!$psfile && $is_file){
             $psfile = plagscan_file::find($cmid, $userid, $file->get_contenthash());
         }

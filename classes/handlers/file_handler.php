@@ -148,23 +148,29 @@ class file_handler {
 
         $connection = new plagscan_connection();
         $instanceconfig = plagscan_get_instance_config($cmid);
+        
+        $submissionid = null;
 
+        $is_multiaccount = get_config('plagiarism_plagscan', 'plagscan_multipleaccounts');
+        
         //Check if the assignment was created from a previous versions without creating it on PS too
-        if (isset($instanceconfig->ownerid) && $instanceconfig->ownerid != null && intval($instanceconfig->ownerid) > 0) {
+        if(!$is_multiaccount) {
+            $assign_owner = $DB->get_record('user', array('email' => get_config('plagiarism_plagscan', 'plagscan_admin_email')));
+        } else if (isset($instanceconfig->ownerid) && $instanceconfig->ownerid != null && intval($instanceconfig->ownerid) > 0) {
             $assign_owner = $DB->get_record('user', array("id" => $instanceconfig->ownerid));
         } else {
             $assign_owner = $DB->get_record('user', array("email" => $instanceconfig->username));
         }
-
+        
         if ($assign_owner == null) {
-            return;
+                return;
         }
-
+        
         $assign_psownerid = $connection->find_user($assign_owner);
 
-        $is_multiaccount = get_config('plagiarism_plagscan', 'plagscan_multipleaccounts');
         if ($is_multiaccount) {
             $submitter_user = $DB->get_record('user', array('id' => $userid));
+            $submissionid = $instanceconfig->submissionid;
         } else {
             $submitter_user = $DB->get_record('user', array('email' => get_config('plagiarism_plagscan', 'plagscan_admin_email')));
         }
@@ -215,7 +221,7 @@ class file_handler {
                 
                 if( $psfile->status == plagscan_file::STATUS_SUBMITTING){
                     $filedata = array(
-                        'submissionid' => $instanceconfig->submissionid,
+                        'submissionid' => $submissionid,
                         'ownerid' => $assign_psownerid,
                         'submitterid' => $submitter_userid,
                         'email' => $submitter_user->email,

@@ -299,14 +299,19 @@ class plagiarism_plugin_plagscan extends plagiarism_plugin {
                 $connection = new plagscan_connection();
                 
                 if ((!isset($oldconfig->upload) || empty($oldconfig->upload)) && (!isset($oldconfig->submissionid) || intval($oldconfig->submissionid) <= 0)) {
-                    $submissionid = $connection->create_submissionid($cmid, $module, $config, $user);
-                    if (intval($submissionid) <= 0){
-                        //throw new moodle_exception('error_assignment_creation', 'plagiarism_plagscan');
-                        \core\notification::add("PlagScan: ".get_string('error_assignment_creation', 'plagiarism_plagscan'), \core\output\notification::NOTIFY_ERROR);
-                        return;
+                    if ($is_multiaccount) {
+                        $submissionid = $connection->create_submissionid($cmid, $module, $config, $user);
+                        if (intval($submissionid) <= 0){
+                            //throw new moodle_exception('error_assignment_creation', 'plagiarism_plagscan');
+                            \core\notification::add("PlagScan: ".get_string('error_assignment_creation', 'plagiarism_plagscan'), \core\output\notification::NOTIFY_ERROR);
+                            return;
+                        }
+                        $assignlog['other']['submissionid'] = $submissionid;
+                        assign_creation_completed::create($assignlog)->trigger();
                     }
-                    $assignlog['other']['submissionid'] = $submissionid;
-                    assign_creation_completed::create($assignlog)->trigger();
+                    else {
+                        $submissionid = null;
+                    }
                 }
                 else {
                     $submissionid = $oldconfig->submissionid;

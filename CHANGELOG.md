@@ -1,3 +1,7 @@
+### Version: 3.1.19 Build: 2019101005
+
+- Improve submit file process to avoid problems when the files are associated to the Admin account
+
 ### Version: 3.1.18 Build: 2019101000
 
 - Improve scheduled tasks in general and identify more problems in the process, updating the status of the file
