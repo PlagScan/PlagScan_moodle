@@ -93,6 +93,9 @@ if (($data = $mform->get_data()) && confirm_sesskey()) {
         }
 
         // Save the setting
+        if($field == 'plagscan_server'){
+            $value = rtrim($value, '/');
+        }
         set_config($field, $value, 'plagiarism_plagscan');
 
         // Check if changing this setting means a full update of server settings is required
