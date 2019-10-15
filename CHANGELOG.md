@@ -1,3 +1,7 @@
+### Version: 3.1.20 Build: 2019101501
+
+- Improve submit file process to avoid problems from assignments created with the old plugin version (<2.x.x)
+
 ### Version: 3.1.19 Build: 2019101005
 
 - Improve submit file process to avoid problems when the files are associated to the Admin account

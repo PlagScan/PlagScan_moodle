@@ -76,6 +76,7 @@ class plagscan_submit_rejected_files_task extends scheduled_task {
             $msg = 'PlagScan: Creating task for file with hash ';
             foreach($records as $record){
                 $msg2 = $msg.' '.$record->filehash;
+                mtrace($msg2);
                 try{
                     if ($CFG->version < 2011120100) {
                         $context = get_context_instance(CONTEXT_MODULE, $record->cmid);
@@ -88,6 +89,7 @@ class plagscan_submit_rejected_files_task extends scheduled_task {
                         $record->status = plagscan_file::STATUS_USER_IN_MOODLE_DOES_NOT_EXIST_ANYMORE;
                         $record = plagscan_file::update($record);
                         $msg2 = $msg2.' - Error: user in moodle does not exist anymore. Ignoring file.';
+                        mtrace($msg2);
                     }
                     else{
                         $hashes = array();
@@ -98,9 +100,9 @@ class plagscan_submit_rejected_files_task extends scheduled_task {
                     $record->status = plagscan_file::STATUS_CM_DOES_NOT_EXIST_ANYMORE;
                     $record = plagscan_file::update($record);
                     $msg2 = $msg2.' - Error: course module does not exist anymore. Ignoring file.';
+                    mtrace($msg2);
                 }
                 
-                mtrace($msg2);
             }
         }
         else{

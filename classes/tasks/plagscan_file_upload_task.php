@@ -64,7 +64,7 @@ class plagscan_file_upload_task extends adhoc_task {
 
         $file = get_file_storage()->get_file_by_hash($data->pathnamehash);
         if(!$file){
-            mtrace('PlagScan: file from user '.$psfile->userid.' deleted on Moodle before sent to PlagScan.');
+            mtrace('PlagScan: file with hash '.$psfile->filehash.' from user '.$psfile->userid.' deleted on Moodle before sent to PlagScan.');
             plagscan_file::delete($psfile);
             return;
         }
@@ -84,7 +84,7 @@ class plagscan_file_upload_task extends adhoc_task {
         
         file_upload_started::create($filelog)->trigger();
         
-        mtrace('PlagScan: Uploading file ' . $filedata['filename'] . '');
+        mtrace('PlagScan: Uploading file ' . $filedata['filename'] . ' with hash '.$psfile->filehash);
 
         try {
             $result = plagscan_file::submit($psfile, $filedata);
@@ -95,16 +95,16 @@ class plagscan_file_upload_task extends adhoc_task {
         $mtracemsg = '';
         switch ($result) {
             case plagscan_connection::SUBMIT_UNSUPPORTED:
-                $mtracemsg = 'PlagScan: ' . $filedata['filename'] . ' is a type of file not supported by the PlagScan server';
+                $mtracemsg = 'PlagScan: ' . $filedata['filename'] . ' with hash'.$psfile->filehash.' is a type of file not supported by the PlagScan server';
                 break;
             case plagscan_connection::SUBMIT_OPTOUT:
                 $mtracemsg = 'Plagscan: User ' . $filedata->userid . ' has opted-out of plagiarism detection - ' . $filedata['filename'] . ' not uploaded';
                 break;
             case plagscan_connection::SUBMIT_FAILED_BY_CONNECTION:
-                $mtracemsg = 'PlagScan: ' . $filedata['filename'] . ' failed on upload process';
+                $mtracemsg = 'PlagScan: ' . $filedata['filename'] . ' with hash'.$psfile->filehash.' failed on upload process';
                 break;
             case plagscan_connection::SUBMIT_OK:
-                $mtracemsg = 'PlagScan: ' . $filedata['filename'] . ' sucessfully uploaded';
+                $mtracemsg = 'PlagScan: ' . $filedata['filename'] . ' with hash'.$psfile->filehash.' sucessfully uploaded';
                 break;
         }
         mtrace($mtracemsg);

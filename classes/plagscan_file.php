@@ -127,6 +127,10 @@ class plagscan_file {
      */
     const STATUS_USER_IN_MOODLE_DOES_NOT_EXIST_ANYMORE = 3002;
     
+    /**
+     * STATUS_ASSIGN_OWNER_IN_MOODLE_DOES_NOT_EXIST_ANYMORE
+     */
+    const STATUS_ASSIGN_OWNER_IN_MOODLE_DOES_NOT_EXIST_ANYMORE = 3003;
     
     /**
      * REPORT_STATS
