@@ -94,7 +94,7 @@ class plagscan_submit_rejected_files_task extends scheduled_task {
                     else{
                         $hashes = array();
                         array_push($hashes, $record->filehash);
-                        file_handler::instance()->file_uploaded_without_event($context,$record->userid, $hashes);
+                        file_handler::instance()->file_uploaded_without_event($context,$record->userid, $hashes, true);
                     }
                 } catch (\dml_exception $e){
                     $record->status = plagscan_file::STATUS_CM_DOES_NOT_EXIST_ANYMORE;

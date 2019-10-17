@@ -87,20 +87,22 @@ class file_handler {
      * @param int $userid
      * @param array $pathnamehashes
      */
-    public function file_uploaded_without_event($context, $userid, $pathnamehashes){
+    public function file_uploaded_without_event($context, $userid, $pathnamehashes, $showlog = false){
         foreach ($pathnamehashes as $pathnamehash) {
             $file = get_file_storage()->get_file_by_hash($pathnamehash);
             if ($file && !$file->is_directory()) {
                 array_push($this->filesqueue, $file);
             }
             else {
-                mtrace('PlagScan: Creating task for file with hash '.$pathnamehash.' - Error: file does not exist anymore.');
+                if($showlog){
+                    mtrace('PlagScan: Creating task for file with hash '.$pathnamehash.' - Error: file does not exist anymore.');
+                }
                 $file = plagscan_file::find($context->instanceid, $userid, $pathnamehash);
                 $file->status = plagscan_file::STATUS_FILE_DOES_NOT_EXIST_IN_STORAGE_ANYMORE;
                 $file = plagscan_file::update($file);
             }
         }
-        $this->handle_files_queue($context->instanceid, $userid);
+        $this->handle_files_queue($context->instanceid, $userid, $showlog);
     }
 
     /**
@@ -144,7 +146,7 @@ class file_handler {
      * @param int $cmid
      * @param int $userid
      */
-    private function handle_files_queue($cmid, $userid) {
+    private function handle_files_queue($cmid, $userid, $showlog = false) {
         global $DB;
 
         $connection = new plagscan_connection();
@@ -163,14 +165,11 @@ class file_handler {
             $assign_owner = $DB->get_record('user', array("email" => $instanceconfig->username));
         }
         
-        mtrace('PlagScan: Creating task for file - Preparing to add to the queue');
         if ($assign_owner == null) {
             $assign_psownerid = null;
         } else {
             $assign_psownerid = $connection->find_user($assign_owner);
         }
-        
-        mtrace('PlagScan: Creating task for file - Getting ownerID '.$assign_psownerid);
         
         if ($is_multiaccount) {
             $submitter_user = $DB->get_record('user', array('id' => $userid));
@@ -190,13 +189,14 @@ class file_handler {
             }
         }
 
-        mtrace('PlagScan: Creating task for file - Getting submitterID '.$submitter_userid);
-
         foreach ($this->filesqueue as $key => $file) {
 
-            mtrace('PlagScan: Creating task for file with hash '.$file->get_pathnamehash().' - Getting ownerID '.$assign_psownerid);        
-            mtrace('PlagScan: Creating task for file with hash '.$file->get_pathnamehash().' - Getting submitterID '.$submitter_userid);        
-            mtrace('PlagScan: Creating task for file with hash '.$file->get_pathnamehash().' - Getting submissionID if exist '.$submissionid);
+            if($showlog) {
+                mtrace('PlagScan: Creating task for file - Preparing to add to the queue');
+                mtrace('PlagScan: Creating task for file with hash '.$file->get_pathnamehash().' - Getting ownerID '.$assign_psownerid);        
+                mtrace('PlagScan: Creating task for file with hash '.$file->get_pathnamehash().' - Getting submitterID '.$submitter_userid);        
+                mtrace('PlagScan: Creating task for file with hash '.$file->get_pathnamehash().' - Getting submissionID if exist '.$submissionid);
+            }
             
             $previous_psfile = plagscan_file::find($cmid, $userid, $file->get_pathnamehash());
             if(!$previous_psfile){
@@ -205,7 +205,10 @@ class file_handler {
             
             if (!$previous_psfile || $previous_psfile->status >= plagscan_file::STATUS_FAILED) {
                 
-                mtrace('PlagScan: Creating task for file with hash '.$file->get_pathnamehash().' - Adding to the queue.');
+                if($showlog) {
+                    mtrace('PlagScan: Creating task for file with hash '.$file->get_pathnamehash().' - Adding to the queue.');
+                }
+                
                 $psfile = new \stdClass();
                 $psfile->userid = $userid;
                 $psfile->cmid = $cmid;
@@ -246,7 +249,9 @@ class file_handler {
                         'filedata' => $filedata,
                         'pathnamehash' => $file->get_pathnamehash()));
                     
-                    mtrace('PlagScan: Creating task for file with hash '.$file->get_pathnamehash().' - Added to the queue.');
+                    if($showlog) {
+                        mtrace('PlagScan: Creating task for file with hash '.$file->get_pathnamehash().' - Added to the queue.');
+                    }
                 }
             }
             unset($this->filesqueue[$key]);

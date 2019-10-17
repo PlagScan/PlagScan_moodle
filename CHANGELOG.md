@@ -1,3 +1,8 @@
+### Version: 3.1.21 Build: 2019101700
+
+- Use trim to avoid problem setting the PlagScan server URL when adding extra trailing slash
+- Remove log output that were shown during the resubmission of files
+
 ### Version: 3.1.20 Build: 2019101501
 
 - Improve submit file process to avoid problems from assignments created with the old plugin version (<2.x.x)

@@ -1,4 +1,4 @@
-# PlagScan Moodle Plugin 3.1.20 Release Notes
+# PlagScan Moodle Plugin 3.1.21 Release Notes
 
 The advanced plagiarism checker plugin for moodle.
 
@@ -23,7 +23,8 @@ https://api.plagscan.com/PlagScan_Moodle_Manual-Admin_EN.pdf
 Bug Fix:
 --------
 
-- Improve submit file process to avoid problems from assignments created with the old plugin version (<2.x.x)
+- Use trim to avoid problem setting the PlagScan server URL when adding extra trailing slash
+- Remove log output that were shown during the resubmission of files
 
 Special thanks:
 ---------------
