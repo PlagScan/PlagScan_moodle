@@ -9,7 +9,7 @@ M.plagiarism_plagscan = {
     reports: []
 };
 
-M.plagiarism_plagscan.init = function (Y, contextid, viewlinks, showlinks, viewreport, ps_yellow_level, ps_red_level) {
+M.plagiarism_plagscan.init = function (Y, contextid, viewlinks, showlinks, viewreport, ps_yellow_level, ps_red_level, pageurl) {
 
     var handleReport = function (report) {
         var reportArea = Y.one('.psreport.pid-' + report.id);
@@ -21,8 +21,8 @@ M.plagiarism_plagscan.init = function (Y, contextid, viewlinks, showlinks, viewr
         }
     };
 
-    var checkReportStatus = function (Y, reports, contextid, viewlinks, showlinks, viewreport, ps_yellow_level, ps_red_level) {
-
+    var checkReportStatus = function (Y, reports, contextid, viewlinks, showlinks, viewreport, ps_yellow_level, ps_red_level, pageurl) {
+        
         if (!reports[0]) {
             return;
         }
@@ -42,7 +42,8 @@ M.plagiarism_plagscan.init = function (Y, contextid, viewlinks, showlinks, viewr
                     showlinks: showlinks,
                     viewreport: viewreport,
                     ps_yellow_level: ps_yellow_level,
-                    ps_red_level: ps_red_level
+                    ps_red_level: ps_red_level,
+                    pageurl: pageurl
                 })
             },
             on: {
@@ -68,6 +69,6 @@ M.plagiarism_plagscan.init = function (Y, contextid, viewlinks, showlinks, viewr
     });
 
     setInterval(function () {
-        checkReportStatus(Y, M.plagiarism_plagscan.reports, contextid, viewlinks, showlinks, viewreport, ps_yellow_level, ps_red_level)
+        checkReportStatus(Y, M.plagiarism_plagscan.reports, contextid, viewlinks, showlinks, viewreport, ps_yellow_level, ps_red_level, pageurl)
     }, 3000);
 };

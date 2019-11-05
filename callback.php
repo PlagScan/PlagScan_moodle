@@ -32,10 +32,8 @@ require(__DIR__ . '/../../config.php');
 
 $checkcallback = optional_param('checkCallback', 0, PARAM_BOOL);
 $docid = optional_param('docID', 0, PARAM_INT);
-$status = optional_param('mode', 0, PARAM_INT);
+$status = optional_param('mode', -1, PARAM_INT);
 $error = optional_param('error', '', PARAM_TEXT);
-
-
 
 require_once($CFG->dirroot . '/plagiarism/plagscan/lib.php');
 //If the callback is from the setup check method
@@ -86,7 +84,8 @@ if (isset($docid) && $docid > 0 && isset($status)) { //If the callback is sent b
     if ($status == 254) {
         $status = 1000;
     }
-    $upd->status = $status;
+    if($status != -1)
+        $upd->status = $status;
     if(isset($error) && strlen($error) >0 && $error == "NOCRED")
         $upd->pstatus = -2;
 } else { //If the callback is sent by the check process that means it has finished 
@@ -94,10 +93,10 @@ if (isset($docid) && $docid > 0 && isset($status)) { //If the callback is sent b
     require_once($CFG->dirroot . '/plagiarism/plagscan/lib.php');
     $connection = new plagscan_connection();
 
-    $result = $connection->plaglevel_retrieve($pid);
-
-    if ($result >= 0) {
-        $upd->pstatus = $result;
+    $res = $connection->plaglevel_retrieve($pid);
+    
+    if (isset($res["response"]["data"]["plagLevel"]) && $res["response"]["data"]["plagLevel"] >= 0) {
+        $upd->pstatus = $res["response"]["data"]["plagLevel"];
     }
 }
 

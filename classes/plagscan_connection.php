@@ -316,7 +316,7 @@ class plagscan_connection {
         }
         else if ($res["httpcode"] == 400) {
             $msg = $res["response"]["error"]["message"];
-            if ($msg == "The user doesn't belong to this institution") {
+            if ($msg == plagscan_api::API_ERROR_MSG_USER_DOES_NOT_BELONG_TO_INST) {
                 $docid = -2;
             }
         }
@@ -369,12 +369,13 @@ class plagscan_connection {
 
         $res = plagscan_api::instance()->request($url, "PUT", null);
 
+        $current = $DB->get_record('plagiarism_plagscan', array('pid' => $pid));
         if ($res["httpcode"] == 204) {
-            $current = $DB->get_record('plagiarism_plagscan', array('pid' => $pid));
             $current->status = 1;
             $DB->update_record('plagiarism_plagscan', $current);
             return null;
         } else {
+            plagscan_file::update_status($current);
             if (isset($res["response"]["error"])) {
                 return $res["response"]["error"]["message"];
             } else {
@@ -393,31 +394,11 @@ class plagscan_connection {
 
         $access_token = $this->get_access_token();
 
-        //Añadir erro en este caso:
-        // {"error":{"code":400,"message":"The document has failed during the upload\/convertion process: Document without text or broken file - minimum length is 50 characters"}}
         $url = plagscan_api::API_FILES . "/$pid/retrieve?access_token=$access_token&mode=0";
 
         $res = plagscan_api::instance()->request($url, "GET", null);
 
-        $httpcode = $res["httpcode"];
-
-        if ($httpcode != 200) {
-            $plaglevel = -1;
-            $msg = $res["response"]["error"]["message"];
-            if ($httpcode == 400 && $msg == "The document doesn't belong to this institution") {
-                $plaglevel = -2;
-            }
-            else if ($httpcode == 404 && $msg == "There is no report for the document") {
-                $plaglevel = -3;
-            }
-            else if ($httpcode == 400 && $msg == "The document has failed during the upload/convertion process: Document without text or broken file - minimum length is 50 characters") {
-                $plaglevel = -4;
-            }
-        } else {
-            $plaglevel = $res["response"]["data"]["plagLevel"];
-        }
-
-        return $plaglevel;
+        return $res;
     }
 
     /**
@@ -800,14 +781,14 @@ class plagscan_connection {
      * @param \stdClass
      * @return array
      */
-    public function check_report_status($psfiles, $context, $viewlinks, $showlinks, $viewreport, $ps_yellow_level, $ps_red_level) {
+    public function check_report_status($psfiles, $context, $viewlinks, $showlinks, $viewreport, $ps_yellow_level, $ps_red_level, $pageurl = null) {
 
         $psfiles = plagscan_file::find_by_psids($psfiles);
 
         $results = array();
 
         foreach ($psfiles as $psfile) {
-            $message = $this->get_message_view_from_report_status($psfile, $context, $viewlinks, $showlinks, $viewreport, $ps_yellow_level, $ps_red_level);
+            $message = $this->get_message_view_from_report_status($psfile, $context, $viewlinks, $showlinks, $viewreport, $ps_yellow_level, $ps_red_level, null, $pageurl);
             if ($message != "") {
                 array_push($results, array("id" => $psfile->id, "content" => $message));
             }
@@ -828,8 +809,12 @@ class plagscan_connection {
      * @param int $ps_red_level
      * @return String
      */
-    public function get_message_view_from_linkarray($linkarray, $context, $viewlinks, $showlinks, $viewreport, $ps_yellow_level, $ps_red_level){
+    public function get_message_view_from_linkarray($linkarray, $context, $viewlinks, $showlinks, $viewreport, $ps_yellow_level, $ps_red_level, $pageurl = null){
         global $PAGE;
+        
+        if($pageurl == null){
+            $pageurl = $PAGE->url;
+        }
         
         $userid = $linkarray['userid'];
         $cmid = $linkarray['cmid'];
@@ -869,7 +854,7 @@ class plagscan_connection {
                     $message .= html_writer::empty_tag('br');
                     $params = array('cmid' => s($cmid), 
                         'userid' => s($userid), 
-                        'return' => urlencode($PAGE->url),
+                        'return' => urlencode($pageurl),
                         'pathnamehash' => s($file->get_pathnamehash()));
 
                     $submiturl = new moodle_url('/plagiarism/plagscan/reports/submit.php', $params);
@@ -878,7 +863,7 @@ class plagscan_connection {
                 }
             }
         } else {
-            $message = $this->get_message_view_from_report_status($psfile, $context, $viewlinks, $showlinks, $viewreport, $ps_yellow_level, $ps_red_level, $linkarray);
+            $message = $this->get_message_view_from_report_status($psfile, $context, $viewlinks, $showlinks, $viewreport, $ps_yellow_level, $ps_red_level, $linkarray, $pageurl);
         }
         
         return $message;
@@ -898,8 +883,12 @@ class plagscan_connection {
      * @param int $ps_red_level
      * @return string
      */
-    public function get_message_view_from_report_status($psfile, $context, $viewlinks, $showlinks, $viewreport, $ps_yellow_level, $ps_red_level, $linkarray = null) {
+    public function get_message_view_from_report_status($psfile, $context, $viewlinks, $showlinks, $viewreport, $ps_yellow_level, $ps_red_level, $linkarray = null, $pageurl = null) {
         global $PAGE;
+        
+        if($pageurl == null){
+            $pageurl = $PAGE->url;
+        }
         
         $message = "";
         
@@ -933,7 +922,7 @@ class plagscan_connection {
                     $message .= html_writer::empty_tag('br');
                     $params = array('cmid' => s($linkarray['cmid']), 
                         'userid' => s($linkarray['userid']), 
-                        'return' => urlencode($PAGE->url),
+                        'return' => urlencode($pageurl),
                         'pathnamehash' => s($linkarray['file']->get_pathnamehash()));
 
                     $submiturl = new moodle_url('/plagiarism/plagscan/reports/submit.php', $params);
@@ -968,7 +957,7 @@ class plagscan_connection {
                     'class' => 'fa fa-exclamation-triangle', 'style' => 'color:#f0ad4e'));
                     $message .= html_writer::empty_tag('br');
                     $submiturl = new moodle_url('/plagiarism/plagscan/reports/analyze.php', array('pid' => s($psfile->pid),
-                        'return' => urlencode($PAGE->url)));
+                        'return' => urlencode($pageurl)));
                     $message .= html_writer::link($submiturl, get_string('check', 'plagiarism_plagscan'));
 
                     $message .= html_writer::empty_tag('br');
@@ -976,7 +965,7 @@ class plagscan_connection {
             }
 
             if ($psfile->pid > 0) {
-                $checkurl = new moodle_url('/plagiarism/plagscan/reports/check_status.php', array('pid' => s($psfile->pid), 'return' => urlencode($PAGE->url)));
+                $checkurl = new moodle_url('/plagiarism/plagscan/reports/check_status.php', array('pid' => s($psfile->pid), 'return' => urlencode($pageurl)));
                 if ($viewlinks) {
                     $message .= ' ' . html_writer::link($checkurl, get_string('checkstatus', 'plagiarism_plagscan'));
                 }
@@ -992,7 +981,7 @@ class plagscan_connection {
                 }
                 // $percent = html_writer::tag('span', sprintf('%0.1f%%', $psfile->pstatus), array('class' => $percentclass));
             }
-            $psurl = new moodle_url('/plagiarism/plagscan/reports/view.php', array('pid' => s($psfile->pid), 'return' => urlencode($PAGE->url)));
+            $psurl = new moodle_url('/plagiarism/plagscan/reports/view.php', array('pid' => s($psfile->pid), 'return' => urlencode($pageurl)));
             $pslink = html_writer::link($psurl, html_writer::tag('span', sprintf('%0.1f%%', $psfile->pstatus), array('id' => s($psfile->pid), 'class' => $percentclass)), array('target' => '_blank'));
             $pslink .= "<div style='    margin-left: -8px;'></div>";
 

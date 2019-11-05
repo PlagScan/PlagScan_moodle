@@ -79,7 +79,32 @@ class plagscan_api {
      * API_INTEGRATION_CONSUMER_VALUE
      */
     const API_INTEGRATION_CONSUMER_VALUE = "Moodle";
-
+    
+    /**
+     * API_ERROR_MSG_DOCUMENT_REJECTED
+     */
+    const API_ERROR_MSG_DOCUMENT_REJECTED = "The document has failed during the upload/convertion process: Document without text or broken file - minimum length is 50 characters";
+    
+    /**
+     * API_ERROR_MSG_DOCUMENT_DELETED
+     */
+    const API_ERROR_MSG_DOCUMENT_DELETED = "The document has been deleted.";
+    
+    /**
+     * API_ERROR_MSG_NO_REPORT
+     */
+    const API_ERROR_MSG_NO_REPORT = "There is no report for the document";
+    
+    /**
+     * API_ERROR_MSG_DOCUMENT_DOES_NOT_BELONG_TO_INST
+     */
+    const API_ERROR_MSG_DOCUMENT_DOES_NOT_BELONG_TO_INST = "The document doesn't belong to this institution";
+    
+    /**
+     * API_ERROR_MSG_USER_DOES_NOT_BELONG_TO_INST
+     */
+    const API_ERROR_MSG_USER_DOES_NOT_BELONG_TO_INST = "The user doesn't belong to this institution";
+    
     /**
      *
      * @var null|plagscan_api
@@ -137,7 +162,7 @@ class plagscan_api {
                 CURLOPT_URL => $url,
                 CURLOPT_RETURNTRANSFER => 1,
                 CURLOPT_MAXREDIRS => 10,
-                CURLOPT_TIMEOUT => 30,
+                CURLOPT_TIMEOUT => 400,
                 CURLOPT_CUSTOMREQUEST => $requestType,
                 CURLOPT_POST => 1,
                 CURLOPT_POSTFIELDS => $data,

@@ -46,6 +46,7 @@ $viewreport = filter_var($data->viewreport, FILTER_VALIDATE_BOOLEAN);
 $ps_yellow_level = filter_var($data->ps_yellow_level, FILTER_VALIDATE_INT);
 $ps_red_level = filter_var($data->ps_red_level, FILTER_VALIDATE_INT);
 
+$pageurl = filter_var(urldecode($data->pageurl), FILTER_SANITIZE_URL);
 
 $cmid = $data->cmid;
 if ($CFG->version < 2011120100) {
@@ -63,7 +64,7 @@ if (!(has_capability('plagiarism/plagscan:viewfullreport', $context) || has_capa
 
 $connection = new plagscan_connection();
 
-$results = $connection->check_report_status($data->psreports, $context, $viewlinks, $showlinks, $viewreport, $ps_yellow_level, $ps_red_level);
+$results = $connection->check_report_status($data->psreports, $context, $viewlinks, $showlinks, $viewreport, $ps_yellow_level, $ps_red_level, $pageurl);
 
 echo json_encode($results, true);
 die;

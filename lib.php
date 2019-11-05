@@ -163,6 +163,7 @@ class plagiarism_plugin_plagscan extends plagiarism_plugin {
             $mform->addElement('select', 'show_students_links', get_string("show_to_students_opt2", "plagiarism_plagscan"), $showstudentslinks);
             $mform->addHelpButton('show_students_links', 'show_to_students_opt2', 'plagiarism_plagscan');
             $mform->setDefault('show_students_links', self::SHOWS_ONLY_PLVL);
+            $mform->disabledIf('show_students_links', 'show_to_students', 'eq', 0);
 
             /*  $mform->addElement('html', '<div class="box boxaligncenter gradingtable p-y-1">');
               $mform->addElement('html', '<div class="flexible generaltable generalbox">');
@@ -345,7 +346,12 @@ class plagiarism_plugin_plagscan extends plagiarism_plugin {
     public function print_disclosure($cmid) {
         global $PAGE, $USER;
         $disclosure = '';
+        
+        $instanceconfig = plagscan_get_instance_config($cmid);
 
+        if(!isset($instanceconfig->upload) || $instanceconfig->upload == plagiarism_plugin_plagscan::RUN_NO)
+            return $disclosure;
+        
         if (get_config('plagiarism_plagscan', 'plagscan_studentpermission')) {
             $returl = urlencode($PAGE->url->out());
             $url = new moodle_url('/plagiarism/plagscan/optout.php', array('sesskey' => sesskey(),
@@ -515,7 +521,12 @@ class plagiarism_plugin_plagscan extends plagiarism_plugin {
             }
 
             $pageurl = $PAGE->url;
-
+            $pagination = optional_param('page', -1, PARAM_INT);
+            
+            if($pagination != -1){
+                $pageurl->param('page', $pagination);
+            }
+            
             // Hack to fix the missing 'userid' when marking a single submission
             $test = $pageurl->out_omit_querystring();
             $cmp = '/mod/assignment/submissions.php';
@@ -543,17 +554,17 @@ class plagiarism_plugin_plagscan extends plagiarism_plugin {
                     'fullpath' => '/plagiarism/plagscan/ajax.js',
                     'requires' => array('json'),
                 );
-                $PAGE->requires->js_init_call('M.plagiarism_plagscan.init', array($context->instanceid, $viewlinksb, $showlinks, $viewreport, $this->ps_yellow_level, $this->ps_red_level), true, $jsmodule);
+                $PAGE->requires->js_init_call('M.plagiarism_plagscan.init', array($context->instanceid, $viewlinksb, $showlinks, $viewreport, $this->ps_yellow_level, $this->ps_red_level, urlencode($pageurl)), true, $jsmodule);
                 //$this->page->requires->yui_module('moodle-local_pluginname-modulename', 'M.local_pluginname.init_modulename',
                 //array(array('aparam'=>'paramvalue')));
                 $ajaxenabled[$cmid] = true;
             }
-
+            
             //Create output for each file
             $message = html_writer::empty_tag('br') .
                     html_writer::tag('img', "", array('src' => new moodle_url('/plagiarism/plagscan/images/plagscan_icon.png'),
                         'width' => '25px', 'height' => '24px'));
-            $message .= $connection->get_message_view_from_linkarray($linkarray, $context, $viewlinksb, $showlinks, $viewreport, $this->ps_yellow_level, $this->ps_red_level);
+            $message .= $connection->get_message_view_from_linkarray($linkarray, $context, $viewlinksb, $showlinks, $viewreport, $this->ps_yellow_level, $this->ps_red_level, $pageurl);
 
             //END create message
 

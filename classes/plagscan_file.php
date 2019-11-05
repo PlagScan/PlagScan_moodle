@@ -427,7 +427,13 @@ class plagscan_file {
         }
 
         $connection = new plagscan_connection();
-        $result = $connection->plaglevel_retrieve($pid);
+        $res = $connection->plaglevel_retrieve($pid);
+        
+        if ($res["httpcode"] != 200) {
+            $result = -1;
+        } else {
+            $result = $res["response"]["data"]["plagLevel"];
+        }
 
         $pstatus = null;
         if (intval($result) >= 0) {
@@ -441,17 +447,14 @@ class plagscan_file {
             $update = new \stdClass();
             $update->pid = $psfile->pid;
             $update->id = $psfile->id;
-            if($result == -2){
-                $update->status = self::STATUS_FAILED_DOCUMENT_DOES_NOT_BELONG_TO_THE_INSTITUTION;
-                self::update($update);
-            } else if ($result == -3) {
-                $update->status = 0;
-                self::update($update);
-            } else if ($result == -4) {
-                $update->status = self::STATUS_FAILED;
-                self::update($update);
-            }
             
+            if(isset($res["response"]["error"]["message"])){
+                $status = plagscan_file::get_status_from_api_error_msg($res["response"]["error"]["message"]);
+                if($status >= 0){
+                    $update->status = $status;
+                    self::update($update);
+                }
+            }
             return false;
         }
             
@@ -481,6 +484,35 @@ class plagscan_file {
         }
 
         return true;
+    }
+    
+    /**
+     * Returns the file status that corresponds to the api error message.
+     * 
+     * @param String $errormsg
+     * @return int
+     */
+    static function get_status_from_api_error_msg($errormsg){
+        $status = -1;
+        switch($errormsg){
+            case plagscan_api::API_ERROR_MSG_DOCUMENT_DOES_NOT_BELONG_TO_INST:
+                $status = self::STATUS_FAILED_DOCUMENT_DOES_NOT_BELONG_TO_THE_INSTITUTION;
+                break;
+            case plagscan_api::API_ERROR_MSG_NO_REPORT:
+                $status = self::STATUS_NOT_STARTED;
+                break;
+            case plagscan_api::API_ERROR_MSG_DOCUMENT_REJECTED:
+                $status = self::STATUS_FAILED;
+                break;
+            case plagscan_api::API_ERROR_MSG_DOCUMENT_DELETED:
+                $status = self::STATUS_FILE_DOES_NOT_EXIST_IN_STORAGE_ANYMORE;
+                break;
+            case plagscan_api::API_ERROR_MSG_USER_DOES_NOT_BELONG_TO_INST:
+                $status = self::STATUS_FAILED_USER_DOES_NOT_BELONG_TO_THE_INSTITUTION;
+                break;
+        }
+        
+        return $status;
     }
 
 }
