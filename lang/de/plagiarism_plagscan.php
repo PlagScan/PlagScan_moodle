@@ -223,6 +223,10 @@ $string['cron_normal'] = "Die Cron-Job-Einstellung wurde akzeptiert";
 $string['cron_running1'] = "Der Cron-Job l&auml;ft seit";
 $string['cron_running2'] = " Zum Zur&uuml;cksetzen klicken ";
 $string['cron_help'] = "Wenn Sie den Cron-Job zur&uuml;cksetzen, kann es vorkommen, dass Dateien doppelt zu PlagScan geschickt werden.";
+$string['wipe_plagscan_user_cache_link'] = 'Wipe PlagScan User Cache';
+$string['wipe_plagscan_user_cache_done'] = 'PlagScan User Cache wiped.';
+$string['wipe_plagscan_user_cache_help'] = 'Clicking in this link will wipe the PlagScan Plugin User cache table.';
+$string['wipe_plagscan_user_cache_alert'] = 'This function should only be used in case you have problems with the PlagScan plugin and it is user related, PlagScan support may require you to use this in case you need to solve some problems.';
 
 $string['privacy:metadata:core_plagiarism'] = 'Plugin wird vom Moodle-Plagiats-System verwendet.';
 $string['privacy:metadata:core_files'] = 'Dateien und Online-Texte, die mit dem PlagScan-Plugin &uuml;bermittelt wurden.';

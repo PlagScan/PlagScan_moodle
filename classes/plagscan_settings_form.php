@@ -148,8 +148,14 @@ class plagscan_settings_form extends moodleform {
         $mform->addRule('plagscan_server', null, 'required', null, 'client');
         $mform->setType('plagscan_server', PARAM_TEXT);
         
-
-
+        $wipe_user_url = new moodle_url('/plagiarism/plagscan/wipe_plagscan_user_cache.php');
+        $mform->addElement('html', html_writer::link($wipe_user_url, get_string('wipe_plagscan_user_cache_link', 'plagiarism_plagscan')) 
+        . ' <a class="btn btn-link p-a-0" role="button" data-container="body" data-toggle="popover" data-placement="right"'
+        . 'data-content="'.get_string('wipe_plagscan_user_cache_help', 'plagiarism_plagscan').'<div style=\'color:red;\'>'.get_string('wipe_plagscan_user_cache_alert', 'plagiarism_plagscan').'</div>" data-html="true" tabindex="0" data-trigger="focus">'
+        . '<i class="icon fa fa-question-circle text-info fa-fw " aria-hidden="true" title="" aria-label=""></i>'
+        . '</a><br/>');
+           
+        
         $mform->addElement('html', "</div>");
 
         //$mform->addElement('button', 'plagscan_connectiontester', get_string('testconnection', 'plagiarism_plagscan'));
