@@ -235,6 +235,7 @@ $string['cron_running2'] = " To reset click ";
 $string['cron_help'] = "If you reset cron job duplicate files could be send to PlagScan";
 $string['wipe_plagscan_user_cache_link'] = 'Wipe PlagScan User Cache';
 $string['wipe_plagscan_user_cache_done'] = 'PlagScan User Cache wiped.';
+$string['wipe_plagscan_user_cache_error'] = 'Error wiping PlagScan User Cache.';
 $string['wipe_plagscan_user_cache_help'] = 'Clicking in this link will wipe the PlagScan Plugin User cache table.';
 $string['wipe_plagscan_user_cache_alert'] = 'This function should only be used in case you have problems with the PlagScan plugin and it is user related, PlagScan support may require you to use this in case you need to solve some problems.';
 

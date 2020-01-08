@@ -50,6 +50,7 @@ if ($result) {
     $time = 5;
     $notification = \core\output\notification::NOTIFY_SUCCESS;
 } else {
+    $msg = get_string('wipe_plagscan_user_cache_error', 'plagiarism_plagscan');
     $time = 10;
     $notification = \core\output\notification::NOTIFY_ERROR;
 }
