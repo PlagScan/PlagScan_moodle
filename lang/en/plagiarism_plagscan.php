@@ -234,10 +234,13 @@ $string['cron_running1'] = "Cron job is running since";
 $string['cron_running2'] = " To reset click ";
 $string['cron_help'] = "If you reset cron job duplicate files could be send to PlagScan";
 $string['wipe_plagscan_user_cache_link'] = 'Wipe PlagScan User Cache';
-$string['wipe_plagscan_user_cache_done'] = 'PlagScan User Cache wiped.';
-$string['wipe_plagscan_user_cache_error'] = 'Error wiping PlagScan User Cache.';
+$string['wipe_plagscan_user_cache_done'] = 'PlagScan User Cache wiped';
+$string['wipe_plagscan_user_cache_error'] = 'Error wiping PlagScan User Cache';
 $string['wipe_plagscan_user_cache_help'] = 'Clicking in this link will wipe the PlagScan Plugin User cache table.';
 $string['wipe_plagscan_user_cache_alert'] = 'This function should only be used in case you have problems with the PlagScan plugin and it is user related, PlagScan support may require you to use this in case you need to solve some problems.';
+$string['plagscan_user_id'] = 'PlagScan User ID';
+$string['plagscan_assingment_id'] = 'PlagScan Assignment ID';
+$string['error_assignment_or_owner_does_not_exist_or_belong'] = 'Could be that the assigment or the owner (the user who activated PlagScan for the assignment) does not exist anymore in PlagScan, or they belong to another institution';
 
 $string['privacy:metadata:core_plagiarism'] = 'Plugin used by Moodle plagiarism system.';
 $string['privacy:metadata:core_files'] = 'Files and online text that has been submitted using PlagScan plugin.';

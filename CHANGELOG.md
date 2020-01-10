@@ -1,3 +1,10 @@
+### Version: 3.1.23 Build: 2020011000
+
+- Add a button on admin settings to wipe the PlagScan User Cache table. This could be used to fix some inconsistency
+- Add more checks and info messages in case there was some inconsistency between the Moodle Plugin data and PlagScan
+- Add a retry when creates user in PlagScan in case it fails once
+- Add and update strings
+
 ### Version: 3.1.22 Build: 2019110500
 
 - Improve Deutsch translation strings

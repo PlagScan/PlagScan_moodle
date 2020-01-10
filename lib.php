@@ -304,7 +304,11 @@ class plagiarism_plugin_plagscan extends plagiarism_plugin {
                         $submissionid = $connection->create_submissionid($cmid, $module, $config, $user);
                         if (intval($submissionid) <= 0){
                             //throw new moodle_exception('error_assignment_creation', 'plagiarism_plagscan');
-                            \core\notification::add("PlagScan: ".get_string('error_assignment_creation', 'plagiarism_plagscan'), \core\output\notification::NOTIFY_ERROR);
+                            $error_msg = "PlagScan: ".get_string('error_assignment_creation', 'plagiarism_plagscan') . ".";
+                            if(intval($submissionid) == -1){
+                                $error_msg .= " " . get_string('error_user_does_not_belong_to_the_institution', 'plagiarism_plagscan'). ".";
+                            }
+                            \core\notification::add($error_msg, \core\output\notification::NOTIFY_ERROR);
                             return;
                         }
                         $assignlog['other']['submissionid'] = $submissionid;
@@ -491,8 +495,21 @@ class plagiarism_plugin_plagscan extends plagiarism_plugin {
             if ($connection->is_assistant($context, $instanceconfig, $USER)) {
                 $is_involved = $connection->involve_assistant($instanceconfig, $assign_psownerid, $USER);
                 $involved[$cmid][$USER->id] = $is_involved;
-                if(!$is_involved){
-                    \core\notification::add("PlagScan: ".get_string('error_involving_assistant', 'plagiarism_plagscan'), \core\output\notification::NOTIFY_ERROR);
+                if ($is_involved["result"] < 1){
+                    $error_msg = get_string('error_involving_assistant', 'plagiarism_plagscan') . ".";
+                    if ($is_involved["result"] == -1){
+                        $error_msg .= " " . get_string('error_user_does_not_belong_to_the_institution', 'plagiarism_plagscan') . ".";
+                        $error_msg .= " " . get_string('plagscan_user_id', 'plagiarism_plagscan') . ": " . $is_involved["psuserid"];
+                    }
+                    else if ($is_involved["result"] == -2){    
+                        $error_msg .= " " . get_string('error_assignment_or_owner_does_not_exist_or_belong', 'plagiarism_plagscan') . ".";
+                        $error_msg .= " " . get_string('plagscan_user_id', 'plagiarism_plagscan') . ": " . $assign_psownerid;
+                    }
+                    else{
+                        $error_msg .= " " . get_string('plagscan_user_id', 'plagiarism_plagscan') . ": " . $is_involved["psuserid"];
+                    }
+                    $error_msg .= " " . get_string('plagscan_assingment_id', 'plagiarism_plagscan') . ": " . $instanceconfig->submissionid;
+                    \core\notification::add("PlagScan: ".$error_msg, \core\output\notification::NOTIFY_ERROR);
                 }
             }
         }

@@ -106,6 +106,16 @@ class plagscan_file {
      * STATUS_FAILED_DOCUMENT_DOES_NOT_BELONG_TO_THE_INSTITUTION
      */
     const STATUS_FAILED_DOCUMENT_DOES_NOT_BELONG_TO_THE_INSTITUTION = 1007;
+
+     /**
+     * STATUS_ASSIGN_OR_OWNER_DOES_NOT_EXIST_OR_BELONG
+     */
+    const STATUS_FAILED_ASSIGN_OR_OWNER_DOES_NOT_EXIST_OR_BELONG = 1008;
+
+    /**
+     * STATUS_USER_NOT_EXIST
+     */
+    const STATUS_FAILED_USER_DOES_NOT_EXIST = 1009;
     
     /**
      * STATUS_NEED_TO_BE_RESUBMITED
@@ -317,14 +327,16 @@ class plagscan_file {
 
 
         if ($result <= 0) {
-            if($result == -2){
+            if ($result == -2){
                 self::set_status($psfile, self::STATUS_FAILED_USER_DOES_NOT_BELONG_TO_THE_INSTITUTION);
-                return plagscan_connection::SUBMIT_FAILED_BY_CONNECTION;
+            }
+            else if ($result == -3){
+                self::set_status($psfile, self::STATUS_FAILED_ASSIGN_OR_OWNER_DOES_NOT_EXIST_OR_BELONG);
             }
             else {
                 self::set_status($psfile, self::STATUS_FAILED_UNKNOWN);
-                return plagscan_connection::SUBMIT_FAILED_BY_CONNECTION;
             }
+            return plagscan_connection::SUBMIT_FAILED_BY_CONNECTION;
         }
 
         $psfile->pid = intval($result);

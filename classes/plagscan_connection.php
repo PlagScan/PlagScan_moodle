@@ -222,7 +222,12 @@ class plagscan_connection {
 
         $res = plagscan_api::instance()->request($url, "PATCH", null);
         
-        return $res["response"]["data"];
+        if (isset($res["response"]["data"])){        
+            return $res["response"]["data"];
+        }
+        else {
+            return null;
+        }
     }
 
     /**
@@ -314,10 +319,13 @@ class plagscan_connection {
         if ($res["httpcode"] == 201) {
             $docid = $res["response"]["data"]["docID"];
         }
-        else if ($res["httpcode"] == 400) {
+        else if ($res["httpcode"] >= 400) {
             $msg = $res["response"]["error"]["message"];
             if ($msg == plagscan_api::API_ERROR_MSG_USER_DOES_NOT_BELONG_TO_INST) {
                 $docid = -2;
+            }
+            else if ($msg == plagscan_api::API_ERROR_MSG_SUBMISSION_DOES_NOT_EXIST){
+                $docid = -3;
             }
         }
 
@@ -516,8 +524,17 @@ class plagscan_connection {
         $url = plagscan_api::API_SUBMISSIONS . "?access_token=" . $access_token;
 
         $res = plagscan_api::instance()->request($url, "POST", $data);
-
-        return $res["response"]["data"]["submissionID"];
+        
+        if (isset($res["response"]["data"]["submissionID"])){
+            return $res["response"]["data"]["submissionID"];
+        }
+        else{
+            if($res["httpcode"] >= 400 && isset($res["response"]["error"]["message"])){
+                if($res["response"]["error"]["message"] == plagscan_api::API_ERROR_MSG_USER_DOES_NOT_BELONG_TO_INST)
+                    return -1;
+            }
+            return 0;
+        }
     }
 
     /**
@@ -548,10 +565,6 @@ class plagscan_connection {
         }
 
         $psuserid = $this->find_user($user);
-
-        if ($psuserid == null) {
-            $psuserid = $this->add_new_user($user);
-        }
 
         $title = $module->name;
         $checkdeadline = 0;
@@ -628,6 +641,13 @@ class plagscan_connection {
         $psid = 0;
         if (isset($res["response"]["data"]["userID"])) {
             $psid = intval($res["response"]["data"]["userID"]);
+        }
+        else { //In case it fails on the creation, try to create with a different username in PlagScan
+            $data["username"] = get_config('plagiarism_plagscan', 'plagscan_id') . ":" . $user->email;
+            $res = plagscan_api::instance()->request($url, "POST", $data);
+            if (isset($res["response"]["data"]["userID"])) {
+                $psid = intval($res["response"]["data"]["userID"]);
+            }
         }
 
         
@@ -717,41 +737,57 @@ class plagscan_connection {
      * @param \stdClass $assign
      * @param int $assign_psownerid
      * @param \stdClass $involved_user
-     * @return boolean
-     * @throws moodle_exception
+     * @return array
      */
     public function involve_assistant($assign, $assign_psownerid, $involved_user) {
         $access_token = $this->get_access_token();
 
         $involved_psuserid = $this->find_user($involved_user);
 
+        $involved = array( 
+            "psuserid" => 0,
+            "result" => 0 );
+
         if ($involved_psuserid == null) {
             $involved_psuserid = $this->add_new_user($involved_user);
         }
         
-        if( $involved_psuserid == 0){
-            return false;
+        if ($involved_psuserid == 0){
+            return $involved;
+        }
+        else {
+            $involved["psuserid"] = $involved_psuserid;
         }
 
         $url = plagscan_api::API_SUBMISSIONS . "/$assign->submissionid/involve?userID=$involved_psuserid&ownerID=$assign_psownerid&shareMode=4&access_token=" . $access_token;
-
+        
         $res = plagscan_api::instance()->request($url, "GET", null);
+
         if(isset( $res["response"]["data"]["involved"])){
             $is_involved = $res["response"]["data"]["involved"];
-        }
-        else{
-            return false;
-        }
 
-        if (!$is_involved) {
-            $res = plagscan_api::instance()->request($url, "PUT", null);
-
-            if ($res["httpcode"] >= 400) {
-                return false;
+            if ($is_involved) {
+                $res = plagscan_api::instance()->request($url, "PUT", null);
+                if ($res["httpcode"] == 204){
+                    $involved["result"] = 1;
+                }
+            }
+            else{
+                $involved["result"] = 1;
+            }
+        }
+        
+        if($res["httpcode"] >= 400 && isset($res["response"]["error"]["message"])){
+            $error = $res["response"]["error"]["message"];
+            if ($error == plagscan_api::API_ERROR_MSG_USER_DOES_NOT_BELONG_TO_INST){
+                $involved["result"] = -1;
+            }
+            else if ($error == plagscan_api::API_ERROR_MSG_SUBMISSION_DOES_NOT_EXIST){
+                $involved["result"] = -2;
             }
         }
 
-        return true;
+        return $involved;
     }
 
     /**
@@ -912,6 +948,10 @@ class plagscan_connection {
             } else if ($psfile->status == plagscan_file::STATUS_FAILED_DOCUMENT_DOES_NOT_BELONG_TO_THE_INSTITUTION) {
                 $message .= get_string('error_refresh_status', 'plagiarism_plagscan');
                 $message .= html_writer::tag('i', '', array('title' => get_string('error_document_does_not_belong_to_the_institution','plagiarism_plagscan'),
+                    'class' => 'fa fa-exclamation-triangle', 'style' => 'color:#f0ad4e'));
+            } else if ($psfile->status == plagscan_file::STATUS_FAILED_ASSIGN_OR_OWNER_DOES_NOT_EXIST_OR_BELONG){
+                $message .= get_string('error_submit', 'plagiarism_plagscan');
+                $message .= html_writer::tag('i', '', array('title' => get_string('error_assignment_or_owner_does_not_exist_or_belong','plagiarism_plagscan'),
                     'class' => 'fa fa-exclamation-triangle', 'style' => 'color:#f0ad4e'));
             } else { // STATUS_FAILED_UNKNOWN
                 $message .= get_string('serverrejected', 'plagiarism_plagscan');

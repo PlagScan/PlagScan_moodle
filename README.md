@@ -1,4 +1,4 @@
-# PlagScan Moodle Plugin 3.1.22 Release Notes
+# PlagScan Moodle Plugin 3.1.23 Release Notes
 
 The advanced plagiarism checker plugin for moodle.
 
@@ -23,12 +23,10 @@ https://api.plagscan.com/PlagScan_Moodle_Manual-Admin_EN.pdf
 Bug Fix:
 --------
 
-- Improve Deutsch translation strings
-- Improve ajax calls when updating the file status
-- Fix a bug that was showing plaintext data from ajax call in the interface output instead of returning to the previous page or refreshing it properly
-- Improve the file status update, changing the status of the file in case of problems found during the conversion/check process
-- Fix a bug that was showing the disclosure of the PlagScan Plugin even in other Moodle Activies that are not assignments, and also in assignments where PlagScan was not activated
-- Improve the redirect from action to return to previous page with proper pagination
+- Add a button on admin settings to wipe the PlagScan User Cache table. This could be used to fix some inconsistency
+- Add more checks and info messages in case there was some inconsistency between the Moodle Plugin data and PlagScan
+- Add a retry when creates user in PlagScan in case it fails once
+- Add and update strings
 
 Special thanks:
 ---------------

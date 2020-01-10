@@ -104,7 +104,17 @@ class plagscan_api {
      * API_ERROR_MSG_USER_DOES_NOT_BELONG_TO_INST
      */
     const API_ERROR_MSG_USER_DOES_NOT_BELONG_TO_INST = "The user doesn't belong to this institution";
+
+    /**
+     * API_ERROR_MSG_SUBMISSION_DOES_NOT_EXIST
+     */
+    const API_ERROR_MSG_SUBMISSION_DOES_NOT_EXIST = "The submission doesn't exist or the user is not the owner of the submission";
     
+    /**
+     * API_ERROR_MSG_USER_DOES_NOT_EXIST
+     */
+    const API_ERROR_MSG_USER_DOES_NOT_EXIST = "That user doesn't exist";
+
     /**
      *
      * @var null|plagscan_api
