@@ -269,7 +269,7 @@ function xmldb_plagiarism_plagscan_upgrade($oldversion) {
             $dbman->add_field($table, $field);
         }
 
-        $field = new xmldb_field('submissionid', XMLDB_TYPE_CHAR, '255', XMLDB_UNSIGNED, null, null, 'ownerid');
+        $field = new xmldb_field('submissionid', XMLDB_TYPE_CHAR, '255', XMLDB_UNSIGNED, null, null, null);
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
