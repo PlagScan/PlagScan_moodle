@@ -61,7 +61,7 @@ foreach ($apimapping as $field => $serverfield) {
         if ($serverfield == "redLevel" || $serverfield == "yellowLevel") {
             $value = $value / 10;
         }
-
+        
         $settings->$field = $value;
     }
 }
@@ -82,7 +82,7 @@ if ($data = $form->get_data()) {
         //if (isset($data->$field) && $data->$field != $settings->$field) {
         // Setting has changed - update the server.
 
-        if ($data->$field == null) {
+        if (!isset($data->$field) || $data->$field == null) {
             $data->$field = 0;
         }
 
@@ -97,8 +97,10 @@ if ($data = $form->get_data()) {
 
     if ($result) {
         $msg = get_string('savedconfigsuccess', 'plagiarism_plagscan');
+        $msgclass = 'notifysuccess';
     } else {
-        $msg = get_string('savedconfigerror', 'plagiarism_plagscan');
+        $msg = get_string('savedapiconfigerror', 'plagiarism_plagscan');
+        $msgclass = 'notifyerror';
     }
 }
 
@@ -109,7 +111,7 @@ $PAGE->set_title(get_string('pluginname', 'plagiarism_plagscan'));
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('settingsfor', 'plagiarism_plagscan', $username));
 if ($msg) {
-    echo html_writer::tag('p', $msg, array('class' => 'notifysuccess'));
+    echo html_writer::tag('p', $msg, array('class' => $msgclass));
 }
 $form->display();
 echo $OUTPUT->footer();

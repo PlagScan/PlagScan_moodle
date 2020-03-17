@@ -41,15 +41,53 @@ class plagiarism_plagscan_observer {
      */
     public static function assignsubmission_file_uploaded(
     \assignsubmission_file\event\assessable_uploaded $event) {
+        global $DB;
 
         $instanceconfig = plagscan_get_instance_config($event->get_context()->instanceid);
         
         if(isset($instanceconfig->upload) && $instanceconfig->upload >= plagiarism_plugin_plagscan::RUN_MANUAL && $instanceconfig->upload <= plagiarism_plugin_plagscan::RUN_DUE){
             file_handler::instance()->file_uploaded($event);
-        } else{
+        } else if(isset($instanceconfig->upload) && $instanceconfig->upload == plagiarism_plugin_plagscan::RUN_SUBMIT_ON_CLOSED_SUBMISSION){
+            $course = $DB->get_record('course_modules', array('id' => $event->get_context()->instanceid));
+            if(!empty($course)){
+                $assign = $DB->get_record('assign', array('id' => $course->instance));
+                if(!empty($assign)){
+                    if($assign->submissiondrafts == 0){
+                        file_handler::instance()->file_uploaded($event);
+                    }
+                    else {
+                        return;
+                    }
+                }
+                else{
+                    return;
+                }
+            }
+            else{
+                return;
+            }
+        }
+        else{
             return;
         }
     }
+
+    /**
+     * Controls the assessable submitted event
+     * 
+     * @param \mod_assign\event\assessable_submitted $event
+     */
+    public static function mod_assign_assessable_submitted(
+        \mod_assign\event\assessable_submitted $event) {
+    
+            $instanceconfig = plagscan_get_instance_config($event->get_context()->instanceid);
+            
+            if(isset($instanceconfig->upload) && $instanceconfig->upload == plagiarism_plugin_plagscan::RUN_SUBMIT_ON_CLOSED_SUBMISSION ){
+                file_handler::instance()->file_submitted($event);
+            } else{
+                return;
+            }
+        }
 
     /**
      * Controls the onlinetext upload event

@@ -71,7 +71,7 @@ class plagscan_userconfig_form extends moodleform {
             7 => '7 %',
             8 => '8 %',
             9 => '9 %',
-            1 => '10 %',
+            10 => '10 %',
             11 => '11 %',
             12 => '12 %',
             13 => '13 %',
@@ -112,10 +112,8 @@ class plagscan_userconfig_form extends moodleform {
         $mform->setDefault('plagscan_ssty', 1);
 
         $mform->addElement('select', 'plagscan_yellow', get_string("yellow", "plagiarism_plagscan"), $yellow);
-        $mform->setDefault('plagscan_yellow', 10);
 
         $mform->addElement('select', 'plagscan_red', get_string("red", "plagiarism_plagscan"), $red);
-        $mform->setDefault('plagscan_red', 50);
         /*
           $radioarray=array();
           $radioarray[] =& $mform->createElement('radio', 'yesno', '', $share->0 , 1, 1);

@@ -79,6 +79,25 @@ class file_handler {
         }
         $this->handle_files_queue($event->get_context()->instanceid, $event->userid);
     }
+
+    /**
+     * Controls the assesable_submitted event and fill the queue with the files received
+     * 
+     * @param \mod_assign\event\assessable_submitted $event
+     */
+    public function file_submitted(
+        \mod_assign\event\assessable_submitted $event) {
+            $context = \context_module::instance($event->contextinstanceid);
+
+            if ($files = get_file_storage()->get_area_files($context->id, 'assignsubmission_file',
+            ASSIGNSUBMISSION_FILE_FILEAREA, $event->objectid, 'id', false)) {
+                foreach ($files as $file) {
+                    array_push($this->filesqueue, $file);
+                }
+            }
+            
+            $this->handle_files_queue($event->get_context()->instanceid, $event->userid);
+        }
     
     /**
      * Fill the queue to upload files from received pathnamehashes

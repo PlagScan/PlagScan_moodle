@@ -82,11 +82,21 @@ if (($data = $mform->get_data()) && confirm_sesskey()) {
         'plagscan_multipleaccounts' => false,
         'plagscan_nondisclosure_notice_email' => false,
         'plagscan_email_notification_account' => false,
-        'plagscan_groups' => true);
+        'plagscan_groups' => true,
+        'plagscan_defaults_exclude_self_matches' => false,
+        'plagscan_defaults_exclude_from_repository' => false,
+        'plagscan_defaults_online_text' => false,
+        'plagscan_defaults_show_to_students' => false,
+        'plagscan_defaults_show_students_links' => false
+    );
 
     //copy submitted localonlysettings to local copy (plagiarism_plagscan)
     $fullserverupdate = false;
     foreach ($localonlysettings as $field => $requirefullupdate) {
+        if ( ($field == 'plagscan_defaults_exclude_self_matches' || $field == 'plagscan_defaults_exclude_from_repository') && (!isset($data->$field) || $data->$field == null) ) {
+            $data->$field = 0;
+        }
+
         $value = $data->$field;
         if (isset($plagiarismsettings->$field) && $plagiarismsettings->$field == $value) { //local property copy is equal to submitted property
             continue; //Setting unchanged

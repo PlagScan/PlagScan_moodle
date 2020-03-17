@@ -36,6 +36,7 @@ if (!defined('MOODLE_INTERNAL')) {
 }
 
 require_once($CFG->dirroot . '/lib/formslib.php');
+require_once($CFG->dirroot . '/plagiarism/plagscan/lib.php');
 
 class plagscan_settings_form extends moodleform {
 
@@ -154,7 +155,42 @@ class plagscan_settings_form extends moodleform {
         . 'data-content="'.get_string('wipe_plagscan_user_cache_help', 'plagiarism_plagscan').'<div style=\'color:red;\'>'.get_string('wipe_plagscan_user_cache_alert', 'plagiarism_plagscan').'</div>" data-html="true" tabindex="0" data-trigger="focus">'
         . '<i class="icon fa fa-question-circle text-info fa-fw " aria-hidden="true" title="" aria-label=""></i>'
         . '</a><br/>');
-           
+
+
+        $mform->addElement('html', "</br></br>");
+        $mform->addElement('header', 'plagscan_assignment_defaults', get_string('plagscan_assignment_defaults_header', 'plagiarism_plagscan'));
+        $mform->addElement('html', get_string('plagscan_assignment_defaults_explain', 'plagiarism_plagscan') 
+        . "<br /><br />");
+
+            $showstudentsopt = array(\plagiarism_plugin_plagscan::SHOWSTUDENTS_NEVER => get_string('show_to_students_never', 'plagiarism_plagscan'),
+                \plagiarism_plugin_plagscan::SHOWSTUDENTS_ALWAYS => get_string('show_to_students_always', 'plagiarism_plagscan'),
+                \plagiarism_plugin_plagscan::SHOWSTUDENTS_ACTCLOSED => get_string('show_to_students_actclosed', 'plagiarism_plagscan'));
+
+            $showstudentslinks = array(\plagiarism_plugin_plagscan::SHOWS_ONLY_PLVL => get_string('show_to_students_plvl', 'plagiarism_plagscan'),
+                \plagiarism_plugin_plagscan::SHOWS_LINKS => get_string('show_to_students_links', 'plagiarism_plagscan'));
+
+            $onlinetextsubmission = array(\plagiarism_plugin_plagscan::ONLINE_TEXT_NO => get_string('online_text_no', 'plagiarism_plagscan'),
+                \plagiarism_plugin_plagscan::ONLINE_TEXT => get_string('online_text_yes', 'plagiarism_plagscan'));
+            
+            
+            $mform->addElement('checkbox', 'plagscan_defaults_exclude_self_matches', get_string('exclude_self_matches', 'plagiarism_plagscan'));
+            $mform->addHelpButton('plagscan_defaults_exclude_self_matches', 'exclude_self_matches', 'plagiarism_plagscan');
+
+            $mform->addElement('checkbox', 'plagscan_defaults_exclude_from_repository', get_string('exclude_from_repository', 'plagiarism_plagscan'));
+            $mform->addHelpButton('plagscan_defaults_exclude_from_repository', 'exclude_from_repository', 'plagiarism_plagscan');
+        
+            $mform->addElement('select', 'plagscan_defaults_online_text', get_string('online_submission', 'plagiarism_plagscan'), $onlinetextsubmission);
+            $mform->addHelpButton('plagscan_defaults_online_text', 'online_submission', 'plagiarism_plagscan');
+            
+            $mform->addElement('select', 'plagscan_defaults_show_to_students', get_string("show_to_students", "plagiarism_plagscan"), $showstudentsopt);
+            $mform->addHelpButton('plagscan_defaults_show_to_students', 'show_to_students', 'plagiarism_plagscan');
+            $mform->setDefault('plagscan_defaults_show_to_students', \plagiarism_plugin_plagscan::SHOWSTUDENTS_NEVER);
+
+            $mform->addElement('select', 'plagscan_defaults_show_students_links', get_string("show_to_students_opt2", "plagiarism_plagscan"), $showstudentslinks);
+            $mform->addHelpButton('plagscan_defaults_show_students_links', 'show_to_students_opt2', 'plagiarism_plagscan');
+            $mform->setDefault('plagscan_defaults_show_students_links', \plagiarism_plugin_plagscan::SHOWS_ONLY_PLVL);
+            $mform->disabledIf('plagscan_defaults_show_students_links', 'plagscan_defaults_show_to_students', 'eq', 0);
+            $mform->setExpanded('plagscan_assignment_defaults', false);
         
         $mform->addElement('html', "</div>");
 

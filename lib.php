@@ -55,6 +55,7 @@ class plagiarism_plugin_plagscan extends plagiarism_plugin {
     const RUN_ALL = 3;
     const RUN_DUE = 4;
     const RUN_SUBMIT_MANUAL = 5;
+    const RUN_SUBMIT_ON_CLOSED_SUBMISSION = 6;
     const SHOWSTUDENTS_NEVER = 0;
     const SHOWSTUDENTS_ALWAYS = 1;
     const SHOWSTUDENTS_ACTCLOSED = 2;
@@ -111,6 +112,7 @@ class plagiarism_plugin_plagscan extends plagiarism_plugin {
             $psfileopts = array(self::RUN_NO => get_string('no'),
                 self::RUN_SUBMIT_MANUAL => get_string('runsubmitmanual', 'plagiarism_plagscan'),
                 self::RUN_MANUAL => get_string('runmanual', 'plagiarism_plagscan'),
+                self::RUN_SUBMIT_ON_CLOSED_SUBMISSION => get_string('runsubmitonclosedsubmission', 'plagiarism_plagscan'),
                 self::RUN_ALL => get_string('runalways', 'plagiarism_plagscan'),
                 self::RUN_AUTO => get_string('runautomatic', 'plagiarism_plagscan'),
                 self::RUN_DUE => get_string('runduedate', 'plagiarism_plagscan'));
@@ -148,21 +150,24 @@ class plagiarism_plugin_plagscan extends plagiarism_plugin {
             if($show_exclude_options){
                 $mform->addElement('checkbox', 'exclude_self_matches', get_string('exclude_self_matches', 'plagiarism_plagscan'));
                 $mform->addHelpButton('exclude_self_matches', 'exclude_self_matches', 'plagiarism_plagscan');
+                $mform->setDefault('exclude_self_matches', get_config('plagiarism_plagscan', 'plagscan_defaults_exclude_self_matches'));
 
                 $mform->addElement('checkbox', 'exclude_from_repository', get_string('exclude_from_repository', 'plagiarism_plagscan'));
                 $mform->addHelpButton('exclude_from_repository', 'exclude_from_repository', 'plagiarism_plagscan');
+                $mform->setDefault('exclude_from_repository', get_config('plagiarism_plagscan', 'plagscan_defaults_exclude_from_repository'));
             }
             
             $mform->addElement('select', 'online_text', get_string('online_submission', 'plagiarism_plagscan'), $onlinetextsubmission);
             $mform->addHelpButton('online_text', 'online_submission', 'plagiarism_plagscan');
+            $mform->setDefault('online_text', get_config('plagiarism_plagscan', 'plagscan_defaults_online_text'));
             
             $mform->addElement('select', 'show_to_students', get_string("show_to_students", "plagiarism_plagscan"), $showstudentsopt);
             $mform->addHelpButton('show_to_students', 'show_to_students', 'plagiarism_plagscan');
-            $mform->setDefault('show_to_students', self::SHOWSTUDENTS_NEVER);
+            $mform->setDefault('show_to_students', get_config('plagiarism_plagscan', 'plagscan_defaults_show_to_students'));
 
             $mform->addElement('select', 'show_students_links', get_string("show_to_students_opt2", "plagiarism_plagscan"), $showstudentslinks);
             $mform->addHelpButton('show_students_links', 'show_to_students_opt2', 'plagiarism_plagscan');
-            $mform->setDefault('show_students_links', self::SHOWS_ONLY_PLVL);
+            $mform->setDefault('show_students_links', get_config('plagiarism_plagscan', 'plagscan_defaults_show_students_links'));
             $mform->disabledIf('show_students_links', 'show_to_students', 'eq', 0);
 
             /*  $mform->addElement('html', '<div class="box boxaligncenter gradingtable p-y-1">');
@@ -213,7 +218,6 @@ class plagiarism_plugin_plagscan extends plagiarism_plugin {
                 }
             } else {
                 $mform->setDefault('plagscan_upload', self::RUN_NO);
-                $mform->setDefault('exclude_self_matches', true);
             }
         }
     }
@@ -571,7 +575,7 @@ class plagiarism_plugin_plagscan extends plagiarism_plugin {
                     'fullpath' => '/plagiarism/plagscan/ajax.js',
                     'requires' => array('json'),
                 );
-                $PAGE->requires->js_init_call('M.plagiarism_plagscan.init', array($context->instanceid, $viewlinksb, $showlinks, $viewreport, $this->ps_yellow_level, $this->ps_red_level, urlencode($pageurl)), true, $jsmodule);
+                $PAGE->requires->js_init_call('M.plagiarism_plagscan.init', array($context->instanceid, $viewlinksb, $showlinks, $viewreport, $ps_yellow_level[$cmid][$USER->id], $ps_red_level[$cmid][$USER->id], urlencode($pageurl)), true, $jsmodule);
                 //$this->page->requires->yui_module('moodle-local_pluginname-modulename', 'M.local_pluginname.init_modulename',
                 //array(array('aparam'=>'paramvalue')));
                 $ajaxenabled[$cmid] = true;
@@ -581,7 +585,7 @@ class plagiarism_plugin_plagscan extends plagiarism_plugin {
             $message = html_writer::empty_tag('br') .
                     html_writer::tag('img', "", array('src' => new moodle_url('/plagiarism/plagscan/images/plagscan_icon.png'),
                         'width' => '25px', 'height' => '24px'));
-            $message .= $connection->get_message_view_from_linkarray($linkarray, $context, $viewlinksb, $showlinks, $viewreport, $this->ps_yellow_level, $this->ps_red_level, $pageurl);
+            $message .= $connection->get_message_view_from_linkarray($linkarray, $context, $viewlinksb, $showlinks, $viewreport, $ps_yellow_level[$cmid][$USER->id] , $ps_red_level[$cmid][$USER->id], $pageurl);
 
             //END create message
 

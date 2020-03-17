@@ -154,8 +154,9 @@ $string['resubmit'] = 'Resubmit to PlagScan';
 $string['runalways'] = "Start check immediately";
 $string['runautomatic'] = 'Start check immediately after the first due date';
 $string['runduedate'] = 'Start check immediately after all due dates';
-$string['runmanual'] = 'Start check manually';
+$string['runmanual'] = 'Start check manually (Upload to PlagScan when students save a draft)';
 $string['runsubmitmanual'] = 'Submit files manually';
+$string['runsubmitonclosedsubmission'] = 'Start check manually (Upload to PlagScan when students click on Submit button)';
 $string['save'] = 'Save';
 $string['savedapiconfigerror'] = 'An error occurred updating your PlagScan settings';
 $string['savedconfigsuccess'] = 'PlagScan settings saved successfully';
@@ -198,7 +199,9 @@ $string['update_frozen_checking_files_task'] = "Update the status of files froze
 $string['useplagscan'] = 'Enable PlagScan';
 $string['useplagscan_filessubmission'] = "Enable PlagScan for files submission";
 $string['useplagscan_filessubmission_help'] = '<ul><li><b>Submit files manually</b>: you can choose when to send the file to Plagscan manually by pressing the submit button.</li>'
-        . '<li><b>Start check manually</b>: you will have to check each document manually.</li>'
+        . '<li><b>Start check manually (Upload to PlagScan when students save a draft)</b>: you will have to check each document manually. Files are sent to PlagScan every time students save a draft.</li>'
+        . '<li><b>Start check manually (Upload to PlagScan when students click on Submit button)</b>: you will have to check each document manually. Files are sent to PlagScan only when students click on Submit button.'
+        . ' This option is valid when the option "Require students click submit button" is enabled. </li>'
         . '<li><b>Start check immediately</b>: the PlagScan plugin will start analyzing documents automatically and immediately after uploading.</li>'
         . '<li><b>Start check immediately after the first due date</b>: the PlagScan plugin only starts when the first due date has passed. </li>'
         . '<li><b>Start check immediately after all due dates</b>: the plugin will begin analyzing the documents right after every deadline.</li></ul>';
@@ -241,6 +244,8 @@ $string['wipe_plagscan_user_cache_alert'] = 'This function should only be used i
 $string['plagscan_user_id'] = 'PlagScan User ID';
 $string['plagscan_assingment_id'] = 'PlagScan Assignment ID';
 $string['error_assignment_or_owner_does_not_exist_or_belong'] = 'Could be that the assigment or the owner (the user who activated PlagScan for the assignment) does not exist anymore in PlagScan, or they belong to another institution';
+$string['plagscan_assignment_defaults_header'] = 'PlagScan default settings for Assignments';
+$string['plagscan_assignment_defaults_explain'] = 'These settings are set as default settings when an assignment is created. Users creating assignments will be able to change the settings according to their needs.';
 
 $string['privacy:metadata:core_plagiarism'] = 'Plugin used by Moodle plagiarism system.';
 $string['privacy:metadata:core_files'] = 'Files and online text that has been submitted using PlagScan plugin.';

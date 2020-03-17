@@ -1,3 +1,11 @@
+### Version: 3.1.24 Build: 2020031702
+
+- Added defaults PlagScan settings for Assignments on the admin settings
+- Added option to upload to PlagScan after final submission
+  - Changed option for enable PlagScan for files submission: "Start check manually" for "Start check manually (Upload to PlagScan when students save a draft)"
+  - Added new option for enable PlagScan for files submission: "Start check manually (Upload to PlagScan when students click on Submit button)"
+- Fixed problem were report level class (icon color) was always red
+
 ### Version: 3.1.23 Build: 2020011000
 
 - Add a button on admin settings to wipe the PlagScan User Cache table. This could be used to fix some inconsistency

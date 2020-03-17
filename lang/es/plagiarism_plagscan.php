@@ -145,8 +145,9 @@ $string['resubmit'] = 'Reenviar a PlagScan';
 $string['runalways'] = "Analizar inmediatamente";
 $string['runautomatic'] = 'Analizar inmediatamente despu&eacute;s de la fecha de entrega';
 $string['runduedate'] = 'Analizar inmediatamente despu&eacute;s de la fecha l&iacute;mite';
-$string['runmanual'] = 'Analizar manualmente';
+$string['runmanual'] = 'Analizar manualmente (Subir a PlagScan cuando los estudiantes guarden una entrega)';
 $string['runsubmitmanual'] = 'Enviar archivos manualmente';
+$string['runsubmitonclosedsubmission'] = 'Analizar manualmente (Subir a PlagScan cuando los estudiantes pulsen el boton Enviar Tarea)';
 $string['save'] = 'Guardar';
 $string['savedapiconfigerror'] = 'Hubo un error mientras se actualiza la configuraci&oacute;n de PlagScan';
 $string['savedconfigsuccess'] = 'Configuraci&oacute;n de PlagScan guardada!';
@@ -186,7 +187,9 @@ $string['update_frozen_checking_files_task'] = "Update the status of files froze
 $string['useplagscan'] = 'Activar PlagScan';
 $string['useplagscan_filessubmission'] = "Activar PlagScan para el envio de archivos";
 $string['useplagscan_filessubmission_help'] = '<ul><li><b>Enviar archivos manualmente</b>: puede elegir cu&aacute;ndo enviar el archivo a Plagscan manualmente presionando el bot&oacute;n de enviar. </li>'
-        . '<li><b>Analizar manualmente</b>: debe analizar cada documento manualmente.</li>'
+        . '<li><b>Analizar manualmente (Subir a PlagScan cuando los estudiantes guarden una entrega)</b>: debe analizar cada documento manualmente. Los archivos son enviados a Plagscan cada vez que los estudiantes guarden una entrega.</li>'
+        . '<li><b>Analizar manualmente (Subir a PlagScan cuando los estudiantes pulsen el boton Enviar Tarea)</b>: debe analizar cada documento manualmente. Los archivos son enviados a PlagScan solo cuando los estudiantes pulsen el boton Enviar Tarea.'
+        . ' Esta opci&oacute;n es v&aacute;lida si est&aacute; activado "Requiera aceptaci&oacute;n del usuario pulsando sobre el bot&oacute;n".</li>'
         . '<li><b>Analizar inmediatamente</b>: el plugin comenzar&aacute; a analizar los documentos autom&aacute;ticamente e inmediatamente despu&eacute;s de su entrega. </li>'
         . '<li><b>Analizar inmediatamente despu&eacute;s de la fecha de entrega</b>: el plugin comienza el analisis de archivos al finalizar la fecha de entrega. </li>'
         . '<li><b>Analizar inmediatamente despu&eacute;s de la fecha l&iacute;mite</b>: el plugin comienza el analisis de archivos al finalizar la fecha l&iacute;mite.</li></ul>';
@@ -228,6 +231,8 @@ $string['wipe_plagscan_user_cache_alert'] = 'Esta funci&oacute;n deber&iacute;a 
 $string['plagscan_user_id'] = 'ID de Usuario de PlagScan';
 $string['plagscan_assingment_id'] = 'ID de Tarea de PlagScan';
 $string['error_assignment_or_owner_does_not_exist_or_belong'] = 'Puede ser debido a que la tarea o el propietario (el usuario que activo PlagScan para la tarea) no existan en PlagScan, o ambos pertenezcan a otra instituci&oacute;n';
+$string['plagscan_assignment_defaults_header'] = 'Ajustes predeterminados de PlagScan para Tareas';
+$string['plagscan_assignment_defaults_explain'] = 'Estos ajustes se establecen como ajustes predeterminados cuando se crea una tarea. Los usuarios que creen tareas podr&aacute;n cambiar los ajustes seg&uacute;n sus necesidades.';
 
 $string['privacy:metadata:core_plagiarism'] = 'Plugin used by Moodle plagiarism system.';
 $string['privacy:metadata:core_files'] = 'Files and online text that has been submitted using PlagScan plugin.';

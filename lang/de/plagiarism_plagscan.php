@@ -146,8 +146,9 @@ $string['resubmit'] = 'Nochmal bei PlagScan einreichen';
 $string['runalways'] = "Analyse sofort bei Abgabe starten";
 $string['runautomatic'] = 'Analyse sofort nach dem ersten Abgabetermin starten';
 $string['runduedate'] = 'Analyse bei allen Abgabeterminen starten';
-$string['runmanual'] = 'Analyse manuell starten';
+$string['runmanual'] = 'Analyse manuell starten (bei PlagScan einreichen wenn Studenten einen Entwurf speichern)';
 $string['runsubmitmanual'] = 'Datei manuell einreichen';
+$string['runsubmitonclosedsubmission'] = 'Analyse manuell starten (bei PlagScan einreichen wenn Studenten auf abgeben klicken)';
 $string['save'] = 'Speichern';
 $string['savedapiconfigerror'] = 'Es gab einen Fehler beim Speichern der PlagScan-Einstellungen';
 $string['savedconfigsuccess'] = 'PlagScan-Einstellungen gespeichert';
@@ -188,7 +189,9 @@ $string['update_frozen_checking_files_task'] = "Datei-Status aktualisieren";
 $string['useplagscan'] = 'Aktiviere PlagScan';
 $string['useplagscan_filessubmission'] = "Aktiviere PlagScan f&uuml;r Einreichung von Dateien";
 $string['useplagscan_filessubmission_help'] = '<ul><li><b>Datei manuell einreichen</b>: Sie k&ouml;nnen die Datei jederzeit manuell an Plagscan senden, indem Sie auf den Button „Einreichen bei PlagScan“ klicken. </li>'
-        . '<li><b>Analyse manuell starten</b>: Sie m&uuml;ssen jedes Dokument einzeln f&uuml;r die Pr&uuml;fung ausw&auml;hlen. </li>'
+        . '<li><b>Analyse manuell starten (bei PlagScan einreichen wenn Studenten einen Entwurf speichern)</b>: Sie m&uuml;ssen jedes Dokument einzeln f&uuml;r die Pr&uuml;fung ausw&auml;hlen. Bei PlagScan einreichen wenn Studenten eine Entwurf speichern.</li>'
+        . '<li><b>Analyse manuell starten (bei PlagScan einreichen wenn Studenten auf abgeben klicken)</b>: Sie m&uuml;ssen jedes Dokument einzeln f&uuml;r die Pr&uuml;fung ausw&auml;hlen. Bei PlagScan einreichen wenn Studenten auf abgeben klicken.'
+        . ' Diese Option ist g&uuml;ltig, wenn die Option "Abgabetaste muss gedr&uuml;ckt werden" aktiviert ist.</li>'
         . '<li><b>Analyse sofort bei Abgabe starten</b>: PlagScan analysiert das Dokument automatisch und sofort nach dem Hochladen. </li>'
         . '<li><b>Analyse sofort nach dem ersten Abgabetermin starten</b>: PlagScan startet nachdem die letzte Abgabem&ouml;glichkeit abgelaufen ist. </li>'
         . '<li><b>Analyse bei allen Abgabeterminen starten: </b>Analyse startet sofort, nachdem alle Abgabem&ouml;glichkeiten abgelaufen sind.</li></ul>';
@@ -231,6 +234,8 @@ $string['wipe_plagscan_user_cache_alert'] = 'Diese Funktion sollte nur genutzt w
 $string['plagscan_user_id'] = 'PlagScan-Nutzer-ID';
 $string['plagscan_assingment_id'] = 'PlagScan-Einreichungs-ID';
 $string['error_assignment_or_owner_does_not_exist_or_belong'] = 'M&ouml;glicherweise existiert die Aufgabe oder ihr Besitzer (der Nutzer, der PlagScan f&uuml;r diese Aufgabe aktiviert hat) nicht mehr in PlagScan, oder sie geh&ouml;ren zu einer anderen Institution';
+$string['plagscan_assignment_defaults_header'] = 'PlagScan-Standardeinstellungen f&uuml;r Aufgaben';
+$string['plagscan_assignment_defaults_explain'] = 'Diese Einstellungen werden als Standardeinstellungen f&uuml;r neu erstellte Aufgaben verwendet. Nutzer k&ouml;nnen bei der Erstellung von Aufgaben diese Einstellungen ihren W&uuml;nschen entsprechend anpassen.';
 
 $string['privacy:metadata:core_plagiarism'] = 'Plugin wird vom Moodle-Plagiats-System verwendet.';
 $string['privacy:metadata:core_files'] = 'Dateien und Online-Texte, die mit dem PlagScan-Plugin &uuml;bermittelt wurden.';
