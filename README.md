@@ -1,4 +1,4 @@
-# PlagScan Moodle Plugin 3.1.24 Release Notes
+# PlagScan Moodle Plugin 3.1.25 Release Notes
 
 The advanced plagiarism checker plugin for moodle.
 
@@ -23,11 +23,7 @@ https://api.plagscan.com/PlagScan_Moodle_Manual-Admin_EN.pdf
 Bug Fix:
 --------
 
-- Added defaults PlagScan settings for Assignments on the admin settings
-- Added option to upload to PlagScan after final submission
-  - Changed option for enable PlagScan for files submission: "Start check manually" for "Start check manually (Upload to PlagScan when students save a draft)"
-  - Added new option for enable PlagScan for files submission: "Start check manually (Upload to PlagScan when students click on Submit button)"
-- Fixed problem were report level class (icon color) was always red
+- Fixed bug causing permissions error when accessing to a report for involved users in an assignment
 
 Special thanks:
 ---------------

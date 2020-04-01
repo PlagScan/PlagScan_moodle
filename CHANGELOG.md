@@ -1,3 +1,7 @@
+### Version: 3.1.25 Build: 2020040101
+
+- Fixed bug causing permissions error when accessing to a report for involved users in an assignment
+
 ### Version: 3.1.24 Build: 2020031702
 
 - Added defaults PlagScan settings for Assignments on the admin settings
