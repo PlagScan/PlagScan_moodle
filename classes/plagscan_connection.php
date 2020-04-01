@@ -766,7 +766,7 @@ class plagscan_connection {
         if(isset( $res["response"]["data"]["involved"])){
             $is_involved = $res["response"]["data"]["involved"];
 
-            if ($is_involved) {
+            if (!$is_involved) {
                 $res = plagscan_api::instance()->request($url, "PUT", null);
                 if ($res["httpcode"] == 204){
                     $involved["result"] = 1;
