@@ -53,7 +53,7 @@ class plagscan_check_automatically_pending_assign_task extends scheduled_task {
      */
     public function execute() {
         global $DB;
-        $params = ['upload' => 3, 'status' => plagscan_file::STATUS_NOT_STARTED];
+        $params = ['upload' => 3, 'status' => plagscan_file::STATUS_NOT_STARTED, 'error_no_cred' => -2];
         $sql = "SELECT psfile.id,            
             psfile.userid,        
             psfile.pid,           
@@ -64,7 +64,7 @@ class plagscan_check_automatically_pending_assign_task extends scheduled_task {
             psfile.updatestatus,  
             psfile.submissiontype
             FROM {plagiarism_plagscan} AS psfile, {plagiarism_plagscan_config} AS psassign
-            WHERE psassign.upload = :upload AND psfile.cmid = psassign.cm AND psfile.status = :status
+            WHERE psassign.upload = :upload AND psfile.cmid = psassign.cm AND psfile.status = :status AND psfile.pstatus != :error_no_cred
             LIMIT 50";
         $records = $DB->get_records_sql($sql, $params);
         

@@ -1,3 +1,7 @@
+### Version: 3.1.26 Build: 2020040601
+
+- Updated Scheduled Task for checking files on assignments configured with the option for checking automatically to avoid retry on files that returned in error due to run out of credits.
+
 ### Version: 3.1.25 Build: 2020040101
 
 - Fixed bug causing permissions error when accessing to a report for involved users in an assignment
