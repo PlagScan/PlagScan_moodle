@@ -402,6 +402,10 @@ class plagiarism_plugin_plagscan extends plagiarism_plugin {
             return '';
         }
 
+        if($is_content && empty($linkarray['content'])){
+            return;
+        }
+
         $is_multiaccount = get_config('plagiarism_plagscan', 'plagscan_multipleaccounts');
 
         // Check if plagscan is enabled for this module instance (and cache the result)

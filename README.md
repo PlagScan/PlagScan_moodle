@@ -1,4 +1,4 @@
-# PlagScan Moodle Plugin 3.1.26 Release Notes
+# PlagScan Moodle Plugin 3.1.27 Release Notes
 
 The advanced plagiarism checker plugin for moodle.
 
@@ -18,7 +18,7 @@ https://www.plagscan.com/en/plagscan-integration-moodle
 Bug Fix:
 --------
 
-- Updated Scheduled Task for checking files on assignments configured with the option for checking automatically to avoid retry on files that returned in error due to run out of credits.
+- Fix issue on assignment page load due to call to a function get_pathnamehash() on null.
 
 Special thanks:
 ---------------
