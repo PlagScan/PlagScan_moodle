@@ -1,3 +1,8 @@
+### Version: 3.1.27 Build: 2020060201
+
+- Fix issue on assignment page load due to call to a function get_pathnamehash() on null.
+
+
 ### Version: 3.1.26 Build: 2020040601
 
 - Updated Scheduled Task for checking files on assignments configured with the option for checking automatically to avoid retry on files that returned in error due to run out of credits.

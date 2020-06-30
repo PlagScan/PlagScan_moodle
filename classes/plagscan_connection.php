@@ -861,14 +861,18 @@ class plagscan_connection {
             $file = $linkarray['file'];
             $filehash = $file->get_pathnamehash();
         } else if ($is_content) {
-//            $filehash = sha1($linkarray['content']);
             $assign = new \assign($context, false, false);
             $user_submission = $assign->get_user_submission($userid,false);
             $files = get_file_storage()->get_area_files($context->id,
             'plagiarism_plagscan', 'assign_submission', $user_submission->id, null, false
             );
             $file = array_shift($files);
-            $filehash = $file->get_pathnamehash();
+            if(isset($file) && $file != NULL){
+                $filehash = $file->get_pathnamehash();
+            }
+            else{
+                $filehash = null;
+            }
         }
         
         if (plagscan_user_opted_out($userid)) {
