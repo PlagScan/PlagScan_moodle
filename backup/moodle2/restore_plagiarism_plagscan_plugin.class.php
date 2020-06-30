@@ -87,7 +87,7 @@ class restore_plagiarism_plagscan_plugin extends restore_plagiarism_plugin {
         // If multiaccount is configured get the submissionid from PlagScan.
         $multiaccount = get_config('plagiarism_plagscan', 'plagscan_multipleaccounts');
         if ($multiaccount) {
-            $data->submissionid = $this->get_submissionid_from_plagscan();
+            $data->submissionid = $this->get_submissionid_from_plagscan($data);
         }
 
         $DB->insert_record('plagiarism_plagscan_config', $data);
@@ -97,19 +97,19 @@ class restore_plagiarism_plagscan_plugin extends restore_plagiarism_plugin {
      * Creates the submission on PlagScan and returns the id.
      * @return int
      */
-    private function get_submissionid_from_plagscan() {
-        global $USER;
+    private function get_submissionid_from_plagscan($data) {
+        global $USER, $DB;
 
         require_once(__DIR__ . '/../../lib.php');
         require_once(__DIR__ . '/../../classes/plagscan_connection.php');
 
-        $cmid = $this->task->get_moduleid();
+        $config = $DB->get_record('plagiarism_plagscan_config', array('id' => $data->id));
+        
+        $cmid = $config->cm;
         $module = get_coursemodule_from_id('assign', $cmid);
 
-        $config = plagscan_get_instance_config($cmid, false);
-
         $connection = new \plagiarism_plagscan\classes\plagscan_connection;
-        $submissionid = $connection->create_submissionid($cmid, $module, $config, $USER);
+        $submissionid = $connection->create_submissionid($cmid, $module, $data, $USER);
 
         return $submissionid;
     }
