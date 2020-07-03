@@ -82,13 +82,14 @@ class restore_plagiarism_plagscan_plugin extends restore_plagiarism_plugin {
         global $DB;
 
         $data = (object)$data;
-        $data->cm = $this->task->get_moduleid();
 
         // If multiaccount is configured get the submissionid from PlagScan.
         $multiaccount = get_config('plagiarism_plagscan', 'plagscan_multipleaccounts');
         if ($multiaccount) {
             $data->submissionid = $this->get_submissionid_from_plagscan($data);
         }
+        // Set the new cm after get the submissionid from plagscan
+        $data->cm = $this->task->get_moduleid();
 
         $DB->insert_record('plagiarism_plagscan_config', $data);
     }
@@ -102,10 +103,8 @@ class restore_plagiarism_plagscan_plugin extends restore_plagiarism_plugin {
 
         require_once(__DIR__ . '/../../lib.php');
         require_once(__DIR__ . '/../../classes/plagscan_connection.php');
-
-        $config = $DB->get_record('plagiarism_plagscan_config', array('id' => $data->id));
         
-        $cmid = $config->cm;
+        $cmid = $data->cm;
         $module = get_coursemodule_from_id('assign', $cmid);
 
         $connection = new \plagiarism_plagscan\classes\plagscan_connection;
