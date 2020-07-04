@@ -103,9 +103,12 @@ class restore_plagiarism_plagscan_plugin extends restore_plagiarism_plugin {
         require_once(__DIR__ . '/../../lib.php');
         require_once(__DIR__ . '/../../classes/plagscan_connection.php');
 
-        $cmid = $this->task->get_moduleid();
-        $module = get_coursemodule_from_id('assign', $cmid);
-
+        $data = $this->task->get_info();
+        foreach ($data->activities as $activity) {
+            $cmid = $activity->moduleid;
+        }
+        // Get old module as template, as the new one is not existing yet in {assign} table.
+        $module = get_coursemodule_from_id('assign', $cmid, $this->task->get_courseid());
         $config = plagscan_get_instance_config($cmid, false);
 
         $connection = new \plagiarism_plagscan\classes\plagscan_connection;
