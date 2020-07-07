@@ -51,7 +51,6 @@ class backup_plagiarism_plagscan_plugin extends backup_plagiarism_plugin {
         $plagscanconfigs = new backup_nested_element('plagscan_configs');
         $plagscanconfig = new backup_nested_element('plagscan_config', array('id'), [
                 'upload',
-                'cm',
                 'complete',
                 'username',
                 'nondisclosure',
@@ -86,7 +85,6 @@ class backup_plagiarism_plagscan_plugin extends backup_plagiarism_plugin {
         $plagscanconfigs = new backup_nested_element('plagscan_configs');
         $plagscanconfig = new backup_nested_element('plagscan_config', array('id'), [
                 'upload',
-                'cm',
                 'complete',
                 'username',
                 'nondisclosure',

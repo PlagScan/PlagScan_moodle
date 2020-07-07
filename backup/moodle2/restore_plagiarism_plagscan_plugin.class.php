@@ -82,14 +82,16 @@ class restore_plagiarism_plagscan_plugin extends restore_plagiarism_plugin {
         global $DB;
 
         $data = (object)$data;
+        $data->cm = $this->task->get_moduleid();
 
         // If multiaccount is configured get the submissionid from PlagScan.
         $multiaccount = get_config('plagiarism_plagscan', 'plagscan_multipleaccounts');
         if ($multiaccount) {
-            $data->submissionid = $this->get_submissionid_from_plagscan($data);
+            $data->submissionid = $this->get_submissionid_from_plagscan();
         }
-        // Set the new cm after get the submissionid from plagscan
-        $data->cm = $this->task->get_moduleid();
+        else {
+            $data->submissionid = null;
+        }
 
         $DB->insert_record('plagiarism_plagscan_config', $data);
     }
@@ -98,17 +100,22 @@ class restore_plagiarism_plagscan_plugin extends restore_plagiarism_plugin {
      * Creates the submission on PlagScan and returns the id.
      * @return int
      */
-    private function get_submissionid_from_plagscan($data) {
-        global $USER, $DB;
+    private function get_submissionid_from_plagscan() {
+        global $USER;
 
         require_once(__DIR__ . '/../../lib.php');
         require_once(__DIR__ . '/../../classes/plagscan_connection.php');
-        
-        $cmid = $data->cm;
-        $module = get_coursemodule_from_id('assign', $cmid);
+
+        $data = $this->task->get_info();
+        foreach ($data->activities as $activity) {
+            $cmid = $activity->moduleid;
+        }
+        // Get old module as template, as the new one is not existing yet in {assign} table.
+        $module = get_coursemodule_from_id('assign', $cmid, $this->task->get_courseid());
+        $config = plagscan_get_instance_config($cmid, false);
 
         $connection = new \plagiarism_plagscan\classes\plagscan_connection;
-        $submissionid = $connection->create_submissionid($cmid, $module, $data, $USER);
+        $submissionid = $connection->create_submissionid($cmid, $module, $config, $USER);
 
         return $submissionid;
     }
