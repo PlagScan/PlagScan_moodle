@@ -1,3 +1,8 @@
+### Version: 3.1.28 Build: 2020071501
+
+- Add Backup/Restore functionality, allowing to backup assignments where PlagScan plugin is enabled and create new ones from there having PlagScan enabled once is restored.
+
+
 ### Version: 3.1.27 Build: 2020060201
 
 - Fix issue on assignment page load due to call to a function get_pathnamehash() on null.
