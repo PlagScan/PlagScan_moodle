@@ -206,7 +206,7 @@ class plagscan_api {
             $proxyhost = $CFG->proxyhost . ":" . $CFG->proxyport;
             $curlopt[CURLOPT_PROXY] = $proxyhost;
             $curlopt[CURLOPT_FOLLOWLOCATION] = 1;
-            if(isset($CFG->proxytype) && $CFG->proxytype != "SOCKS5"){
+            if(isset($CFG->proxytype) && $CFG->proxytype == "SOCKS5"){
                 $curlopt[CURLOPT_PROXYTYPE] = CURLPROXY_SOCKS5;
             }
             if(isset($CFG->proxyuser) && $CFG->proxyuser != ""){
