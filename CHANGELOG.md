@@ -1,3 +1,8 @@
+### Version: 3.1.29 Build: 2020111901
+
+- Add proxy support, getting proxy config from Moodle settings
+- Fix a problem causing that some content was shown when creating/editing assigment related to exclude functions
+
 ### Version: 3.1.28 Build: 2020071501
 
 - Add Backup/Restore functionality, allowing to backup assignments where PlagScan plugin is enabled and create new ones from there having PlagScan enabled once is restored.

@@ -1,4 +1,4 @@
-# PlagScan Moodle Plugin 3.1.28 Release Notes
+# PlagScan Moodle Plugin 3.1.29 Release Notes
 
 The advanced plagiarism checker plugin for moodle.
 
@@ -18,7 +18,8 @@ https://www.plagscan.com/en/plagscan-integration-moodle
 Bug Fix:
 --------
 
-- Add Backup/Restore functionality, allowing to backup assignments where PlagScan plugin is enabled and create new ones from there having PlagScan enabled once is restored.
+- Add proxy support, getting proxy config from Moodle settings
+- Fix a problem causing that some content was shown when creating/editing assigment related to exclude functions
 
 Special thanks:
 ---------------

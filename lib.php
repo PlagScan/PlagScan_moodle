@@ -140,11 +140,17 @@ class plagiarism_plugin_plagscan extends plagiarism_plugin {
             }
             
             $show_exclude_options = true;
+            $is_multiaccount = get_config('plagiarism_plagscan', 'plagscan_multipleaccounts');
             if($cmid){
                 $instanceconfig = plagscan_get_instance_config($cmid);
                 if(!empty($instanceconfig->username) && ($instanceconfig->submissionid == NULL || intval($instanceconfig->submissionid) <= 0 )){
                     $show_exclude_options = false;
-                }            
+                }
+            }
+            else{
+                if(!$is_multiaccount){
+                    $show_exclude_options = false;
+                }
             }
             
             if($show_exclude_options){

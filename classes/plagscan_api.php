@@ -146,6 +146,7 @@ class plagscan_api {
      * @return array
      */
     public function request($endPoint, $requestType, $data, $filedata = null, $urlencodeddata = false) {
+        global $CFG;
 
         $ch = curl_init();
         $url = filter_var(get_config('plagiarism_plagscan', 'plagscan_server'), FILTER_SANITIZE_URL);
@@ -200,6 +201,20 @@ class plagscan_api {
                 CURLOPT_POSTFIELDS => $data,
             );
         }
+
+        if(isset($CFG->proxyhost) && $CFG->proxyhost != "") {
+            $proxyhost = $CFG->proxyhost . ":" . $CFG->proxyport;
+            $curlopt[CURLOPT_PROXY] = $proxyhost;
+            $curlopt[CURLOPT_FOLLOWLOCATION] = 1;
+            if(isset($CFG->proxytype) && $CFG->proxytype == "SOCKS5"){
+                $curlopt[CURLOPT_PROXYTYPE] = CURLPROXY_SOCKS5;
+            }
+            if(isset($CFG->proxyuser) && $CFG->proxyuser != ""){
+                $proxyauth = $CFG->proxyuser . ":" . $CFG->proxypassword;
+                $curlopt[CURLOPT_PROXYUSERPWD] = $proxyauth;
+            }
+        }
+
         curl_setopt_array($ch, $curlopt);
         
         $response = curl_exec($ch);
