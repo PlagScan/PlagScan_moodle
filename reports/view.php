@@ -84,11 +84,23 @@ if (!$is_multiaccount || $instanceconfig->submissionid == null || $instanceconfi
 
 $res = $connection->report_retrieve($pid, $psuserid, $mode);
 
+if(isset($res["message"])){
+    $msg = $res["message"];
+    if($msg == "The user provided has no permissions to see the report." && $is_teacher){
+        if($is_multiaccount && $instanceconfig->submissionid != null && $instanceconfig->ownerid != null){
+            $assign_owner = $DB->get_record('user', array("email" => $instanceconfig->username));
+            $assign_psownerid = $connection->find_user($assign_owner);
+            $is_involved = $connection->involve_assistant($instanceconfig, $assign_psownerid, $USER);
+            if ($is_involved["result"] == 1){
+                $res = $connection->report_retrieve($pid, $psuserid, $mode);
+            }
+        }
+    }
+}
+
 if (isset($res["reportLink"])) {
     redirect($res["reportLink"]);
-} else if (isset($res["message"])) {
-    $msg = $res["message"];
-} else {
+} else if (!isset($msg)) {
     $msg = get_string('report_retrieve_error', 'plagiarism_plagscan');
 }
 
