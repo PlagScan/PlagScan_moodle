@@ -532,7 +532,8 @@ class plagiarism_plugin_plagscan extends plagiarism_plugin {
         if ($is_file || ($is_content && $instanceconfig->enable_online_text == 1)) {
             
             static $ps_red_level, $ps_yellow_level;
-            if ($ps_red_level[$cmid][$USER->id] == null && $ps_yellow_level[$cmid][$USER->id] == null) {
+            if ((!isset($ps_red_level[$cmid][$USER->id]) && !isset($ps_yellow_level[$cmid][$USER->id])) || 
+                ($ps_red_level[$cmid][$USER->id] == null && $ps_yellow_level[$cmid][$USER->id] == null)) {
                 try {
                     if ($instanceconfig->nondisclosure == 1) {
                         $connection->enable_nondisclosure();
