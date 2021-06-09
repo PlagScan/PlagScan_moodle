@@ -1,3 +1,11 @@
+### Version: 3.2.1 Build: 2021060900
+
+- Remove deprecated config variables
+- Remove deprecated methods
+- Added methods to support Course module edit form Callbacks
+- Added support for latest Moodle versions 3.9, 3.10 and 3.11 
+- Fix problem with showing some debug message from non set variables or objects
+
 ### Version: 3.1.29 Build: 2020111901
 
 - Add proxy support, getting proxy config from Moodle settings

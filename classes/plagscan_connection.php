@@ -675,38 +675,41 @@ class plagscan_connection {
      */
     function find_user($user) {
         global $DB;
+
         //First check if the user is registered in the Moodle DB with the PS id
-        $psuser = $DB->get_record("plagiarism_plagscan_user", array("userid" => $user->id));
         $psuserid = null;
+        if(isset($user->id)){
+            $psuser = $DB->get_record("plagiarism_plagscan_user", array("userid" => $user->id));
 
-        if ($psuser) {
-            $psuserid = $psuser->psuserid;
-        } else {
-            $access_token = $this->get_access_token();
-
-            $userlog = array(
-                'context' => \context_system::instance(),
-                'userid' => $user->id
-            );
-
-            user_search_started::create($userlog)->trigger();
-
-            $url = plagscan_api::API_USERS . "?access_token=$access_token&searchByEmail=$user->email";
-
-            $res = plagscan_api::instance()->request($url, "GET", null);
-
-            if (isset($res["response"]["data"]["userID"])) {
-                $psuserid = $res["response"]["data"]["userID"];
-            }
-
-            if ($psuserid != null && intval($psuserid) > 0) {
-                $insert = new \stdClass();
-                $insert->userid = $user->id;
-                $insert->psuserid = $psuserid;
-                $DB->insert_record('plagiarism_plagscan_user', $insert);
-
-                $userlog['other']['psuserid'] = $psuserid;
-                user_search_completed::create($userlog)->trigger();
+            if ($psuser) {
+                $psuserid = $psuser->psuserid;
+            } else {
+                $access_token = $this->get_access_token();
+    
+                $userlog = array(
+                    'context' => \context_system::instance(),
+                    'userid' => $user->id
+                );
+    
+                user_search_started::create($userlog)->trigger();
+    
+                $url = plagscan_api::API_USERS . "?access_token=$access_token&searchByEmail=$user->email";
+    
+                $res = plagscan_api::instance()->request($url, "GET", null);
+    
+                if (isset($res["response"]["data"]["userID"])) {
+                    $psuserid = $res["response"]["data"]["userID"];
+                }
+    
+                if ($psuserid != null && intval($psuserid) > 0) {
+                    $insert = new \stdClass();
+                    $insert->userid = $user->id;
+                    $insert->psuserid = $psuserid;
+                    $DB->insert_record('plagiarism_plagscan_user', $insert);
+    
+                    $userlog['other']['psuserid'] = $psuserid;
+                    user_search_completed::create($userlog)->trigger();
+                }
             }
         }
 

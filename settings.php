@@ -70,8 +70,7 @@ if (($data = $mform->get_data()) && confirm_sesskey()) {
         $data->plagscan_email_notification_account = 0;
     }
 
-    set_config('plagscan_use', $data->plagscan_use, 'plagiarism');
-    set_config('plagscan_use', $data->plagscan_use, 'plagiarism_plagscan');
+    set_config('enabled', $data->plagscan_use, 'plagiarism_plagscan');
 
     // Save all local only settings first (as these could affect the server connection parameters).
     $localonlysettings = array('plagscan_id' => true,
