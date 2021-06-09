@@ -340,5 +340,14 @@ function xmldb_plagiarism_plagscan_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2019101000, 'plagiarism', 'plagscan');
     }
 
+    if ($oldversion < 2021060900) {
+        $enabled = get_config('plagiarism', 'plagscan_use');
+        set_config('enabled', $enabled, 'plagiarism_plagscan');
+        $DB->delete_records('config_plugins', array('name' => 'plagscan_use', 'plugin' => 'plagiarism'));
+        $DB->delete_records('config_plugins', array('name' => 'plagscan_use', 'plugin' => 'plagiarism_plagscan'));
+        
+        upgrade_plugin_savepoint(true, 2021060900, 'plagiarism', 'plagscan');
+    }
+
     return true;
 }

@@ -56,7 +56,7 @@ if (!(has_capability('plagiarism/plagscan:viewfullreport', $context) || has_capa
     throw new moodle_exception('Permission denied! You do not have the right capabilities.', 'plagiarism_plagscan');
 }
 
-if (!get_config('plagiarism_plagscan', 'plagscan_use')) {
+if (!get_config('plagiarism_plagscan', 'enabled')) {
     // Disabled at the site level
     print_error('disabledsite', 'plagiarism_plagscan');
 }

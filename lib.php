@@ -67,292 +67,6 @@ class plagiarism_plugin_plagscan extends plagiarism_plugin {
     private $ps_yellow_level = null;
     private $ps_red_level = null;
 
-    /**
-     * hook to add plagiarism specific settings to a module settings page
-     * @param object $mform  - Moodle form
-     * @param object $context - current context
-     * @param string $modulename - name of module
-     */
-    public function get_form_elements_module($mform, $context, $modulename = "") {
-        global $DB, $USER, $COURSE, $CFG;
-
-        if (!has_capability('plagiarism/plagscan:enable', $context)) {
-            return '';
-        }
-        $groups = trim(get_config('plagiarism_plagscan', 'plagscan_groups'));
-
-        $groups = explode(",", $groups);
-        $enable_plagscan = false;
-
-        if (sizeof($groups) == 1 && $groups[0] == "") {
-            $enable_plagscan = true;
-        }
-        $category = $DB->get_record('course_categories', array('id' => $COURSE->category));
-        $category = $category->name;
-
-
-        if (!$enable_plagscan) {
-            for ($i = 0; $i < sizeof($groups); $i++) {
-                if (strtolower($groups[$i]) == strtolower($category)) {
-                    $enable_plagscan = true;
-                    break;
-                }
-            }
-        }
-
-        if (!$enable_plagscan) {
-            return '';
-        }
-
-
-        if ($modulename != "mod_forum") {
-            //cm update
-            $cmid = optional_param('update', 0, PARAM_INT);
-            
-            $psfileopts = array(self::RUN_NO => get_string('no'),
-                self::RUN_SUBMIT_MANUAL => get_string('runsubmitmanual', 'plagiarism_plagscan'),
-                self::RUN_MANUAL => get_string('runmanual', 'plagiarism_plagscan'),
-                self::RUN_SUBMIT_ON_CLOSED_SUBMISSION => get_string('runsubmitonclosedsubmission', 'plagiarism_plagscan'),
-                self::RUN_ALL => get_string('runalways', 'plagiarism_plagscan'),
-                self::RUN_AUTO => get_string('runautomatic', 'plagiarism_plagscan'),
-                self::RUN_DUE => get_string('runduedate', 'plagiarism_plagscan'));
-
-            $showstudentsopt = array(self::SHOWSTUDENTS_NEVER => get_string('show_to_students_never', 'plagiarism_plagscan'),
-                self::SHOWSTUDENTS_ALWAYS => get_string('show_to_students_always', 'plagiarism_plagscan'),
-                self::SHOWSTUDENTS_ACTCLOSED => get_string('show_to_students_actclosed', 'plagiarism_plagscan'));
-
-            $showstudentslinks = array(self::SHOWS_ONLY_PLVL => get_string('show_to_students_plvl', 'plagiarism_plagscan'),
-                self::SHOWS_LINKS => get_string('show_to_students_links', 'plagiarism_plagscan'));
-
-            $onlinetextsubmission = array(self::ONLINE_TEXT_NO => get_string('online_text_no', 'plagiarism_plagscan'),
-                self::ONLINE_TEXT => get_string('online_text_yes', 'plagiarism_plagscan'));
-
-            $mform->addElement('header', 'plagscandesc', get_string('plagscan', 'plagiarism_plagscan'));
-
-            $mform->addElement('select', 'plagscan_upload', get_string("useplagscan_filessubmission", "plagiarism_plagscan"), $psfileopts);
-            $mform->addHelpButton('plagscan_upload', 'useplagscan_filessubmission', 'plagiarism_plagscan');
-
-// prints non-disclosure notice if it's activated
-            if (get_config('plagiarism_plagscan', 'plagscan_nondisclosure_notice_email')) {
-                $mform->addElement('checkbox', 'nondisclosure_notice', get_string('plagscan_nondisclosure_notice_email', 'plagiarism_plagscan'));
-                $mform->addHelpButton('nondisclosure_notice', 'plagscan_nondisclosure_notice_email', 'plagiarism_plagscan');
-                $mform->addElement('static', 'nondisclosure_notice_desc', '', get_string('nondisclosure_notice_desc', 'plagiarism_plagscan', get_config('plagiarism_plagscan', 'plagscan_nondisclosure_notice_email')));
-            }
-            
-            $show_exclude_options = true;
-            $is_multiaccount = get_config('plagiarism_plagscan', 'plagscan_multipleaccounts');
-            if($cmid){
-                $instanceconfig = plagscan_get_instance_config($cmid);
-                if(!empty($instanceconfig->username) && ($instanceconfig->submissionid == NULL || intval($instanceconfig->submissionid) <= 0 )){
-                    $show_exclude_options = false;
-                }
-            }
-            else{
-                if(!$is_multiaccount){
-                    $show_exclude_options = false;
-                }
-            }
-            
-            if($show_exclude_options){
-                $mform->addElement('checkbox', 'exclude_self_matches', get_string('exclude_self_matches', 'plagiarism_plagscan'));
-                $mform->addHelpButton('exclude_self_matches', 'exclude_self_matches', 'plagiarism_plagscan');
-                $mform->setDefault('exclude_self_matches', get_config('plagiarism_plagscan', 'plagscan_defaults_exclude_self_matches'));
-
-                $mform->addElement('checkbox', 'exclude_from_repository', get_string('exclude_from_repository', 'plagiarism_plagscan'));
-                $mform->addHelpButton('exclude_from_repository', 'exclude_from_repository', 'plagiarism_plagscan');
-                $mform->setDefault('exclude_from_repository', get_config('plagiarism_plagscan', 'plagscan_defaults_exclude_from_repository'));
-            }
-            
-            $mform->addElement('select', 'online_text', get_string('online_submission', 'plagiarism_plagscan'), $onlinetextsubmission);
-            $mform->addHelpButton('online_text', 'online_submission', 'plagiarism_plagscan');
-            $mform->setDefault('online_text', get_config('plagiarism_plagscan', 'plagscan_defaults_online_text'));
-            
-            $mform->addElement('select', 'show_to_students', get_string("show_to_students", "plagiarism_plagscan"), $showstudentsopt);
-            $mform->addHelpButton('show_to_students', 'show_to_students', 'plagiarism_plagscan');
-            $mform->setDefault('show_to_students', get_config('plagiarism_plagscan', 'plagscan_defaults_show_to_students'));
-
-            $mform->addElement('select', 'show_students_links', get_string("show_to_students_opt2", "plagiarism_plagscan"), $showstudentslinks);
-            $mform->addHelpButton('show_students_links', 'show_to_students_opt2', 'plagiarism_plagscan');
-            $mform->setDefault('show_students_links', get_config('plagiarism_plagscan', 'plagscan_defaults_show_students_links'));
-            $mform->disabledIf('show_students_links', 'show_to_students', 'eq', 0);
-
-            /*  $mform->addElement('html', '<div class="box boxaligncenter gradingtable p-y-1">');
-              $mform->addElement('html', '<div class="flexible generaltable generalbox">');
-              $mform->addElement('html', '</div>');
-              $mform->addElement('html', '</div>');
-              $this->add_action_buttons(true); */
-
-            if ($cmid) {
-                $mform->setDefault('plagscan_upload', $instanceconfig->upload);
-                if (isset($instanceconfig->enable_online_text)) {
-                    $mform->setDefault('online_text', $instanceconfig->enable_online_text);
-                }
-                
-                if($show_exclude_options){
-                    if(isset($instanceconfig->exclude_self_matches)){
-                        $mform->setDefault('exclude_self_matches', $instanceconfig->exclude_self_matches);
-                    }
-
-                    if(isset($instanceconfig->exclude_from_repository)){
-                        $mform->setDefault('exclude_from_repository', $instanceconfig->exclude_from_repository);
-                    }
-                }                    
-
-                $mform->setDefault('show_to_students', $instanceconfig->show_report_to_students);
-                $mform->setDefault('show_students_links', $instanceconfig->show_students_links);
-
-
-                if (get_config('plagiarism_plagscan', 'plagscan_nondisclosure_notice_email')) {
-                    $mform->setDefault('nondisclosure_notice', $instanceconfig->nondisclosure);
-                }
-
-                if (get_config('plagiarism_plagscan', 'plagscan_multipleaccounts')) {
-                    if (!empty($instanceconfig->username)) {
-                        if ($instanceconfig->username == $USER->email) {
-                            $user = $USER;
-                        } else {
-                            $user = $DB->get_record('user', array('email' => $instanceconfig->username));
-                        }
-                        if ($user) {
-                            $name = fullname($user) . " ({$user->email})";
-                            $mform->addElement('static', 'plagscan_admin_email', '', get_string('filesassociated', 'plagiarism_plagscan', $name));
-                        }
-                    }
-                    $url = new moodle_url('/plagiarism/plagscan/userconfig.php', array('sesskey' => sesskey()));
-                    $link = html_writer::link($url, get_string('updateyoursettings', 'plagiarism_plagscan'), array('target' => '_blank'));
-                    $mform->addElement('html', $link);
-                }
-            } else {
-                $mform->setDefault('plagscan_upload', self::RUN_NO);
-            }
-        }
-    }
-
-    /* hook to save plagiarism specific settings on a module settings page
-     * @param object $data - data from an mform submission.
-     */
-
-    public function save_form_elements($data) {
-        global $DB, $USER, $CFG;
-
-        if ($data->modulename != "assign") {
-            return '';
-        }
-
-        $cmid = $data->coursemodule;
-
-        $modulesql = 'SELECT m.id, m.name, cm.instance' .
-                ' FROM {course_modules} cm' .
-                ' INNER JOIN {modules} m on cm.module = m.id ' .
-                'WHERE cm.id = ?';
-        $moduledetail = $DB->get_record_sql($modulesql, array($cmid));
-
-        if (!empty($moduledetail)) {
-            $sql = "SELECT * FROM " . $CFG->prefix . $moduledetail->name . " WHERE id= ?";
-            $module = $DB->get_record_sql($sql, array($moduledetail->instance));
-        }
-
-        if (isset($data->plagscan_upload)) {
-            $config = new \stdClass();
-            $config->upload = filter_var($data->plagscan_upload, FILTER_VALIDATE_INT);
-
-            if ($config->upload !== self::RUN_NO) {
-                $assignlog = array(
-                    'context' => \context_system::instance(),
-                    'objectid' => $cmid
-                );
-
-                assign_creation_started::create($assignlog)->trigger();
-                
-                $is_multiaccount = get_config('plagiarism_plagscan', 'plagscan_multipleaccounts');
-
-                if ($is_multiaccount) {
-                    $user = $USER;
-                } else {
-                    $user = $DB->get_record('user', array('email' => get_config('plagiarism_plagscan', 'plagscan_admin_email')));
-                }
-                
-                $oldconfig = plagscan_get_instance_config($cmid, false);
-                if (!isset($oldconfig->username) || empty($oldconfig->username)) {
-                    $config->username = $user->email;
-                } else {
-                    $config->username = $oldconfig->username;
-                }
-
-                
-                if ( !isset($oldconfig->ownerid) || empty($oldconfig->ownerid) || intval($oldconfig->ownerid) <= 0 ) {
-                    if (!isset($oldconfig->username) || empty($oldconfig->username)) {
-                        $config->ownerid = $user->id;
-                    } else {
-                        $owner = $DB->get_record('user', array("email" => $oldconfig->username));
-                        $config->ownerid = $owner->id;
-                    }
-                } else {
-                    $config->ownerid = $oldconfig->ownerid;
-                }
-                
-                $validation_default = array('options' => array('default' => 0));
-                
-                if(isset($data->exclude_self_matches)){
-                    $config->exclude_self_matches = filter_var($data->exclude_self_matches, FILTER_VALIDATE_INT, $validation_default);
-                }
-                else{
-                    $config->exclude_self_matches = 0;
-                }
-                
-                if(isset($data->exclude_from_repository)){
-                    $config->exclude_from_repository = filter_var($data->exclude_from_repository, FILTER_VALIDATE_INT, $validation_default);
-                }
-                else {
-                    $config->exclude_from_repository = 0;
-                }
-                
-                $connection = new plagscan_connection();
-                
-                if ((!isset($oldconfig->upload) || empty($oldconfig->upload)) && (!isset($oldconfig->submissionid) || intval($oldconfig->submissionid) <= 0)) {
-                    if ($is_multiaccount) {
-                        $submissionid = $connection->create_submissionid($cmid, $module, $config, $user);
-                        if (intval($submissionid) <= 0){
-                            //throw new moodle_exception('error_assignment_creation', 'plagiarism_plagscan');
-                            $error_msg = "PlagScan: ".get_string('error_assignment_creation', 'plagiarism_plagscan') . ".";
-                            if(intval($submissionid) == -1){
-                                $error_msg .= " " . get_string('error_user_does_not_belong_to_the_institution', 'plagiarism_plagscan'). ".";
-                            }
-                            \core\notification::add($error_msg, \core\output\notification::NOTIFY_ERROR);
-                            return;
-                        }
-                        $assignlog['other']['submissionid'] = $submissionid;
-                        assign_creation_completed::create($assignlog)->trigger();
-                    }
-                    else {
-                        $submissionid = null;
-                    }
-                }
-                else {
-                    $submissionid = $oldconfig->submissionid;
-                    if ($submissionid != NULL) {
-                        $assign_owner = $DB->get_record("user", array("id" => $config->ownerid));
-                        $connection->update_submission($cmid, $module, $config, $submissionid, $assign_owner);
-                        assign_update_completed::create($assignlog)->trigger();
-                    }
-                }
-                
-                $config->show_report_to_students = filter_var($data->show_to_students, FILTER_VALIDATE_INT, $validation_default);
-                $config->show_students_links = filter_var($data->show_students_links, FILTER_VALIDATE_INT, $validation_default);
-                $config->enable_online_text = filter_var($data->online_text, FILTER_VALIDATE_INT, $validation_default);
-
-                $config->submissionid = $submissionid;
-                //nondisclosure document
-                if (isset($data->nondisclosure_notice) && $data->nondisclosure_notice == 1 && get_config('plagiarism_plagscan', 'plagscan_nondisclosure_notice_email')) {
-                    $config->nondisclosure = 1;
-                    //$config->username = get_config('plagiarism_plagscan', 'plagscan_nondisclosure_notice_email');
-                }
-                //END nondisclosure document
-            }
-            plagscan_set_instance_config($cmid, $config);
-        }
-    }
-
     public function cron() {
         
     }
@@ -736,4 +450,296 @@ function plagscan_user_opted_out($userid) {
     }
 
     return $optout[$userid];
+}
+
+/**
+ * hook to add plagiarism specific settings to a module settings page
+ * @param moodleform $formwrapper The moodle quickforms wrapper object.
+ * @param MoodleQuickForm $mform The actual form object (required to modify the form).
+ */
+function plagiarism_plagscan_coursemodule_standard_elements($formwrapper, $mform) {
+    global $DB, $USER, $COURSE, $CFG;
+
+    $plugin = new plagiarism_plugin_plagscan();
+    $context = context_course::instance($formwrapper->get_course()->id);
+
+    if (!get_config('plagiarism_plagscan', 'enabled') || !has_capability('plagiarism/plagscan:enable', $context)) {
+        return '';
+    }
+    $groups = trim(get_config('plagiarism_plagscan', 'plagscan_groups'));
+
+    $groups = explode(",", $groups);
+    $enable_plagscan = false;
+
+    if (sizeof($groups) == 1 && $groups[0] == "") {
+        $enable_plagscan = true;
+    }
+    $category = $DB->get_record('course_categories', array('id' => $COURSE->category));
+    $category = $category->name;
+
+
+    if (!$enable_plagscan) {
+        for ($i = 0; $i < sizeof($groups); $i++) {
+            if (strtolower($groups[$i]) == strtolower($category)) {
+                $enable_plagscan = true;
+                break;
+            }
+        }
+    }
+
+    if (!$enable_plagscan) {
+        return '';
+    }
+
+    $modulename = $formwrapper->get_current()->modulename;
+    if ($modulename == 'assign') {
+        //cm update
+        $cmid = optional_param('update', 0, PARAM_INT);
+        
+        $psfileopts = array($plugin::RUN_NO => get_string('no'),
+            $plugin::RUN_SUBMIT_MANUAL => get_string('runsubmitmanual', 'plagiarism_plagscan'),
+            $plugin::RUN_MANUAL => get_string('runmanual', 'plagiarism_plagscan'),
+            $plugin::RUN_SUBMIT_ON_CLOSED_SUBMISSION => get_string('runsubmitonclosedsubmission', 'plagiarism_plagscan'),
+            $plugin::RUN_ALL => get_string('runalways', 'plagiarism_plagscan'),
+            $plugin::RUN_AUTO => get_string('runautomatic', 'plagiarism_plagscan'),
+            $plugin::RUN_DUE => get_string('runduedate', 'plagiarism_plagscan'));
+
+        $showstudentsopt = array($plugin::SHOWSTUDENTS_NEVER => get_string('show_to_students_never', 'plagiarism_plagscan'),
+            $plugin::SHOWSTUDENTS_ALWAYS => get_string('show_to_students_always', 'plagiarism_plagscan'),
+            $plugin::SHOWSTUDENTS_ACTCLOSED => get_string('show_to_students_actclosed', 'plagiarism_plagscan'));
+
+        $showstudentslinks = array($plugin::SHOWS_ONLY_PLVL => get_string('show_to_students_plvl', 'plagiarism_plagscan'),
+            $plugin::SHOWS_LINKS => get_string('show_to_students_links', 'plagiarism_plagscan'));
+
+        $onlinetextsubmission = array($plugin::ONLINE_TEXT_NO => get_string('online_text_no', 'plagiarism_plagscan'),
+            $plugin::ONLINE_TEXT => get_string('online_text_yes', 'plagiarism_plagscan'));
+
+        $mform->addElement('header', 'plagscandesc', get_string('plagscan', 'plagiarism_plagscan'));
+
+        $mform->addElement('select', 'plagscan_upload', get_string("useplagscan_filessubmission", "plagiarism_plagscan"), $psfileopts);
+        $mform->addHelpButton('plagscan_upload', 'useplagscan_filessubmission', 'plagiarism_plagscan');
+
+// prints non-disclosure notice if it's activated
+        if (get_config('plagiarism_plagscan', 'plagscan_nondisclosure_notice_email')) {
+            $mform->addElement('checkbox', 'nondisclosure_notice', get_string('plagscan_nondisclosure_notice_email', 'plagiarism_plagscan'));
+            $mform->addHelpButton('nondisclosure_notice', 'plagscan_nondisclosure_notice_email', 'plagiarism_plagscan');
+            $mform->addElement('static', 'nondisclosure_notice_desc', '', get_string('nondisclosure_notice_desc', 'plagiarism_plagscan', get_config('plagiarism_plagscan', 'plagscan_nondisclosure_notice_email')));
+        }
+        
+        $show_exclude_options = true;
+        $is_multiaccount = get_config('plagiarism_plagscan', 'plagscan_multipleaccounts');
+        if($cmid){
+            $instanceconfig = plagscan_get_instance_config($cmid);
+            if(!empty($instanceconfig->username) && ($instanceconfig->submissionid == NULL || intval($instanceconfig->submissionid) <= 0 )){
+                $show_exclude_options = false;
+            }
+        }
+        else{
+            if(!$is_multiaccount){
+                $show_exclude_options = false;
+            }
+        }
+        
+        if($show_exclude_options){
+            $mform->addElement('checkbox', 'exclude_self_matches', get_string('exclude_self_matches', 'plagiarism_plagscan'));
+            $mform->addHelpButton('exclude_self_matches', 'exclude_self_matches', 'plagiarism_plagscan');
+            $mform->setDefault('exclude_self_matches', get_config('plagiarism_plagscan', 'plagscan_defaults_exclude_self_matches'));
+
+            $mform->addElement('checkbox', 'exclude_from_repository', get_string('exclude_from_repository', 'plagiarism_plagscan'));
+            $mform->addHelpButton('exclude_from_repository', 'exclude_from_repository', 'plagiarism_plagscan');
+            $mform->setDefault('exclude_from_repository', get_config('plagiarism_plagscan', 'plagscan_defaults_exclude_from_repository'));
+        }
+        
+        $mform->addElement('select', 'online_text', get_string('online_submission', 'plagiarism_plagscan'), $onlinetextsubmission);
+        $mform->addHelpButton('online_text', 'online_submission', 'plagiarism_plagscan');
+        $mform->setDefault('online_text', get_config('plagiarism_plagscan', 'plagscan_defaults_online_text'));
+        
+        $mform->addElement('select', 'show_to_students', get_string("show_to_students", "plagiarism_plagscan"), $showstudentsopt);
+        $mform->addHelpButton('show_to_students', 'show_to_students', 'plagiarism_plagscan');
+        $mform->setDefault('show_to_students', get_config('plagiarism_plagscan', 'plagscan_defaults_show_to_students'));
+
+        $mform->addElement('select', 'show_students_links', get_string("show_to_students_opt2", "plagiarism_plagscan"), $showstudentslinks);
+        $mform->addHelpButton('show_students_links', 'show_to_students_opt2', 'plagiarism_plagscan');
+        $mform->setDefault('show_students_links', get_config('plagiarism_plagscan', 'plagscan_defaults_show_students_links'));
+        $mform->disabledIf('show_students_links', 'show_to_students', 'eq', 0);
+
+        /*  $mform->addElement('html', '<div class="box boxaligncenter gradingtable p-y-1">');
+            $mform->addElement('html', '<div class="flexible generaltable generalbox">');
+            $mform->addElement('html', '</div>');
+            $mform->addElement('html', '</div>');
+            $this->add_action_buttons(true); */
+
+        if ($cmid) {
+            $mform->setDefault('plagscan_upload', $instanceconfig->upload);
+            if (isset($instanceconfig->enable_online_text)) {
+                $mform->setDefault('online_text', $instanceconfig->enable_online_text);
+            }
+            
+            if($show_exclude_options){
+                if(isset($instanceconfig->exclude_self_matches)){
+                    $mform->setDefault('exclude_self_matches', $instanceconfig->exclude_self_matches);
+                }
+
+                if(isset($instanceconfig->exclude_from_repository)){
+                    $mform->setDefault('exclude_from_repository', $instanceconfig->exclude_from_repository);
+                }
+            }                    
+
+            $mform->setDefault('show_to_students', $instanceconfig->show_report_to_students);
+            $mform->setDefault('show_students_links', $instanceconfig->show_students_links);
+
+
+            if (get_config('plagiarism_plagscan', 'plagscan_nondisclosure_notice_email')) {
+                $mform->setDefault('nondisclosure_notice', $instanceconfig->nondisclosure);
+            }
+
+            if (get_config('plagiarism_plagscan', 'plagscan_multipleaccounts')) {
+                if (!empty($instanceconfig->username)) {
+                    if ($instanceconfig->username == $USER->email) {
+                        $user = $USER;
+                    } else {
+                        $user = $DB->get_record('user', array('email' => $instanceconfig->username));
+                    }
+                    if ($user) {
+                        $name = fullname($user) . " ({$user->email})";
+                        $mform->addElement('static', 'plagscan_admin_email', '', get_string('filesassociated', 'plagiarism_plagscan', $name));
+                    }
+                }
+                $url = new moodle_url('/plagiarism/plagscan/userconfig.php', array('sesskey' => sesskey()));
+                $link = html_writer::link($url, get_string('updateyoursettings', 'plagiarism_plagscan'), array('target' => '_blank'));
+                $mform->addElement('html', $link);
+            }
+        } else {
+            $mform->setDefault('plagscan_upload', $plugin::RUN_NO);
+        }
+    }
+}
+
+/**
+ *
+ * Hook to process data from submitted form
+ *
+ * @param stdClass $data
+ * @param stdClass $course
+ */
+function plagiarism_plagscan_coursemodule_edit_post_actions($data, $course) {
+    global $DB, $USER, $CFG;
+
+    $plugin = new plagiarism_plugin_plagscan();
+    if ($data->modulename != "assign") {
+        return '';
+    }
+
+    $cmid = $data->coursemodule;
+
+    $modulesql = 'SELECT m.id, m.name, cm.instance' .
+            ' FROM {course_modules} cm' .
+            ' INNER JOIN {modules} m on cm.module = m.id ' .
+            'WHERE cm.id = ?';
+    $moduledetail = $DB->get_record_sql($modulesql, array($cmid));
+
+    if (!empty($moduledetail)) {
+        $sql = "SELECT * FROM " . $CFG->prefix . $moduledetail->name . " WHERE id= ?";
+        $module = $DB->get_record_sql($sql, array($moduledetail->instance));
+    }
+
+    if (isset($data->plagscan_upload)) {
+        $config = new \stdClass();
+        $config->upload = filter_var($data->plagscan_upload, FILTER_VALIDATE_INT);
+
+        if ($config->upload !== $plugin::RUN_NO) {
+            $assignlog = array(
+                'context' => \context_system::instance(),
+                'objectid' => $cmid
+            );
+
+            assign_creation_started::create($assignlog)->trigger();
+            
+            $is_multiaccount = get_config('plagiarism_plagscan', 'plagscan_multipleaccounts');
+
+            if ($is_multiaccount) {
+                $user = $USER;
+            } else {
+                $user = $DB->get_record('user', array('email' => get_config('plagiarism_plagscan', 'plagscan_admin_email')));
+            }
+            
+            $oldconfig = plagscan_get_instance_config($cmid, false);
+            if (!isset($oldconfig->username) || empty($oldconfig->username)) {
+                $config->username = $user->email;
+            } else {
+                $config->username = $oldconfig->username;
+            }
+
+            
+            if ( !isset($oldconfig->ownerid) || empty($oldconfig->ownerid) || intval($oldconfig->ownerid) <= 0 ) {
+                if (!isset($oldconfig->username) || empty($oldconfig->username)) {
+                    $config->ownerid = $user->id;
+                } else {
+                    $owner = $DB->get_record('user', array("email" => $oldconfig->username));
+                    $config->ownerid = $owner->id;
+                }
+            } else {
+                $config->ownerid = $oldconfig->ownerid;
+            }
+            
+            $validation_default = array('options' => array('default' => 0));
+            
+            if(isset($data->exclude_self_matches)){
+                $config->exclude_self_matches = filter_var($data->exclude_self_matches, FILTER_VALIDATE_INT, $validation_default);
+            }
+            else{
+                $config->exclude_self_matches = 0;
+            }
+            
+            if(isset($data->exclude_from_repository)){
+                $config->exclude_from_repository = filter_var($data->exclude_from_repository, FILTER_VALIDATE_INT, $validation_default);
+            }
+            else {
+                $config->exclude_from_repository = 0;
+            }
+            
+            $connection = new plagscan_connection();
+            
+            if ((!isset($oldconfig->upload) || empty($oldconfig->upload)) && (!isset($oldconfig->submissionid) || intval($oldconfig->submissionid) <= 0)) {
+                if ($is_multiaccount) {
+                    $submissionid = $connection->create_submissionid($cmid, $module, $config, $user);
+                    if (intval($submissionid) <= 0){
+                        //throw new moodle_exception('error_assignment_creation', 'plagiarism_plagscan');
+                        $error_msg = "PlagScan: ".get_string('error_assignment_creation', 'plagiarism_plagscan') . ".";
+                        if(intval($submissionid) == -1){
+                            $error_msg .= " " . get_string('error_user_does_not_belong_to_the_institution', 'plagiarism_plagscan'). ".";
+                        }
+                        \core\notification::add($error_msg, \core\output\notification::NOTIFY_ERROR);
+                        return;
+                    }
+                    $assignlog['other']['submissionid'] = $submissionid;
+                    assign_creation_completed::create($assignlog)->trigger();
+                }
+                else {
+                    $submissionid = null;
+                }
+            }
+            else {
+                $submissionid = $oldconfig->submissionid;
+                if ($submissionid != NULL) {
+                    $assign_owner = $DB->get_record("user", array("id" => $config->ownerid));
+                    $connection->update_submission($cmid, $module, $config, $submissionid, $assign_owner);
+                    assign_update_completed::create($assignlog)->trigger();
+                }
+            }
+            
+            $config->show_report_to_students = filter_var($data->show_to_students, FILTER_VALIDATE_INT, $validation_default);
+            $config->show_students_links = filter_var($data->show_students_links, FILTER_VALIDATE_INT, $validation_default);
+            $config->enable_online_text = filter_var($data->online_text, FILTER_VALIDATE_INT, $validation_default);
+
+            $config->submissionid = $submissionid;
+            //nondisclosure document
+            if (isset($data->nondisclosure_notice) && $data->nondisclosure_notice == 1 && get_config('plagiarism_plagscan', 'plagscan_nondisclosure_notice_email')) {
+                $config->nondisclosure = 1;
+                //$config->username = get_config('plagiarism_plagscan', 'plagscan_nondisclosure_notice_email');
+            }
+            //END nondisclosure document
+        }
+        plagscan_set_instance_config($cmid, $config);
+    }
 }
