@@ -331,14 +331,15 @@ class plagiarism_plugin_plagscan extends plagiarism_plugin {
      * @param object $cm - full cm object
      */
     public function update_status($course, $cm) {
-        global $PAGE, $DB;
+        global $PAGE, $DB, $CFG;
 
         //called at top of submissions/grading pages - allows printing of admin style links or updating status
         $run = plagscan_get_instance_config($cm->id);
-
+        
         if ($run->upload == self::RUN_NO) {
             return '';
         }
+
 
         $output = '';
 //$DB->set_debug(true);
@@ -375,6 +376,20 @@ class plagiarism_plugin_plagscan extends plagiarism_plugin {
         //$output .= html_writer::empty_tag('br');
         //$checkalltextstatus = new moodle_url('/plagiarism/plagscan/classes/content_submission/check_contentstatus.php', array('cmid' => $cm->id,'return' => urlencode($PAGE->url)));
         //$output .= html_writer::link($checkalltextstatus, get_string('checkalltextstatus', 'plagiarism_plagscan'));
+        
+        $pageurl = $PAGE->url;
+        $pagination = optional_param('page', -1, PARAM_INT);
+        
+        if($pagination != -1){
+            $pageurl->param('page', $pagination);
+        }
+        $output .= html_writer::empty_tag('br');
+        $params = array('cmid' => s($cm->id), 
+        'return' => urlencode($pageurl));
+
+        $submiturl = new moodle_url('/plagiarism/plagscan/reports/submit_all_files.php', $params);
+        $output .= html_writer::link($submiturl, "submit all files to PlagScan");
+        $output .= html_writer::empty_tag('br');
 
 
         return $output;
