@@ -642,11 +642,18 @@ class plagscan_connection {
         if (isset($res["response"]["data"]["userID"])) {
             $psid = intval($res["response"]["data"]["userID"]);
         }
-        else { //In case it fails on the creation, try to create with a different username in PlagScan
-            $data["username"] = get_config('plagiarism_plagscan', 'plagscan_id') . ":" . $user->email;
-            $res = plagscan_api::instance()->request($url, "POST", $data);
-            if (isset($res["response"]["data"]["userID"])) {
-                $psid = intval($res["response"]["data"]["userID"]);
+        else if (isset($res["httpcode"]) && $res["httpcode"] == 409){ //In case it fails on the creation, try to create with a different username in PlagScan
+            //Check again if the user exist before create to avoid duplicate
+            $url2 = plagscan_api::API_USERS . "?access_token=$access_token&searchByEmail=$user->email";
+    
+            $res2 = plagscan_api::instance()->request($url2, "GET", null);
+            
+            if(!isset($res2["response"]["data"]["userID"])) {
+                $data["username"] = get_config('plagiarism_plagscan', 'plagscan_id') . ":" . $user->email;
+                $res = plagscan_api::instance()->request($url, "POST", $data);
+                if (isset($res["response"]["data"]["userID"])) {
+                    $psid = intval($res["response"]["data"]["userID"]);
+                }
             }
         }
 

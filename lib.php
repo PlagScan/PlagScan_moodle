@@ -388,7 +388,7 @@ class plagiarism_plugin_plagscan extends plagiarism_plugin {
         'return' => urlencode($pageurl));
 
         $submiturl = new moodle_url('/plagiarism/plagscan/reports/submit_all_files.php', $params);
-        $output .= html_writer::link($submiturl, "submit all files to PlagScan");
+        $output .= html_writer::link($submiturl, get_string('submit_all_files', 'plagiarism_plagscan'));
         $output .= html_writer::empty_tag('br');
 
 
