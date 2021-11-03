@@ -1,4 +1,4 @@
-# PlagScan Moodle Plugin 3.2.1 Release Notes
+# PlagScan Moodle Plugin 3.2.2 Release Notes
 
 The advanced plagiarism checker plugin for moodle.
 
