@@ -199,13 +199,7 @@ $string['updateyoursettings'] = 'To your PlagScan settings';
 $string['update_frozen_checking_files_task'] = "Update the status of files frozen as checking or in progress";
 $string['useplagscan'] = 'Enable PlagScan';
 $string['useplagscan_filessubmission'] = "Enable PlagScan for files submission";
-$string['useplagscan_filessubmission_help'] = '<ul><li><b>Submit files manually</b>: you can choose when to send the file to Plagscan manually by pressing the submit button.</li>'
-        . '<li><b>Start check manually (Upload to PlagScan when students save a draft)</b>: you will have to check each document manually. Files are sent to PlagScan every time students save a draft.</li>'
-        . '<li><b>Start check manually (Upload to PlagScan when students click on Submit button)</b>: you will have to check each document manually. Files are sent to PlagScan only when students click on Submit button.'
-        . ' This option is valid when the option "Require students click submit button" is enabled. </li>'
-        . '<li><b>Start check immediately</b>: the PlagScan plugin will start analyzing documents automatically and immediately after uploading.</li>'
-        . '<li><b>Start check immediately after the first due date</b>: the PlagScan plugin only starts when the first due date has passed. </li>'
-        . '<li><b>Start check immediately after all due dates</b>: the plugin will begin analyzing the documents right after every deadline.</li></ul>';
+$string['useplagscan_filessubmission_help'] = '<ul><li><b>Submit files manually</b>: you can choose when to send the file to Plagscan manually by pressing the submit button.</li><li><b>Start check manually (Upload to PlagScan when students save a draft)</b>: you will have to check each document manually. Files are sent to PlagScan every time students save a draft.</li><li><b>Start check manually (Upload to PlagScan when students click on Submit button)</b>: you will have to check each document manually. Files are sent to PlagScan only when students click on Submit button. This option is valid when the option "Require students click submit button" is enabled. </li><li><b>Start check immediately</b>: the PlagScan plugin will start analyzing documents automatically and immediately after uploading.</li><li><b>Start check immediately after the first due date</b>: the PlagScan plugin only starts when the first due date has passed. </li><li><b>Start check immediately after all due dates</b>: the plugin will begin analyzing the documents right after every deadline.</li></ul>';
 $string['useroptedout'] = 'Opted-out of plagiarism detection';
 $string['viewmatches'] = 'View matches';
 $string['viewreport'] = 'View report';
