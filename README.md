@@ -1,4 +1,4 @@
-# PlagScan Moodle Plugin 3.2.1 Release Notes
+# PlagScan Moodle Plugin 3.2.2 Release Notes
 
 The advanced plagiarism checker plugin for moodle.
 
@@ -18,11 +18,10 @@ https://www.plagscan.com/en/plagscan-integration-moodle
 Bug Fix:
 --------
 
-- Remove deprecated config variables
-- Remove deprecated methods
-- Added methods to support Course module edit form Callbacks
-- Added support for latest Moodle versions 3.9, 3.10 and 3.11 
-- Fix problem with showing some debug message from non set variables or objects
+- Added new feature to submit all files from an assigment
+- Fix a bug when trying to use AMOS to translate items
+- Fix a bug where 'Save and display' option when editing an assignment was returning back to course instead of the assignment view
+- Fix a bug where plugin admin settings page was still accessible when the plagiarism plugin option was disabled under Site Administration / Advanced features
 
 Special thanks:
 ---------------
