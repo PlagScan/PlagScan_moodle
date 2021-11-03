@@ -627,7 +627,7 @@ function plagiarism_plagscan_coursemodule_edit_post_actions($data, $course) {
 
     $plugin = new plagiarism_plugin_plagscan();
     if ($data->modulename != "assign") {
-        return '';
+        return $data;
     }
 
     $cmid = $data->coursemodule;
@@ -710,7 +710,7 @@ function plagiarism_plagscan_coursemodule_edit_post_actions($data, $course) {
                             $error_msg .= " " . get_string('error_user_does_not_belong_to_the_institution', 'plagiarism_plagscan'). ".";
                         }
                         \core\notification::add($error_msg, \core\output\notification::NOTIFY_ERROR);
-                        return;
+                        return $data;
                     }
                     $assignlog['other']['submissionid'] = $submissionid;
                     assign_creation_completed::create($assignlog)->trigger();
@@ -742,4 +742,6 @@ function plagiarism_plagscan_coursemodule_edit_post_actions($data, $course) {
         }
         plagscan_set_instance_config($cmid, $config);
     }
+
+    return $data;
 }
