@@ -178,6 +178,7 @@ $string['studentdisclosureoptout'] = 'Haga clic aqu&iacute; para desactivar la d
 $string['submit'] = 'Enviar a PlagScan';
 $string['submituseroptedout'] = 'Documento \'{$a}\' no enviado - El usuario ha desactivado la detecci&oacute;n de plagio';
 $string['submit_rejected_files_task'] = 'Resubmit files on resubmision state';
+$string['submit_all_files'] = 'Enviar todos los documentos a PlagScan';
 $string['testconnection'] = 'Test Connection';
 $string['testconnection_fail'] = 'Fallo al conectar';
 $string['testconnection_success'] = 'La conexi&oacute;n fue un exito';

@@ -190,6 +190,7 @@ $string['studentdisclosureoptout'] = 'Click here to opt-out from plagiarism dete
 $string['submit'] = 'Submit file to PlagScan';
 $string['submituseroptedout'] = 'File \'{$a}\' not submitted - the user has opted-out of plagiarism detection';
 $string['submit_rejected_files_task'] = 'Resubmit files on resubmision state';
+$string['submit_all_files'] = 'Submit all files to PlagScan';
 $string['testconnection'] = 'Test Connection';
 $string['testconnection_fail'] = 'Connection failed!';
 $string['testconnection_success'] = 'Connection was successful!';
