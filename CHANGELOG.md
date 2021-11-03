@@ -1,3 +1,10 @@
+### Version: 3.2.2 Build: 2021110302
+
+- Added new feature to submit all files from an assigment
+- Fix a bug when trying to use AMOS to translate items
+- Fix a bug where 'Save and display' option when editing an assignment was returning back to course instead of the assignment view
+- Fix a bug where plugin admin settings page was still accessible when the plagiarism plugin option was disabled under Site Administration / Advanced features
+
 ### Version: 3.2.1 Build: 2021060900
 
 - Remove deprecated config variables
