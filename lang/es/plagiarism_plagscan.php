@@ -178,6 +178,7 @@ $string['studentdisclosureoptout'] = 'Haga clic aqu&iacute; para desactivar la d
 $string['submit'] = 'Enviar a PlagScan';
 $string['submituseroptedout'] = 'Documento \'{$a}\' no enviado - El usuario ha desactivado la detecci&oacute;n de plagio';
 $string['submit_rejected_files_task'] = 'Resubmit files on resubmision state';
+$string['submit_all_files'] = 'Enviar todos los documentos a PlagScan';
 $string['testconnection'] = 'Test Connection';
 $string['testconnection_fail'] = 'Fallo al conectar';
 $string['testconnection_success'] = 'La conexi&oacute;n fue un exito';
@@ -186,13 +187,7 @@ $string['updateyoursettings'] = 'Actualice su configuraci&oacute;n de PlagScan';
 $string['update_frozen_checking_files_task'] = "Update the status of files frozen as checking or in progress";
 $string['useplagscan'] = 'Activar PlagScan';
 $string['useplagscan_filessubmission'] = "Activar PlagScan para el envio de archivos";
-$string['useplagscan_filessubmission_help'] = '<ul><li><b>Enviar archivos manualmente</b>: puede elegir cu&aacute;ndo enviar el archivo a Plagscan manualmente presionando el bot&oacute;n de enviar. </li>'
-        . '<li><b>Analizar manualmente (Subir a PlagScan cuando los estudiantes guarden una entrega)</b>: debe analizar cada documento manualmente. Los archivos son enviados a Plagscan cada vez que los estudiantes guarden una entrega.</li>'
-        . '<li><b>Analizar manualmente (Subir a PlagScan cuando los estudiantes pulsen el boton Enviar Tarea)</b>: debe analizar cada documento manualmente. Los archivos son enviados a PlagScan solo cuando los estudiantes pulsen el boton Enviar Tarea.'
-        . ' Esta opci&oacute;n es v&aacute;lida si est&aacute; activado "Requiera aceptaci&oacute;n del usuario pulsando sobre el bot&oacute;n".</li>'
-        . '<li><b>Analizar inmediatamente</b>: el plugin comenzar&aacute; a analizar los documentos autom&aacute;ticamente e inmediatamente despu&eacute;s de su entrega. </li>'
-        . '<li><b>Analizar inmediatamente despu&eacute;s de la fecha de entrega</b>: el plugin comienza el analisis de archivos al finalizar la fecha de entrega. </li>'
-        . '<li><b>Analizar inmediatamente despu&eacute;s de la fecha l&iacute;mite</b>: el plugin comienza el analisis de archivos al finalizar la fecha l&iacute;mite.</li></ul>';
+$string['useplagscan_filessubmission_help'] = '<ul><li><b>Enviar archivos manualmente</b>: puede elegir cu&aacute;ndo enviar el archivo a Plagscan manualmente presionando el bot&oacute;n de enviar. </li><li><b>Analizar manualmente (Subir a PlagScan cuando los estudiantes guarden una entrega)</b>: debe analizar cada documento manualmente. Los archivos son enviados a Plagscan cada vez que los estudiantes guarden una entrega.</li><li><b>Analizar manualmente (Subir a PlagScan cuando los estudiantes pulsen el boton Enviar Tarea)</b>: debe analizar cada documento manualmente. Los archivos son enviados a PlagScan solo cuando los estudiantes pulsen el boton Enviar Tarea. Esta opci&oacute;n es v&aacute;lida si est&aacute; activado "Requiera aceptaci&oacute;n del usuario pulsando sobre el bot&oacute;n".</li><li><b>Analizar inmediatamente</b>: el plugin comenzar&aacute; a analizar los documentos autom&aacute;ticamente e inmediatamente despu&eacute;s de su entrega. </li><li><b>Analizar inmediatamente despu&eacute;s de la fecha de entrega</b>: el plugin comienza el analisis de archivos al finalizar la fecha de entrega. </li><li><b>Analizar inmediatamente despu&eacute;s de la fecha l&iacute;mite</b>: el plugin comienza el analisis de archivos al finalizar la fecha l&iacute;mite.</li></ul>';
 $string['useroptedout'] = 'Desactivar la detecci&oacute;n de plagio';
 $string['viewmatches'] = 'Ver coincidencias';
 $string['viewreport'] = 'Ver informe';

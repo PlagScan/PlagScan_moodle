@@ -180,6 +180,7 @@ $string['studentdisclosureoptout'] = 'Klicke hier, um die Plagiatspr&uuml;fung z
 $string['submit'] = 'Einreichen bei PlagScan';
 $string['submituseroptedout'] = 'Datei \'{$a}\' nicht eingereicht – der Nutzer hat eine Plagiatspr&uuml;fung verweigert';
 $string['submit_rejected_files_task'] = 'Dateien erneut einreichen';
+$string['submit_all_files'] = 'Alle Dateien beim PlagScan einreichen';
 $string['testconnection'] = 'Teste Verbindung';
 $string['testconnection_fail'] = 'Verbindung fehlgeschlagen!';
 $string['testconnection_success'] = 'Verbindung war erfolgreich!';
@@ -188,13 +189,7 @@ $string['updateyoursettings'] = 'Zu Ihren PlagScan-Einstellungen';
 $string['update_frozen_checking_files_task'] = "Datei-Status aktualisieren";
 $string['useplagscan'] = 'Aktiviere PlagScan';
 $string['useplagscan_filessubmission'] = "Aktiviere PlagScan f&uuml;r Einreichung von Dateien";
-$string['useplagscan_filessubmission_help'] = '<ul><li><b>Datei manuell einreichen</b>: Sie k&ouml;nnen die Datei jederzeit manuell an Plagscan senden, indem Sie auf den Button „Einreichen bei PlagScan“ klicken. </li>'
-        . '<li><b>Analyse manuell starten (bei PlagScan einreichen wenn Studenten einen Entwurf speichern)</b>: Sie m&uuml;ssen jedes Dokument einzeln f&uuml;r die Pr&uuml;fung ausw&auml;hlen. Bei PlagScan einreichen wenn Studenten eine Entwurf speichern.</li>'
-        . '<li><b>Analyse manuell starten (bei PlagScan einreichen wenn Studenten auf abgeben klicken)</b>: Sie m&uuml;ssen jedes Dokument einzeln f&uuml;r die Pr&uuml;fung ausw&auml;hlen. Bei PlagScan einreichen wenn Studenten auf abgeben klicken.'
-        . ' Diese Option ist g&uuml;ltig, wenn die Option "Abgabetaste muss gedr&uuml;ckt werden" aktiviert ist.</li>'
-        . '<li><b>Analyse sofort bei Abgabe starten</b>: PlagScan analysiert das Dokument automatisch und sofort nach dem Hochladen. </li>'
-        . '<li><b>Analyse sofort nach dem ersten Abgabetermin starten</b>: PlagScan startet nachdem die letzte Abgabem&ouml;glichkeit abgelaufen ist. </li>'
-        . '<li><b>Analyse bei allen Abgabeterminen starten: </b>Analyse startet sofort, nachdem alle Abgabem&ouml;glichkeiten abgelaufen sind.</li></ul>';
+$string['useplagscan_filessubmission_help'] = '<ul><li><b>Datei manuell einreichen</b>: Sie k&ouml;nnen die Datei jederzeit manuell an Plagscan senden, indem Sie auf den Button „Einreichen bei PlagScan“ klicken. </li><li><b>Analyse manuell starten (bei PlagScan einreichen wenn Studenten einen Entwurf speichern)</b>: Sie m&uuml;ssen jedes Dokument einzeln f&uuml;r die Pr&uuml;fung ausw&auml;hlen. Bei PlagScan einreichen wenn Studenten eine Entwurf speichern.</li><li><b>Analyse manuell starten (bei PlagScan einreichen wenn Studenten auf abgeben klicken)</b>: Sie m&uuml;ssen jedes Dokument einzeln f&uuml;r die Pr&uuml;fung ausw&auml;hlen. Bei PlagScan einreichen wenn Studenten auf abgeben klicken. Diese Option ist g&uuml;ltig, wenn die Option "Abgabetaste muss gedr&uuml;ckt werden" aktiviert ist.</li><li><b>Analyse sofort bei Abgabe starten</b>: PlagScan analysiert das Dokument automatisch und sofort nach dem Hochladen. </li><li><b>Analyse sofort nach dem ersten Abgabetermin starten</b>: PlagScan startet nachdem die letzte Abgabem&ouml;glichkeit abgelaufen ist. </li><li><b>Analyse bei allen Abgabeterminen starten: </b>Analyse startet sofort, nachdem alle Abgabem&ouml;glichkeiten abgelaufen sind.</li></ul>';
 $string['useroptedout'] = 'Plagiatspr&uuml;fung verweigert';
 $string['viewmatches'] = 'Zeige Liste';
 $string['viewreport'] = 'Zeige Textbericht';

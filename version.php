@@ -24,7 +24,7 @@
  * @copyright  	@2018 PlagScan GmbH
  * @license    	http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-$plugin->version = 2021060900;
+$plugin->version = 2021110301;
 $plugin->requires = 2019101000;
 $plugin->cron = 60;
 $plugin->maturity = MATURITY_STABLE;

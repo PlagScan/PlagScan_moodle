@@ -642,11 +642,18 @@ class plagscan_connection {
         if (isset($res["response"]["data"]["userID"])) {
             $psid = intval($res["response"]["data"]["userID"]);
         }
-        else { //In case it fails on the creation, try to create with a different username in PlagScan
-            $data["username"] = get_config('plagiarism_plagscan', 'plagscan_id') . ":" . $user->email;
-            $res = plagscan_api::instance()->request($url, "POST", $data);
-            if (isset($res["response"]["data"]["userID"])) {
-                $psid = intval($res["response"]["data"]["userID"]);
+        else if (isset($res["httpcode"]) && $res["httpcode"] == 409){ //In case it fails on the creation, try to create with a different username in PlagScan
+            //Check again if the user exist before create to avoid duplicate
+            $url2 = plagscan_api::API_USERS . "?access_token=$access_token&searchByEmail=$user->email";
+    
+            $res2 = plagscan_api::instance()->request($url2, "GET", null);
+            
+            if(!isset($res2["response"]["data"]["userID"])) {
+                $data["username"] = get_config('plagiarism_plagscan', 'plagscan_id') . ":" . $user->email;
+                $res = plagscan_api::instance()->request($url, "POST", $data);
+                if (isset($res["response"]["data"]["userID"])) {
+                    $psid = intval($res["response"]["data"]["userID"]);
+                }
             }
         }
 
@@ -1047,6 +1054,93 @@ class plagscan_connection {
 
 
         return $message;
+    }
+
+    /**
+     * Method to submit all the files from one assignment to PlagScan. It creates a task for each file in a given assignment.
+     * 
+     * @param coursemodule $cm
+     * @param context $context
+     */
+    public function submit_all_files($cm, $context) {
+        global $CFG, $DB;
+        
+        $fs = get_file_storage();
+        $submitted = $DB->get_records_select('plagiarism_plagscan', 'cmid = :cmid',
+                                             array('cmid' => $cm->id), '', 'filehash');
+
+        if ($cm->modname == 'assign') {
+            require_once($CFG->dirroot.'/mod/assign/locallib.php');
+
+            //$cm = get_coursemodule_from_id('assign', $cmid, 0, false, MUST_EXIST);
+            $course = $DB->get_record('course', array('id' => $cm->course));
+            $assign = new \assign($context, $cm, $course);
+
+            // Loop through all the submissions and ask the submission plugins to return a list of files.
+            /** @var $plugins assign_submission_plugin[] */
+            $plugins = $assign->get_submission_plugins();
+            $files = array();
+            
+            $submissions = $DB->get_records('assign_submission', array('assignment' => $cm->instance));
+ 
+            foreach ($submissions as $submission) {
+                foreach ($plugins as $plugin) {
+                    if (!$plugin->is_enabled() || !$plugin->is_visible() || $plugin->get_type() != "file") {
+                        continue;
+                    }
+                    $user= $DB->get_record('user', array('id' => $submission->userid));               
+                    foreach ($plugin->get_files($submission,$user) as $file) {
+                        // Files are returned indexed by filename - which causes problems if different students submit
+                        // files with the same name.
+                        /** @var $file stored_file */
+                        if(method_exists($file,'get_id'))
+                            $files[$file->get_id()] = $file;
+                     
+                    }
+                }
+            }
+            
+            foreach ($files as $file) {
+                $filename = $file->get_filename();
+                $userid = $file->get_userid();
+                $pathnamehash = $file->get_pathnamehash();
+    
+                /*$plagscan = new \stdClass();
+                $plagscan->cmid = $cm->id;
+                $plagscan->userid = $userid;
+                $plagscan->filehash = $pathnamehash;
+                
+                 /*$oldrecords = $DB->get_records('plagiarism_plagscan', array('cmid' => $plagscan->cmid,
+                    'userid' => $plagscan->userid,
+                    'filehash' => $plagscan->filehash), 'id');
+                    $flag=false;
+                     foreach ($oldrecords as $oldrecord) {
+                            mtrace("Plagscan: Looks like the file '$filename' for user $userid is already on PlagScan server");
+                            mtrace("Plagscan: Ignoring to avoid duplicates\n");
+                            $flag=true;
+                        }
+                     if($flag){
+                         continue;
+                     }*/
+                     
+                if (array_key_exists($pathnamehash, $submitted)) {
+                    //mtrace("Plagscan: File '$filename' has already been submitted\n");
+                    continue; // This file has already been submitted.
+                }        
+                if (!plagscan_file::plagscan_supported_filetype($filename)) {
+                    //mtrace("Plagscan: '$filename' is a type of file not supported by the PlagScan server\n");
+                    //$this->set_file_status($plagscan, $plagscan_file::STATUS_FAILED_FILETYPE);
+                    continue; // Don't try to submit unsupported file types.
+                }
+                if (plagscan_user_opted_out($userid)) {
+                    continue; // User has opted-out.
+                }
+                
+                $hashes = array();
+                array_push($hashes, $pathnamehash);
+                \plagiarism_plagscan\handlers\file_handler::instance()->file_uploaded_without_event($context,$userid, $hashes);
+            }
+        }
     }
 
 }
