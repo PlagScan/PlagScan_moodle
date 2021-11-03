@@ -32,33 +32,26 @@ require_once($CFG->dirroot . '/plagiarism/plagscan/classes/plagscan_settings_for
 
 use plagiarism_plagscan\classes\plagscan_connection;
 
-require_login();
+admin_externalpage_setup('plagiarismplagscan');
 
-$url = new moodle_url('/plagiarism/plagscan/settings.php');
-$PAGE->set_url($url);
-
-if ($CFG->version < 2011120100) {
-    $context = get_context_instance(CONTEXT_SYSTEM);
-} else {
-    $context = context_system::instance();
-}
-require_capability('moodle/site:config', $context, $USER->id, true, "nopermissions");
-
-$PAGE->set_context($context);
+$context = context_system::instance();
+require_capability('moodle/site:config', $context, $USER->id);
 
 //require form
 $mform = new \plagiarism_plagscan\classes\plagscan_settings_form();
+
+if ($mform->is_cancelled()) {
+    $url = new moodle_url('/plagiarism/plagscan/settings.php');
+    redirect($url);
+}
+
+echo $OUTPUT->header();
+
 $plagiarismsettings = (array) get_config('plagiarism_plagscan');
 
 $connection = new plagscan_connection();
 $apimapping = $connection->get_user_settings_mapping();
 
-if ($mform->is_cancelled()) {
-    $url = new moodle_url('/plagiarism/plagscan/settings.php');
-    $PAGE->set_url($url);
-}
-
-echo $OUTPUT->header();
 // user clicked on save changes
 if (($data = $mform->get_data()) && confirm_sesskey()) {
 
@@ -140,7 +133,7 @@ if (($data = $mform->get_data()) && confirm_sesskey()) {
             $updatesettings->$serverfield = $value;
         }
     }
-    
+
     $try_connection = $connection->check_connection_to_plagscan_server();
     if($try_connection['httpcode'] != 200)
         echo $OUTPUT->notification(get_string('connectionfailed', 'plagiarism_plagscan'), 'notifyerror');
