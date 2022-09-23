@@ -29,4 +29,4 @@ $plugin->requires = 2019101000;
 $plugin->cron = 60;
 $plugin->maturity = MATURITY_STABLE;
 $plugin->component = 'plagiarism_plagscan';
-$plugin->release = '3.2.2';
+$plugin->release = '3.2.3';
