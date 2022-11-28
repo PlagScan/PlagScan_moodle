@@ -88,12 +88,13 @@ class restore_plagiarism_plagscan_plugin extends restore_plagiarism_plugin {
         $multiaccount = get_config('plagiarism_plagscan', 'plagscan_multipleaccounts');
         if ($multiaccount) {
             $data->submissionid = $this->get_submissionid_from_plagscan();
+            if(intval($data->submissionid) > 0)
+                $DB->insert_record('plagiarism_plagscan_config', $data);
         }
         else {
             $data->submissionid = null;
+            $DB->insert_record('plagiarism_plagscan_config', $data);
         }
-
-        $DB->insert_record('plagiarism_plagscan_config', $data);
     }
 
     /**
