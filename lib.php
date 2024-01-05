@@ -545,7 +545,7 @@ function plagiarism_plagscan_coursemodule_standard_elements($formwrapper, $mform
         $is_multiaccount = get_config('plagiarism_plagscan', 'plagscan_multipleaccounts');
         if($cmid){
             $instanceconfig = plagscan_get_instance_config($cmid);
-            if(!empty($instanceconfig->username) && ($instanceconfig->submissionid == NULL || intval($instanceconfig->submissionid) <= 0 )){
+            if(!empty($instanceconfig->username) && (isset($instanceconfig->submissionid) && intval($instanceconfig->submissionid) <= 0 )){
                 $show_exclude_options = false;
             }
         }
@@ -755,7 +755,7 @@ function plagiarism_plagscan_coursemodule_edit_post_actions($data, $course) {
             }
             //END nondisclosure document
         }
-        if (intval($config->submissionid) <= 0){
+        if (isset($config->submissionid) && intval($config->submissionid) <= 0){
             $error_msg = "PlagScan: ".get_string('error_assignment_creation', 'plagiarism_plagscan') . ".";
             \core\notification::add($error_msg, \core\output\notification::NOTIFY_ERROR);
             return $data;
