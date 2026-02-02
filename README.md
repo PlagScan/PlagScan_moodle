@@ -1,3 +1,5 @@
+# [DEPRECATED] This project has reached the end of its development
+
 # PlagScan Moodle Plugin 3.2.3 Release Notes
 
 The advanced plagiarism checker plugin for moodle.
