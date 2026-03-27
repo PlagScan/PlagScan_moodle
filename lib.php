@@ -113,6 +113,9 @@ class plagiarism_plugin_plagscan extends plagiarism_plugin {
 
         global $CFG, $USER, $COURSE, $DB, $PAGE, $cm;
 
+        if (!isset($linkarray['cmid'])) {
+            return '';
+        }
         $cmid = $linkarray['cmid'];
 
         $is_file = isset($linkarray['file']);
