@@ -75,7 +75,7 @@ class plagscan_settings_form extends moodleform {
 
         $mform->addElement('html', "<div>");
 
-        $mform->addElement('checkbox', 'plagscan_use', get_string('useplagscan', 'plagiarism_plagscan'));
+        $mform->addElement('checkbox', 'enabled', get_string('useplagscan', 'plagiarism_plagscan'));
 
         //$mform->addElement('text', 'plagscan_version', get_string('plagscan_API_version', 'plagiarism_plagscan'), array('style' => 'height: 33px'));
         //$mform->addHelpButton('plagscan_version', 'plagscan_API_version', 'plagiarism_plagscan');
